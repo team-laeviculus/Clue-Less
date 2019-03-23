@@ -2,44 +2,53 @@ import flask
 from flask import jsonify, request
 from flask_restful import Resource, Api
 
-# This requires python path to be set correctly, i.e.
-# export PYTHONPATH=$PYTHONPATH:/path/to/MainFolder
-# TODO: What's a better way to do this?
+# Ensure you have your virtual environment properly set up and activated
+# PyCharm should automatically do this for you
 from Databases.DBController import *
 
-# TODO: This shouldn't be declared in global scope, but I'm not sure
-# where the best place for this is
-db_controller = DBController('./Databases/players.db', 0)
 
-# Access to the player database
-# Posts new players to the database, gets lists of all active players
-class HandlePlayers(Resource):
+class Server(object):
 
-    def get(self):
-        all_players = db_controller.get_table_values('players')
-        return jsonify(all_players)
+    def __init__(self, db_connection: DBController, port=5000):
+        self.port = port
+        self.db_connection = db_connection
 
-    def post(self):
-        values = [request.json["name"]]
-        return db_controller.add_table_value('players', values)
+    # Access to the player database
+    # Posts new players to the database, gets lists of all active players
+    class HandlePlayers(Resource):
 
-    def delete(self):
-        values = [request.json["name"]]
-        return db_controller.remove_table_value('players', values)
+        def __init__(self, **kwargs):
+            self.db_connection = kwargs['db_connection']
 
-def end_game():
-    return(jsonify("Ending Game"))
+        def get(self):
+            all_players = self.db_connection.get_table_values('players')
+            return jsonify(all_players)
 
-def go():
-    app = flask.Flask(__name__)
-    app.config["DEBUG"] = True
-    api = Api(app)
+        def post(self):
+            values = [request.json["name"]]
+            return self.db_connection.add_table_value('players', values)
 
-    api.add_resource(HandlePlayers, '/players')
-    #api.add_resource(end_game, '/end_game')
+        def delete(self):
+            values = [request.json["name"]]
+            return self.db_connection.db_controller.remove_table_value('players', values)
 
+    # IDK if this blocks, if so run this in a thread
+    def start_server(self):
+        app = flask.Flask("Clueless Server")
+        app.config["DEBUG"] = True
+        api = Api(app)
 
-    app.run()
+        api.add_resource(self.HandlePlayers, '/players', resource_class_kwargs={'db_connection': self.db_connection})
+        # api.add_resource(end_game, '/end_game')
+
+        app.run()
+
+    def end_game(self):
+        return jsonify("Ending Game")
+
 
 if __name__ == "__main__":
-    go()
+    dbController = DBController('../Networking/players.db', 0)
+    server = Server(dbController)
+    server.start_server()
+    #server.end_game()
