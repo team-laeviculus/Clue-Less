@@ -1,43 +1,31 @@
 import flask
 from flask import jsonify, request
-import sqlite3
 from flask_restful import Resource, Api
 
-# Use dictionaries instead of lists for database returns
-# This is optional
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+# This requires python path to be set correctly, i.e.
+# export PYTHONPATH=$PYTHONPATH:/path/to/MainFolder
+# TODO: What's a better way to do this?
+from Databases.DBController import *
+
+# TODO: This shouldn't be declared in global scope, but I'm not sure
+# where the best place for this is
+db_controller = DBController('./Databases/players.db', 0)
 
 # Access to the player database
 # Posts new players to the database, gets lists of all active players
 class HandlePlayers(Resource):
+
     def get(self):
-        conn = sqlite3.connect('../Databases/players.db')
-        conn.row_factory = dict_factory
-        cur = conn.cursor()
-        all_players = cur.execute('SELECT * FROM players;').fetchall()
+        all_players = db_controller.get_table_values('players')
         return jsonify(all_players)
 
     def post(self):
-        conn = sqlite3.connect('../Databases/players.db')
-        cur = conn.cursor()
         values = [request.json["name"]]
-        command = 'INSERT INTO players(name) VALUES(?)'
-        cur.execute(command, values)
-        conn.commit()
-        conn.close()
+        return db_controller.add_table_value('players', values)
 
     def delete(self):
-        conn = sqlite3.connect('../Databases/players.db')
-        cur = conn.cursor()
         values = [request.json["name"]]
-        command = 'DELETE FROM players WHERE name = ?'
-        cur.execute(command, values)
-        conn.commit()
-        conn.close()
+        return db_controller.remove_table_value('players', values)
 
 def end_game():
     return(jsonify("Ending Game"))
@@ -48,7 +36,7 @@ def go():
     api = Api(app)
 
     api.add_resource(HandlePlayers, '/players')
-    api.add_resource(end_game, '/end_game')
+    #api.add_resource(end_game, '/end_game')
 
 
     app.run()
