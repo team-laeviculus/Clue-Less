@@ -12,6 +12,8 @@ def dict_factory(cursor, row):
 
 
 #TODO: add error handling for these class methods
+#TODO: Might want this running in its own thread if we make server
+# multithreaded (I think flask automatically handles multithreading)
 class DBController:
 
     def __init__(self, db_path, port):
@@ -23,22 +25,21 @@ class DBController:
 
         self.port = port
         self.is_connected = False
+        self.create_connection() # Temporarily For testing purposes
 
 
     # Connect to the database
     def create_connection(self):
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.db_path, check_same_thread=False) #TODO: We will get a race condition
         self.conn.row_factory = dict_factory
         self.cur = self.conn.cursor()
         self.is_connected = True
-
-
 
     def create_table(self, table_name):
         pass
 
     def remove_table(self, table_name):
-            pass
+        pass
 
     # Get all values in the specified table
     def get_table_values(self, table_name):
