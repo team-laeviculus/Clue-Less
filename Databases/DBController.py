@@ -50,11 +50,23 @@ class DBController:
         all_values = self.cur.execute('SELECT * FROM ' + table_name + ';').fetchall()
         return all_values
 
+
     # Add a value to a table
-    def add_table_value(self, table_name, values):
-        #TODO: Once table columns are defined, add columns here
-        columns = '(name)'
-        command = 'INSERT INTO ' + table_name + columns +' VALUES(?)'
+    def add_table_value(self, table_name, column_data):
+        columns = '('
+        values = []
+        values_string = ' VALUES('
+        for column, value in column_data.items():
+            columns = columns + column + ','
+            values.append(value)
+            values_string = values_string  + '? ,'
+
+        #Remove trailing comma, add ending bracket
+        columns = columns[:-1]
+        columns = columns + ')'
+        values_string = values_string[:-2]
+        values_string = values_string + ')'
+        command = 'INSERT INTO ' + table_name + columns + values_string
         self.cur.execute(command, values)
         self.conn.commit()
 

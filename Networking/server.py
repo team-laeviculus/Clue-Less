@@ -18,7 +18,7 @@ class HandlePlayers(Resource):
         return jsonify(all_players)
 
     def post(self):
-        values = [request.json["name"]]
+        values = request.json
         return self.db_connection.add_table_value('players', values)
 
     def delete(self):
