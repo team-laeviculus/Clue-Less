@@ -78,6 +78,13 @@ class BasicServerTest(unittest.TestCase):
         print(f"Players: {r_data}")
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+    # TAP: Not sure how to call the server to get the right function for this
+    # def testGetPlayersByName(self, name):
+    #     print("Starting Get Players By Name")
+    #     response = self.app.get("/players", follow_redirects=True)
+    #     r_data = response.get_json()
+    #     print(f"Players: {r_data}")
+    #     self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def testJoinGame(self):
         print("FooBar is going to try and join the game!")

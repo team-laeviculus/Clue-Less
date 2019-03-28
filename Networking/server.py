@@ -17,6 +17,11 @@ class HandlePlayers(Resource):
         all_players = self.db_connection.get_table_values('players')
         return jsonify(all_players)
 
+    # TAP: Not sure how to link this command with a http call
+    # def get(self):
+    #     player = self.db_connection.get_player_by_name(name)
+    #     return jsonify(player)
+
     def post(self):
         values = request.json
         return self.db_connection.add_table_value('players', values)

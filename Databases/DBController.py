@@ -50,6 +50,18 @@ class DBController:
         all_values = self.cur.execute('SELECT * FROM ' + table_name + ';').fetchall()
         return all_values
 
+    # TAP: This should be correct, but hasn't been tested
+    #  Get player in the player table by name
+    def get_player_by_name(self, name):
+
+        if not self.is_connected:
+            self.create_connection()
+
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM players WHERE name=?", (name,))
+        rows = cur.fetchall()
+        return rows
+
 
     # Add a value to a table
     def add_table_value(self, table_name, column_data):
