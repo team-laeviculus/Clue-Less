@@ -154,8 +154,7 @@ class BasicServerTest(unittest.TestCase):
         r = self.app.delete("/players/Doggo", json=data)
         self.assertEqual(r.status_code, HTTPStatus.BAD_REQUEST)
 
-
-    def testUpdateExisitngPlayer(self):
+    def testUpdateExistingPlayer(self):
 
         data = {'name': "DingDong"}
         qry = "/players/" + data['name']

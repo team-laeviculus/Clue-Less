@@ -6,7 +6,10 @@ import threading
 import multiprocessing
 import argparse
 import traceback
+import json
 import requests
+import time
+import queue
 from ClueLessGUI import AbstractGUI
 
 
@@ -19,6 +22,7 @@ class CliObject(object):
         self.is_running = True
         self.addr = 'http://localhost:5000'
         self.gui_thread_handle = None
+        self.msg_queue = queue.Queue()  # Thread safe queue
 
         # Jank command line parser
         self.dispatch_table = {
@@ -30,16 +34,41 @@ class CliObject(object):
             "gui" : self.create_gui_object
         }
 
+        self.server_commands = {"get_all", "join", "leave", "get", "update"}
+
     def create_gui_object(self):
-        handle = threading.Thread(target=AbstractGUI.thread_method, name="GUI Thread")
+        handle = threading.Thread(target=AbstractGUI.thread_method,
+                                  name="GUI Thread",
+                                  args=(self.msg_queue,)
+                                  )
         handle.start()
         return handle
 
+    def send_response_to_thread(self, cmd, response):
+        if cmd[0] in self.server_commands:
+            r_code = response.status_code
+            r_data = response.text.replace('\\', '').replace('\n  ', '').replace('\n', '')#json.dumps(response.json())  # json.dumps(response.text)
+            print(f"Jsonified response: {json.dumps(r_data)}")
+            r_data = json.dumps(r_data)
+            r_data = response.json()
+            #t = json.loads(r_data).replace('"', '\\"').replace('\n', '\\n')
+            # print(f"Json deseriallized: {json.loads(r_data)}")
+
+            client_message = f"[CLIENT]: {' '.join(cmd)}"
+            # server_r_string = ""
+            # for k, v in r_data.items():
+            #     server_r_string = server_r_string + f"{k}: {v}, "
+            server_message = [f"[SERVER][{r_code}]: ", r_data]
+
+
+            message = {"client": client_message, "server": server_message}
+            self.msg_queue.put(message)
 
     def start_listener_loop(self):
-        cmd = ""
+
         while self.is_running:
             cmd = input("Enter A Command> ")
+            r = None
             print(f"Command Entered: {cmd}\n\r")
 
             if cmd == "q" or cmd == "quit":
@@ -53,6 +82,7 @@ class CliObject(object):
                 for c in self.dispatch_table.keys():
                     print(c)
             else:
+                # HTTP Request messages
                 try:
                     parsed = cmd.split(" ")
                     cmd = parsed[0]
@@ -68,6 +98,7 @@ class CliObject(object):
                                 else:
                                     double_parsed = parsed[2].split("=")
                                     dat = {double_parsed[0]: double_parsed[1]}
+                                    print(f"PUTTING: {dat}")
                                     r = self.dispatch_table[cmd](n, dat)
                                     print(f"Server Response: {r.text}")
                             else:
@@ -84,11 +115,15 @@ class CliObject(object):
                         print(f"Error! Unknown Command {cmd}")
                         print("Use command 'h' or 'help' for list of commands")
 
+                    self.send_response_to_thread(parsed, r)
+
                 except Exception as e:
                     # Keep loop running even with bad commands
                     print(f"Error: {e}")
                     traceback.print_exc()
 
+            time.sleep(300.0/1000.0)
+            print("\n\r")
 
 
 if __name__ == "__main__":
