@@ -77,6 +77,9 @@ class DBController:
 
             self.cur.execute(f"UPDATE players SET weapon='{weapon}', suspect='{sus}', current_space='{current_space}' WHERE ID={player_id}")
             self.conn.commit()
+            return True
+        return False
+
     # Use this for deleting table items by player name
     def delete_player_by_name(self, name):
         player_v = self.get_player_by_name(name)

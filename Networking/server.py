@@ -55,13 +55,14 @@ class HandleIndividualPlayerManagement(Resource):
         print(f"PUT serverside: {playername}")
         args = parser.parse_args()
         print(f"PUT Args: {args}")
-        self.db_connection.update_player_by_name(playername,
-                                                 weapon=args['weapon'],
-                                                 suspect=args['suspect'],
-                                                 space=args['location']
-                                                 )
-        return '', HTTPStatus.OK
-
+        ret_code = self.db_connection.update_player_by_name(playername,
+                                                            weapon=args['weapon'],
+                                                            suspect=args['suspect'],
+                                                            space=args['location']
+                                                            )
+        if ret_code == True:
+            return f'Player {playername} Updated', HTTPStatus.OK
+        return f'Player {playername} Does Not Exist', HTTPStatus.BAD_REQUEST
 
 
 

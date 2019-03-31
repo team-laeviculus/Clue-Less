@@ -38,7 +38,7 @@ class AbstractGUI(object):
     def startEventLoop(self, tick_rate=60):
         # Main GUI event loop. This is where all events get parsed (input), and
         # any type of graphical element gets registered to be rendered. ORDER IS IMPORTANT!
-    
+        # tick_rate = time to sleep between loops, in ms
         if self.window_initialized:
 
             while self.event_loop_running:
@@ -52,14 +52,16 @@ class AbstractGUI(object):
                 self.window_ptr.fill(self.BACKGROUND_COLOR)
                 self.hello_world_message()
 
+                # Redraw
                 pygame.display.update()
-                self.clock.tick()
+                # Time duration between next loop update. Used to reduce CPU usage
+                self.clock.tick(tick_rate)
 
 
 
             # On event loop exit:
             pygame.quit()
-            quit()
+            #quit()
         else:
             self.log("Error! Can't start event loop unless window has been initialized")
 
@@ -82,6 +84,14 @@ class AbstractGUI(object):
 
     def hello_world_message(self):
         self.render_message("Hello World from game window!", 32)
+
+
+
+def thread_method():
+    window = AbstractGUI(600, 800, "Test Window")
+    window.initializeWindow()
+    window.startEventLoop()
+
 
 # for testing purposes
 
