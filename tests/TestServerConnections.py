@@ -179,6 +179,14 @@ class BasicServerTest(unittest.TestCase):
 
         self.deletePlayerHelper(data)
 
+    def testUpdateNonExistingPlayer(self):
+
+        data = {'name': "Doggo"}
+        qry = "/players/" + data['name']
+
+        r = self.app.put(qry, data={"weapon": "tennis ball"})
+        self.assertEqual(r.status_code, HTTPStatus.BAD_REQUEST)
+
 
 
     # TODO: This wasnt as easy as I thought
