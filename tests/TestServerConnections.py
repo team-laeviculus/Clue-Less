@@ -38,7 +38,16 @@ class BasicServerTest(unittest.TestCase):
     Test Case helper methods
     """
 
+    # Helper method for adding players to db. Returns response
+    def createPlayerHelper(self, player_data):
+        print(f"Adding player: {player_data}")
+        r = self.app.post(self.server_url + "players", json=player_data)
+        return r
 
+    def deletePlayerHelper(self, player_data):
+        qry = f"/players/{player_data['name']}"
+        r = self.app.delete(qry, json=player_data)
+        return r
 
 
     """
@@ -71,20 +80,35 @@ class BasicServerTest(unittest.TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertEqual(r, None)
 
+    # Test get all players
     def testGetPlayers(self):
         print("Starting Get players test")
         response = self.app.get("/players", follow_redirects=True)
         r_data = response.get_json()
-        print(f"Players: {r_data}")
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        print(f'Players: ')
+        for p in r_data:
+            print(f"{p['name']}: {p}")
 
-    # TAP: Not sure how to call the server to get the right function for this
-    # def testGetPlayersByName(self, name):
-    #     print("Starting Get Players By Name")
-    #     response = self.app.get("/players", follow_redirects=True)
-    #     r_data = response.get_json()
-    #     print(f"Players: {r_data}")
-    #     self.assertEqual(response.status_code, HTTPStatus.OK)
+    # Test get an individual player that is already in the database
+    def testGetValidPlayerByName(self):
+        print("Starting Get Players By Name")
+        # Create Fake  and insert it into the database
+        fake_player = {'name': "DummyPlayer"}
+        # r = self.app.post(self.server_url + "players", json=fake_player)
+        r = self.createPlayerHelper(fake_player)
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+        # Get fake player
+        response = self.app.get("/players/DummyPlayer", follow_redirects=True)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        r_data = response.get_json()
+        print(f"Players: {r_data}")
+        self.assertEqual(r_data.get('name'), "DummyPlayer")
+        # self.assertEqual(response.status_code, HTTPStatus.OK)
+        # Remove dummy player from DB
+        r = self.app.delete(self.server_url + 'players', json=fake_player)
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+
 
     def testJoinGame(self):
         print("FooBar is going to try and join the game!")
@@ -97,15 +121,82 @@ class BasicServerTest(unittest.TestCase):
 
         r = self.app.get("/players")
         r_data = r.get_json()
-        #print(f"Players: {r.json['name']}")
-        for k in r_data:
-            print(f"{k}")
+
+        #r = self.app.delete(self.server_url + 'players', json=data)
+        #self.assertEqual(r.status_code, HTTPStatus.OK)
         print(f"Players: {r_data}")
 
-        # Cleanup! We need to remove foobar!!!
-        # TODO: Doesnt remove foobar... or there are a lot of players with the same name!
-        r = self.app.delete(self.server_url + 'players', json=data)
+    def testLeaveGameExistingPlayer(self):
+        data = {'name': "TomTheCat"}
+        r = self.createPlayerHelper(data)
         self.assertEqual(r.status_code, HTTPStatus.OK)
+        print(f"Response: {r.get_json()}")
+        r = self.app.delete(self.server_url + 'players', json=data)
+
+        print(f"Delete Response: {r.get_json()}")
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+
+    def testDeleteExistingPlayer(self):
+        data = {'name': "Jerry"}
+        qry = "/players/" + data["name"]
+
+        r = self.createPlayerHelper(data)
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+
+        response = self.app.get(qry, follow_redirects=True)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        r = self.app.delete(qry, json=data)
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+
+    def testDeleteNonExistingPlayer(self):
+        data = {"name": "Doggo"}
+        r = self.app.delete("/players/Doggo", json=data)
+        self.assertEqual(r.status_code, HTTPStatus.BAD_REQUEST)
+
+
+    def testUpdateExisitngPlayer(self):
+
+        data = {'name': "DingDong"}
+        qry = "/players/" + data['name']
+
+        r = self.createPlayerHelper(data)
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+
+        r = self.app.get(qry)
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+
+        print(f"Inserting dangerous weapon into database")
+        weapon_data = {"weapon": "tactical assault toothbrush"}
+        r = self.app.put(qry, data=weapon_data)
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+
+        r = self.app.get(qry)
+        r_data = r.get_json()
+        print(f"Data response: {data}")
+        self.assertEqual(r.status_code, HTTPStatus.OK)
+        self.assertEqual(r_data['weapon'], "tactical assault toothbrush")
+
+        self.deletePlayerHelper(data)
+
+
+
+    # TODO: This wasnt as easy as I thought
+    # def testGetPlayerAttribute(self):
+    #     name = {'name': "DummyPlayer2"}
+    #     self.createPlayerHelper(name)
+    #
+    #     qry = "/players/DummyPlayer2/weapon"
+    #     r = self.app.get(qry)
+    #     print(f"Atrtribute Response: {r.get_json()}")
+    #     self.assertEqual(r.status_code, HTTPStatus.OK)
+    #
+    #     r = self.deletePlayerHelper(name)
+    #     self.assertEqual(r.status_code, HTTPStatus.OK)
+
+
+
+
 
 if __name__ == "__main__":
 

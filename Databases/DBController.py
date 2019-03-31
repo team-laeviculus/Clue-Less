@@ -59,9 +59,35 @@ class DBController:
 
         cur = self.conn.cursor()
         cur.execute("SELECT * FROM players WHERE name=?", (name,))
-        rows = cur.fetchall()
+        rows = cur.fetchone()
+        print(f"Player By Name Rows: {rows}")
         return rows
 
+    def update_player_by_name(self, name, weapon=None, suspect=None, space=None):
+        #TODO: Validate suspect exists before updating
+        print(f"POST Request: Updating vals for {name}")
+        player_info = self.get_player_by_name(name)
+        if player_info:
+            player = player_info['name']
+            wep = player_info['weapon'] if weapon is None else weapon
+            sus = player_info['suspect'] if suspect is None else suspect
+            current_space = player_info['current_space'] if space is None else space
+            player_id = player_info['ID']
+            print(f"PUT Query: id={player_id}, player={player}, weapon={wep}, suspect={sus}, space={current_space}")
+
+            self.cur.execute(f"UPDATE players SET weapon='{weapon}', suspect='{sus}', current_space='{current_space}' WHERE ID={player_id}")
+            self.conn.commit()
+    # Use this for deleting table items by player name
+    def delete_player_by_name(self, name):
+        player_v = self.get_player_by_name(name)
+        print(f"Player Lookup Before Delete: {player_v}")
+        if player_v:
+            self.cur.execute(f"DELETE FROM players WHERE name=?", (name, ))
+            self.conn.commit()
+            print(f"Player Exists and was removed")
+            return player_v
+        print("Player Does not exist")
+        return None
 
     # Add a value to a table
     def add_table_value(self, table_name, column_data):
@@ -71,7 +97,7 @@ class DBController:
         for column, value in column_data.items():
             columns = columns + column + ','
             values.append(value)
-            values_string = values_string  + '? ,'
+            values_string = values_string + '? ,'
 
         #Remove trailing comma, add ending bracket
         columns = columns[:-1]
@@ -85,7 +111,7 @@ class DBController:
     def update_table_value(self, table_name, table_value):
         pass
 
-    # Remove a value from a table
+    # Remove a value from a table.
     def remove_table_value(self, table_name, values):
         # TODO: Once table columns are defined, add params here
         params = 'name'
