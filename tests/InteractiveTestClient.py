@@ -47,12 +47,7 @@ class CliObject(object):
     def send_response_to_thread(self, cmd, response):
         if cmd[0] in self.server_commands:
             r_code = response.status_code
-            r_data = response.text.replace('\\', '').replace('\n  ', '').replace('\n', '')#json.dumps(response.json())  # json.dumps(response.text)
-            print(f"Jsonified response: {json.dumps(r_data)}")
-            r_data = json.dumps(r_data)
             r_data = response.json()
-            #t = json.loads(r_data).replace('"', '\\"').replace('\n', '\\n')
-            # print(f"Json deseriallized: {json.loads(r_data)}")
 
             client_message = f"[CLIENT]: {' '.join(cmd)}"
             # server_r_string = ""
@@ -65,6 +60,9 @@ class CliObject(object):
             self.msg_queue.put(message)
 
     def start_listener_loop(self):
+        # I should have used argparser for this... oh well, I always like me some spaghetti
+        # Its really easy to break this, but it will continue running since exceptions get caught
+        # Exceptions that occur in the PyGame window will probably cause that window to crash.
 
         while self.is_running:
             cmd = input("Enter A Command> ")
@@ -98,7 +96,6 @@ class CliObject(object):
                                 else:
                                     double_parsed = parsed[2].split("=")
                                     dat = {double_parsed[0]: double_parsed[1]}
-                                    print(f"PUTTING: {dat}")
                                     r = self.dispatch_table[cmd](n, dat)
                                     print(f"Server Response: {r.text}")
                             else:
