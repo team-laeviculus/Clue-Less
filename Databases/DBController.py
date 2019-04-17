@@ -94,6 +94,7 @@ class DBController:
 
     # Add a value to a table
     def add_table_value(self, table_name, column_data):
+        # TODO: Deal with failures
         columns = '('
         values = []
         values_string = ' VALUES('
@@ -110,6 +111,7 @@ class DBController:
         command = 'INSERT INTO ' + table_name + columns + values_string
         self.cur.execute(command, values)
         self.conn.commit()
+        return True
 
     def update_table_value(self, table_name, table_value):
         pass
@@ -117,10 +119,12 @@ class DBController:
     # Remove a value from a table.
     def remove_table_value(self, table_name, values):
         # TODO: Once table columns are defined, add params here
+        # TODO: Deal with failures [return False]
         params = 'name'
         command = 'DELETE FROM ' + table_name + ' WHERE ' + params + ' = ?'
         self.cur.execute(command, values)
         self.conn.commit()
+        return True
 
     def disconnect(self):
         self.conn.close()

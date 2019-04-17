@@ -5,6 +5,7 @@ import time
 import queue
 import json
 
+
 class AbstractGUI(object):
 
     window_height = 0
@@ -91,9 +92,6 @@ class AbstractGUI(object):
             self.window_ptr.blit(TextSurface, TextRectangle)
         except Exception as e:
             print(f"Error!: {e}")
-        # pygame.display.update()
-        #time.sleep(2)
-        #self.startEventLoop()
 
     def hello_world_message(self):
         self.render_message("Hello World from game window!", 32)
@@ -105,22 +103,13 @@ class AbstractGUI(object):
             self.render_message(self.latest_message['client'], 12, x_offset=-40)
             server_messages = self.latest_message['server'][0]
             json_server_msg = self.latest_message['server'][1]
-            #print(f"TEST: {json_server_msg['ID']}")
-            if True:
-                y_off = 20
-                if not type(json_server_msg) is list:
-                    json_server_msg = [json_server_msg]
-                for item in json_server_msg:
-                    #server_messages = server_messages + json.dumps(item)
-                    self.render_message(server_messages + json.dumps(item), 12, x_offset=-40, y_offset=y_off)
-                    #print(f"Json Item: {item}")
-                    y_off += 20
-                self.run_once = True
-            # for i in json.loads(json_server_msg):
-            #     print(f"ITEM: {i}")
-            #server_messages += json.dumps(json_server_msg)
-
-            #self.render_message(server_messages, 12, x_offset=-40, y_offset=20)
+            y_off = 20
+            if not type(json_server_msg) is list:
+                json_server_msg = [json_server_msg]
+            # We have to re-draw the messages every tick
+            for item in json_server_msg:
+                self.render_message(server_messages + json.dumps(item), 12, x_offset=-40, y_offset=y_off)
+                y_off += 20
 
 
 def thread_method(msg_queue=None):
