@@ -50,7 +50,12 @@ class DBController:
         all_values = self.cur.execute('SELECT * FROM ' + table_name + ';').fetchall()
         return all_values
 
-    # TAP: This should be correct, but hasn't been tested
+    # Get all values in the game_info db
+    #TODO: Once turn mechanics get added, return whose turn it is
+    def get_game_state(self):
+        return self.get_table_values("game_info")
+
+
     #  Get player in the player table by name
     def get_player_by_name(self, name):
 
