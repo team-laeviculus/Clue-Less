@@ -2,88 +2,76 @@ import pprint
 import io
 import sys
 import os
+import argparse
+import shlex
+import cmd
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-"""
-Command Line Tools: Helper classes for easily creating command line options.
-Uses the Builder Design pattern.
-"""
+class CommandShell(cmd.Cmd):
+    '''
+    @class CommandShell: The command line ClueLess Game.
 
-# class Director(object):
-#     """
-#     Creates a new Command Line argument using the builder interface.
-#     """
-#
-#     def __init__(self):
-#         self.__builder = None
-#     def construct(self, builder):
-#         self.__builder = builder
-#         self.__builder.
-class CLIArgument(object):
-    """
-    CLIArgument: Because I couldnt find a good library to do this I have to
-    implement command line parsing from scratch. Hopefully this ends up better
-    then a ton of 'if', 'else' statements.
-    """
+    To add a command, simple create a function below called: `do_<command_name>`.
+    The command can take either 0,1, or many arguments. The action of the argument
+    can be added in the function for the argument, or as a separate callback function.
+    Note: Please add the docustring comment so the help function works
 
-    def __init__(self, argname):
-        self.__argname = argname
-        self.__argdata = dict()
+    You need to parse the argument first. To make things easy, just do: `args = shlex.split(args)`
+    and for single arg functions, get the argument with `arg[0]`. If something might cause an exception,
+    you need to add exception handling in the function or callback, otherwise the program will crash.
 
-    def add_argument(self, argname, action_type=None):
-        '''
-        :param argname: a name for the argument in the argument map
-        :param action_type: A function or whatever you want to store in the argument name
-        :return : The current command line parser object
 
-        Adds an argument to the argument table of the class along with a callback
-        function or something you want the argument to do
-        '''
-        #TODO better action types
-        self.__argdata[argname] = action_type
-        return self
+    Example Usage:
 
-    def parse_argument(self, args):
-        args = args.split()
-        print(f"Args passed: {args}")
-        if len(args) >= 1:
-            if args[0] in self.__argdata:
-                print(f"Argument {args[0]} Found!")
-                # How tf do I handle data???
-                if len(args) == 1:
-                    self.__argdata[args[0]]()
-                elif len(args) > 1:
-                    #TODO This will only work for one argument
-                    self.__argdata[args[0]](args[1])
-                else:
-                    print("Unhandled")
-            else:
-                print(f"Argument {args[0]} NOT Found")
+    Enter a command> help connect
+    connect - connect to a server on address:port, if none provided localhost:5000 will be used
 
-    def __str__(self):
-        out = io.StringIO()
-        out.writelines(f"{self.__argname}:\n")
-        pprint.pprint(self.__argdata, out)
-        return out.getvalue()
-    # def __repr__(self):
-    #     return
+    Enter a command> connect localhost:5000
+    Attempting to connect to server: localhost:5000
+    ...
 
-    def __getitem__(self, item):
-        return self.__argdata[item]
+
+    '''
+
+    intro = "Welcome to ClueLess by Team Laeviculus. Type help or ? for a list of commands\n"
+    prompt = "Enter a command> "
+
+    def do_connect(self, server_address):
+
+        '''connect - connect to a server on address:port, if none provided localhost:5000 will be used'''
+        # TODO
+        parse_connect(server_address)
+
+    def do_get_games(self):
+        '''get_games - performs a GET request to server for a list of active games'''
+
+        # TODO
+        print("Getting the server list...")
+
+    def do_join_game(self, game_name):
+        '''join_game - attempts to join a game name passed by player. Validates to ensure the game actually exists'''
+        # TODO: Check name in list of games returned from a get_games() call
+        # TODO: Tell the server you want to join the game
+        # TODO: Handle successful join request
+        # TODO: Handle failed join request
+        print(f"Attempting to join game: {game_name}")
+
+    def do_quit(self, arg):
+        '''quit - quit the ClueLess game and exit'''
+        sys.exit(0)
+
+def parse_connect(args):
+    if not args:
+        args = "http://localhost:5000"
+    args = shlex.split(args)
+    print(f"Connect args after shlex: {args}")
+    print(f"Attempting to connect to server: {args[0]}")
 
 
 if __name__ == "__main__":
-    print("Starting test")
-    # Example usage
+    cmd = CommandShell()
+    cmd.cmdloop()
 
-    test = CLIArgument("test")
-    a = test.add_argument("a", lambda : print("call to a"))
-    b = test.add_argument("b", lambda x: print(f"call to b: {x}"))
-    b.add_argument("b_a", lambda : print("Call to sub function on b_a"))
-    print(f"Done: {test}")
-    test["a"]()
-    test["b"]("Hello world")
-    test["b_a"]()
 
 
