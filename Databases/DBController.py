@@ -50,10 +50,10 @@ class DBController:
         all_values = self.cur.execute('SELECT * FROM ' + table_name + ';').fetchall()
         return all_values
 
-    # Get all values in the game_info db
-    #TODO: Once turn mechanics get added, return whose turn it is
+    # Get all values in the players db
+    # TODO: After minimal, we may want to limit this information
     def get_game_state(self):
-        return self.get_table_values("game_info")
+        return self.get_table_values("players")
 
 
     #  Get player in the player table by name
@@ -66,6 +66,18 @@ class DBController:
         cur.execute("SELECT * FROM players WHERE name=?", (name,))
         rows = cur.fetchone()
         print(f"Player By Name Rows: {rows}")
+        return rows
+
+    #  Get player in the player table by location
+    def get_player_by_location(self, location):
+
+        if not self.is_connected:
+            self.create_connection()
+
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM players WHERE location=?", (location,))
+        rows = cur.fetchone()
+        print(f"Player By Location Rows: {rows}")
         return rows
 
     def update_player_by_name(self, name, weapon=None, suspect=None, space=None):
@@ -134,3 +146,23 @@ class DBController:
     def disconnect(self):
         self.conn.close()
         self.is_connected = False
+
+    def check_if_legal_move(self, name, dest_space):
+        player_info = self.get_player_by_name(name)
+        current_space = player_info['current_space']
+        # if dest_space adjacent to current space
+            # if dest_space is a hallway
+                # space_info = self.get_player_by_location(dest_space)
+                # if space_info is empty, return True
+            # else return True
+        # else
+        # return True;
+        return False
+
+    def move_player(self, name, dest_space, is_suggestion=False):
+        if not is_suggestion:
+            is_legal = self.check_if_legal_move(name, dest_space)
+            if not is_legal:
+                # throw some error
+                return False
+        self.update_player_by_name(name, None, None, dest_space)
