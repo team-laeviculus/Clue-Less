@@ -37,6 +37,19 @@ class CommandShell(cmd.Cmd):
     intro = "Welcome to ClueLess by Team Laeviculus. Type help or ? for a list of commands\n"
     prompt = "Enter a command> "
 
+    players = {
+        1: "miss alice",
+        2: "prof whatever"
+    }
+
+    weapons = {
+        1: "knife",
+        2: "gun"
+    }
+
+    name = None
+
+
     def do_connect(self, server_address):
 
         '''connect - connect to a server on address:port, if none provided localhost:5000 will be used'''
@@ -57,9 +70,61 @@ class CommandShell(cmd.Cmd):
         # TODO: Handle failed join request
         print(f"Attempting to join game: {game_name}")
 
+    def do_suggest(self, args):
+        '''sugest - Suggest player name'''
+        for k,v in self.players.items():
+            print(f"{k}: {v}")
+        name = input("enter player num")
+        print(f"You suggested: {self.players[int(name)]}")
+    def do_get_status(self, args):
+        print("Latest server status...")
+        if not self.inbound_q.empty():
+            print(f"Queue Item: {self.inbound_q.get()}")
+
     def do_quit(self, arg):
         '''quit - quit the ClueLess game and exit'''
         sys.exit(0)
+
+    def do_send(self, args):
+        '''send - send a message to the server with event tag "message"'''
+        data = {f"{self.name}": args}
+        print(f"Sending: {data}")
+        self.send_message(data)
+
+    def do_send_namespace(self, args: str):
+        args = args.split()
+        print(f"Namespace send data: {args}")
+        if len(args) >= 1:
+            namespace = args[0]
+            msg = args[1:]
+            data = {
+                "namespace": namespace,
+                "data": msg
+            }
+            print(f"Sending: {data}")
+            self.outbound_q.put(data)
+        else:
+            print("Invalid send namespace message")
+
+
+
+
+    def send_message(self, data: dict):
+        self.outbound_q.put(data)
+
+    @staticmethod
+    def set_name(name):
+        CommandShell.name = name
+
+    def set_message_queues(self, inbound, outbound):
+
+        self.inbound_q = inbound
+        print(f"Inbound Message Queue Set: {inbound}")
+        self.outbound_q = outbound
+        print(f"Outbound Message Queue Set: {outbound}")
+
+
+
 
 def parse_connect(args):
     if not args:
@@ -69,9 +134,13 @@ def parse_connect(args):
     print(f"Attempting to connect to server: {args[0]}")
 
 
-if __name__ == "__main__":
+def start_shell():
     cmd = CommandShell()
     cmd.cmdloop()
 
 
+
+if __name__ == "__main__":
+    cmd = CommandShell()
+    cmd.cmdloop()
 

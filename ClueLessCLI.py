@@ -1,33 +1,68 @@
 
-from tools.command_line_tools import CLIArgument
+import shlex
+import queue
+import threading
+from tools.command_line_tools import CommandShell
+from Networking.client import ClientNetworking
+import time
 
 
 
-def example_callback(arg):
-    print(f"You called me with arg: {arg}")
+class ClueLess(object):
 
-def print_help():
-    print(f"Help message or something")
+    name = None
+    address = None
 
+    def __init__(self, address, *args):
+        """
+        @class ClueLess: Main Clueless Client class. Runs all sub-components
+        :param args:
+        """
+        self.address = address
+        # Network message queues to be shared between threads
+        self.inbound_q = queue.Queue()
+        self.outbound_q = queue.Queue()
 
-test_arg = CLIArgument("parent")
-def initialize():
-    help = test_arg.add_argument("help", print_help)
-    test = test_arg.add_argument("test", example_callback)
+    def start_cli_tool(self):
+        # 1. Get username
 
-def start_cli_tool():
+        while True:
+            try:
+                player_name = input("Enter Your Username> ")
+                player_name = shlex.split(player_name)
+                if player_name and len(player_name) > 1 or not player_name:
+                    print(f"Invalid name. please enter a username with no spaces.")
+                    pass
+                else:
+                    self.name = player_name[0]
+                    print(f"Your username was set to {self.name}")
+                    break
+            except Exception as e:
+                print(f"An exception occurred in cli tool: {e}")
 
-    while True:
-        try:
-            cmd = input("Enter a command> ")
-            print(f"Command Entered: {cmd}")
-            test_arg.parse_argument(cmd)
-        except Exception as e:
-            print(f"An exception occurred in cli tool: {e}")
+        # 2. Start Client Networking Thread
+        cli_net = ClientNetworking('http://127.0.0.1:5000/', 'test_name', self.inbound_q, self.outbound_q)
+        cli_net.set_message_queues(self.inbound_q, self.outbound_q)
+        cli_net.start()
+        # 3. Start the CommandShell class
+        c = CommandShell()
+        c.set_name(self.name)
+        c.set_message_queues(self.inbound_q, self.outbound_q)
+        threading.Thread(target=c.cmdloop).start()
+        print("Do I run???????????????????")
+        while True:
+            if not self.outbound_q.empty():
+                msg = self.outbound_q.get()
+                if "namespace" in msg:
+                    print(f"Sending message [{msg['namespace']}]: {msg['data']}")
+                    cli_net.emit_message('message', msg["data"], namespace=msg["namespace"])
+                else:
+                    cli_net.emit_message('message', self.outbound_q.get())
+            time.sleep(0.1)
 
 if __name__ == "__main__":
-    initialize()
-    start_cli_tool()
+    cliptr = ClueLess("localhost:5000")
+    cliptr.start_cli_tool()
     # Examples:
     # > test foobar
     # > help

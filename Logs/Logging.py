@@ -29,3 +29,16 @@ def create_logger(name: str):
     logger.addHandler(fh)
     logger.addHandler(ch)
     return logger
+
+
+def create_background_logger(name: str, path: str):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler(f"{path}/{name}-dev.log")
+    print(f"{fh}")
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("[%(asctime)s][%(name)s][%(levelname)s]: %(message)s", datefmt='%Y-%m-%d %H:%M:%S')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    return logger
+

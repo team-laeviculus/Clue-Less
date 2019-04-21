@@ -1,6 +1,9 @@
 import flask
 from flask import jsonify, request, make_response
 from flask_restful import Resource, Api, reqparse
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
+import flask_socketio
 
 from http import HTTPStatus
 import os
@@ -147,7 +150,8 @@ api.add_resource(HandleIndividualPlayerManagement, '/players/<playername>', reso
 #                  resource_class_kwargs={'db_connection': db_conn})
 
 api.add_resource(HandleHTTPCodes, '/')
+socketio_server = SocketIO(app)
 
 
 if __name__ == "__main__":
-    start_server()
+    socketio_server.run(app)
