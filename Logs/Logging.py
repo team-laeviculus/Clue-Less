@@ -1,10 +1,12 @@
 import logging
+import os
 """
 Logging utility class
 """
 
 
-def create_logger(name: str):
+
+def create_logger(name: str, path: str = None):
     """
     create_logger: Creates a logger
     :param name: The name of a logger (string)
@@ -16,7 +18,12 @@ def create_logger(name: str):
     logger.setLevel(logging.DEBUG)
     # create file handler which logs even debug messages
     # log files are located in the current working directory (Logs)
-    fh = logging.FileHandler(f"../Logs/{name}-dev.log")
+    file_path = "../Logs"
+    if path:
+        file_path = path
+
+    print(f"LOGGING CWD: {os.getcwd()}")
+    fh = logging.FileHandler(f"{file_path}/{name}-dev.log")
     fh.setLevel(logging.DEBUG)
     # create console handler with a higher log level
     ch = logging.StreamHandler()

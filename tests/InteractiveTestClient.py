@@ -3,10 +3,7 @@ An interactive test client for manual testing of functionality of the system.
 """
 
 import threading
-import multiprocessing
-import argparse
 import traceback
-import json
 import requests
 import time
 import queue

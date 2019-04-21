@@ -1,17 +1,18 @@
-
 import shlex
 import queue
 import threading
+import requests
 from tools.command_line_tools import CommandShell
 from Networking.client import ClientNetworking
+from Logs.Logging import create_logger
 import time
+import traceback
 
-
+log = create_logger("ClueLessCLI", "Logs")
 
 class ClueLess(object):
-
-    name = None
-    address = None
+    name = None # Username
+    address = None # server address, unused here
 
     def __init__(self, address, *args):
         """
@@ -35,21 +36,31 @@ class ClueLess(object):
                     pass
                 else:
                     self.name = player_name[0]
-                    print(f"Your username was set to {self.name}")
+                    # TODO: Invalid name handling
+                    if self.login_to_server(self.name):
+                        print(f"Your username was set to {self.name}")
+                    else:
+                        #TODO
+                        pass
                     break
             except Exception as e:
                 print(f"An exception occurred in cli tool: {e}")
+                traceback.print_exc()
 
         # 2. Start Client Networking Thread
-        cli_net = ClientNetworking('http://127.0.0.1:5000/', 'test_name', self.inbound_q, self.outbound_q)
+        #TODO: Update name passed to ClientNetworking
+        cli_net = ClientNetworking(self.address, self.name, self.inbound_q, self.outbound_q)
         cli_net.set_message_queues(self.inbound_q, self.outbound_q)
         cli_net.start()
         # 3. Start the CommandShell class
         c = CommandShell()
         c.set_name(self.name)
         c.set_message_queues(self.inbound_q, self.outbound_q)
+
+        # Start the user input loop in another thread
         threading.Thread(target=c.cmdloop).start()
-        print("Do I run???????????????????")
+
+        # Listen for messages from the server
         while True:
             if not self.outbound_q.empty():
                 msg = self.outbound_q.get()
@@ -60,8 +71,21 @@ class ClueLess(object):
                     cli_net.emit_message('message', self.outbound_q.get())
             time.sleep(0.1)
 
+    def login_to_server(self, desired_username):
+        """
+        Send a POST request to server to login with a chosen username
+        :param desired_username: A username wanted by player.
+        :return: True if success, False if invalid or already registered
+        """
+        print(f"Name being sent: {desired_username}")
+        r = requests.post('http://localhost:5000' + '/players', json={"name": desired_username})
+        #r = requests.post(self.address + '/players', json={"name": self.name})
+        log.debug(f"Server Response To Login: {r.text}")
+        # TODO error handling
+        return True
+
 if __name__ == "__main__":
-    cliptr = ClueLess("localhost:5000")
+    cliptr = ClueLess("http://127.0.0.1:5000/")
     cliptr.start_cli_tool()
     # Examples:
     # > test foobar

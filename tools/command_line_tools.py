@@ -68,6 +68,7 @@ class CommandShell(cmd.Cmd):
         # TODO: Tell the server you want to join the game
         # TODO: Handle successful join request
         # TODO: Handle failed join request
+
         print(f"Attempting to join game: {game_name}")
 
     def do_suggest(self, args):
