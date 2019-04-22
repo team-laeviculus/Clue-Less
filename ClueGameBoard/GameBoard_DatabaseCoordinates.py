@@ -4,10 +4,6 @@ from Databases.DBController import *
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
 class Room:
 
-    name = None
-    positionX = None
-    positionY = None
-
     def __init__(self, room_name, room_position_x, room_position_y):
         self.name = room_name
         self.positionX = room_position_x
@@ -19,9 +15,6 @@ class Room:
 
 class Hall:
 
-    name = None
-    positionX = None
-    positionY = None
 
     def __init__(self, hall_name, hall_position_x, hall_position_y):
         self.name = hall_name
@@ -29,10 +22,6 @@ class Hall:
         self.positionY = hall_position_y
 
 class Player:
-
-    name = None
-    positionX = None
-    positionY = None
 
     def __init__(self, player_name, player_position_x, player_position_y):
         self.name = player_name
