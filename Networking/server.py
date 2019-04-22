@@ -16,6 +16,9 @@ from Networking.RESTResources import *
 from Networking import socketio, app
 
 
+
+
+
 @socketio.on('message')
 def on_message(message):
     logger.debug(f"Received Message: {message}")
@@ -116,6 +119,7 @@ db_conn = DBController("../Databases/players.db", 0)
 api.add_resource(HandlePlayers, '/players', resource_class_kwargs={'db_connection': db_conn})
 api.add_resource(HandleIndividualPlayerManagement, '/players/<playername>',
                  resource_class_kwargs={'db_connection': db_conn})
+api.add_resource(HandleJoinGame, "/games")
 # api.add_resource(HandlePlayerModification,
 #                  '/players/<playername>',
 #                  '/players/<playername>/<attribute>',

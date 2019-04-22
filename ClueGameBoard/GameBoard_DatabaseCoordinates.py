@@ -11,7 +11,7 @@ class Room:
     def __init__(self, room_name, room_position_x, room_position_y):
         self.name = room_name
         self.positionX = room_position_x
-        self.positionY =  room_position_y
+        self.positionY = room_position_y
 
 # Current GUI is set to Width = 600 and Height = 600. 187.5,75 is currently static middle position of hallway from top left room to top middle room. All other rooms are 225 in either direction.
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
@@ -45,16 +45,48 @@ class Player:
 
 class GameBoard:
 
+    """
+    Gameboard object
+    """
+
+    # Static Variables
+
+    # Rooms
+    kitchen = Room('Kitchen', 5, 5)
+    conservatory = Room('Conservatory', 5, 1)
+    dining_room = Room('Dining Room', 3, 5)
+    ballroom = Room('Ballroom', 5, 3)
+    study = Room('Study', 1, 1)
+    hall = Room('Hall', 1, 3)
+    lounge = Room('Lounge', 1, 5)
+    library = Room('Library', 3, 1)
+    billard_room = Room('Billard Room', 3, 3)
+
+    # Hallways
+    s_h = Hall("study_hall", 1, 2)
+    h_l = Hall("hall_lounge", 1, 4)
+    li_br = Hall("library_billard room", 3, 2)
+    br_dr = Hall("billard room_dinning room", 3, 4)
+    c_b = Hall("conservatory_ballroom", 5, 2)
+    b_k = Hall("ballroom_kitchen", 5, 4)
+    s_li = Hall("study_library", 2, 1)
+    h_br = Hall("hall_billard room", 2, 3)
+    l_dr = Hall("lounge_dining room", 2, 5)
+    li_c = Hall("library_conservatory", 4, 1)
+    br_b = Hall("billard room_ballroom", 4, 3)
+    dr_k = Hall("dining room_kitchen", 4, 5)
+
     name = None
     rooms = []
     hallways = []
     winner = None
 
-    def __init__(self):
+    def __init__(self, db_controller):
         self.name = "Clue-Less GameBoard"
         self.rooms = []
         self.hallways = []
         self.winner = None
+        self.db_conn = db_controller
 
     def add_room(self,room):
         self.rooms.append(room)
@@ -91,15 +123,13 @@ class GameBoard:
 
 
     def check_if_legal_move(self, current_location, dest_location):
-        # TODO: Is this the right way to access the DBController?
-        db_conn = DBController("../Databases/players.db", 0)
 
         #if moving to a connected room
         if dest_location in self.get_connected_rooms(current_location):
 
             #if moving to a hall, check if it's empty
             if dest_location in self.get_halls():
-                space_info = db_conn.get_player_by_location(dest_location)
+                space_info = self.db_conn.get_player_by_location(dest_location)
                 if not space_info:
                     return True
                 else:
@@ -110,80 +140,65 @@ class GameBoard:
         return False
 
     def move_player(self, name, dest_space, is_suggestion=False):
-        db_conn = DBController("../Databases/players.db", 0)
         if not is_suggestion:
             is_legal = self.check_if_legal_move(name, dest_space)
             if not is_legal:
                 # throw some error
                 print("This move is illegal")
                 return False
-        db_conn.update_player_by_name(name, None, None, dest_space)
+        self.db_conn.update_player_by_name(name, None, None, dest_space)
+
+    @staticmethod
+    def create_game_board(db_controller: DBController, print_board=False):
+
+        game_board = GameBoard(db_controller)
+
+        game_board.add_room(GameBoard.kitchen)
+        game_board.add_room(GameBoard.conservatory)
+        game_board.add_room(GameBoard.dining_room)
+        game_board.add_room(GameBoard.ballroom)
+        game_board.add_room(GameBoard.study)
+        game_board.add_room(GameBoard.hall)
+        game_board.add_room(GameBoard.lounge)
+        game_board.add_room(GameBoard.library)
+        game_board.add_room(GameBoard.billard_room)
+
+        game_board.add_hall(GameBoard.s_h)
+        game_board.add_hall(GameBoard.h_l)
+        game_board.add_hall(GameBoard.li_br)
+        game_board.add_hall(GameBoard.br_dr)
+        game_board.add_hall(GameBoard.c_b)
+        game_board.add_hall(GameBoard.b_k)
+        game_board.add_hall(GameBoard.s_li)
+        game_board.add_hall(GameBoard.h_br)
+        game_board.add_hall(GameBoard.l_dr)
+        game_board.add_hall(GameBoard.li_c)
+        game_board.add_hall(GameBoard.br_b)
+        game_board.add_hall(GameBoard.dr_k)
+
+        if print_board:
+            for room in game_board.rooms:
+                print(room.name)
+
+        return game_board
 
 
 if __name__ == '__main__':
-    kitchen = Room('Kitchen',5,5)
-    conservatory = Room('Conservatory',5,1)
-    dining_room = Room('Dining Room', 3, 5)
-    ballroom = Room('Ballroom', 5, 3)
-    study = Room('Study', 1, 1)
-    hall = Room('Hall', 1, 3)
-    lounge = Room('Lounge', 1, 5)
-    library = Room('Library', 3, 1)
-    billard_room = Room('Billard Room', 3, 3)
+    db_conn = DBController("../Databases/players.db", 0)
+    game_board = GameBoard.create_game_board(db_conn, print_board=True)
 
-    john = Player('John',5,5)
-
-    s_h = Hall("study_hall",1,2)
-    h_l = Hall("hall_lounge",1,4)
-    li_br = Hall("library_billard room",3,2)
-    br_dr = Hall("billard room_dinning room", 3, 4)
-    c_b = Hall("conservatory_ballroom",5,2)
-    b_k = Hall("ballroom_kitchen", 5, 4)
-    s_li = Hall("study_library", 2, 1)
-    h_br = Hall("hall_billard room", 2, 3)
-    l_dr = Hall("lounge_dining room", 2, 5)
-    li_c = Hall("library_conservatory", 4, 1)
-    br_b = Hall("billard room_ballroom", 4, 3)
-    dr_k = Hall("dining room_kitchen", 4, 5)
-
-    game_board = GameBoard()
-    game_board.add_room(kitchen)
-    game_board.add_room(conservatory)
-    game_board.add_room(dining_room)
-    game_board.add_room(ballroom)
-    game_board.add_room(study)
-    game_board.add_room(hall)
-    game_board.add_room(lounge)
-    game_board.add_room(library)
-    game_board.add_room(billard_room)
-
-    game_board.add_hall(s_h)
-    game_board.add_hall(h_l)
-    game_board.add_hall(li_br)
-    game_board.add_hall(br_dr)
-    game_board.add_hall(c_b)
-    game_board.add_hall(b_k)
-    game_board.add_hall(s_li)
-    game_board.add_hall(h_br)
-    game_board.add_hall(l_dr)
-    game_board.add_hall(li_c)
-    game_board.add_hall(br_b)
-    game_board.add_hall(dr_k)
-
-    for room in game_board.rooms:
-        print(room.name)
-
+    john = Player('John', 5, 5)
     game_board.set_game_winner(john)
     print(game_board.winner)
 
-    john.set_player_position(study.positionY,study.positionX)
+    john.set_player_position(game_board.study.positionY, game_board.study.positionX)
     print(john.positionX, john.positionY)
 
-    room_list = game_board.get_connected_rooms(kitchen)
+    room_list = game_board.get_connected_rooms(game_board.kitchen)
     for room in room_list:
         print(room.name)
 
-    print(game_board.check_if_legal_move(kitchen,study))
-    print(game_board.check_if_legal_move(kitchen, dr_k))
+    print(game_board.check_if_legal_move(game_board.kitchen, game_board.study))
+    print(game_board.check_if_legal_move(game_board.kitchen, game_board.dr_k))
 
 

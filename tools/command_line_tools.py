@@ -5,6 +5,7 @@ import os
 import argparse
 import shlex
 import cmd
+import requests
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
@@ -71,12 +72,18 @@ class CommandShell(cmd.Cmd):
 
         print(f"Attempting to join game: {game_name}")
 
+    def do_join(self, args):
+        r = requests.post('http://localhost:5000' + '/games', json={"playername": self.name})
+        # r = requests.post(self.address + '/players', json={"name": self.name})
+        print(f"Server Response To Login: {r.text}")
+
     def do_suggest(self, args):
         '''sugest - Suggest player name'''
         for k,v in self.players.items():
             print(f"{k}: {v}")
         name = input("enter player num")
         print(f"You suggested: {self.players[int(name)]}")
+
     def do_get_status(self, args):
         print("Latest server status...")
         if not self.inbound_q.empty():

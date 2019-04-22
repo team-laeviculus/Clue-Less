@@ -15,6 +15,15 @@ parser.add_argument('location')
 parser.add_argument('suspect')
 logger = create_server_logger()
 
+mock_games = {
+    "game1" : {
+        "players": list()
+    },
+    "game2" : {
+        "players": list()
+    }
+}
+
 # Access to the player database
 # Posts new players to the database, gets lists of all active players
 class HandlePlayers(Resource):
@@ -63,6 +72,26 @@ class HandleHTTPCodes(Resource):
     def get(self):
         logger.debug("Dummy GET request")
         return make_response(jsonify({"ROOT": "Test"}), HTTPStatus.OK)
+
+class HandleJoinGame(Resource):
+    def __init__(self, **kwargs):
+        pass
+
+    #TODO use sessions
+    def post(self):
+        values = request.json
+        logger.debug(f"Data recvd JSON: {values}")
+        playername = values["playername"]
+        logger.debug(f"Data recvd: {playername}")
+        mock_games["game1"]["players"].append(playername)#session["name"]) # Real joining of game in Database
+        logger.debug(f"Player joined game: {mock_games['game1']['players']}")
+        return f"you joined game1. Current players: {mock_games['game1']['players']}", HTTPStatus.OK
+
+    def get(self):
+        logger.debug("Get request for /games")
+        return jsonify(mock_games)
+
+
 
 class HandlePlayerModification(Resource):
     """
