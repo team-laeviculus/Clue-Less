@@ -72,15 +72,15 @@ class GameBoard:
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
     def get_connected_rooms(self, room):
         connected = []
-        current = self.rooms
+        current = self.rooms + self.hallways
         current.remove(room)
         for rooms in current:
             if room.positionX == rooms.positionX:
-                if rooms.positionY -2 <= room.positionY <= rooms.positionY +2:
+                if rooms.positionY -1 <= room.positionY <= rooms.positionY +1:
                     connected.append(rooms)
 
             if room.positionY == rooms.positionY:
-                if rooms.positionX - 2 <= room.positionX <= rooms.positionX + 2:
+                if rooms.positionX - 1 <= room.positionX <= rooms.positionX + 1:
                     connected.append(rooms)
 
             if abs(room.positionX - rooms.positionX) == 4:
@@ -179,10 +179,11 @@ if __name__ == '__main__':
     john.set_player_position(study.positionY,study.positionX)
     print(john.positionX, john.positionY)
 
-    room_list = game_board.get_connected_rooms(billard_room)
+    room_list = game_board.get_connected_rooms(kitchen)
     for room in room_list:
         print(room.name)
 
-
+    print(game_board.check_if_legal_move(kitchen,study))
+    print(game_board.check_if_legal_move(kitchen, dr_k))
 
 
