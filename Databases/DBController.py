@@ -147,22 +147,9 @@ class DBController:
         self.conn.close()
         self.is_connected = False
 
-    def check_if_legal_move(self, name, dest_space):
+    def get_player_location(self, name):
         player_info = self.get_player_by_name(name)
-        current_space = player_info['current_space']
-        # if dest_space adjacent to current space
-            # if dest_space is a hallway
-                # space_info = self.get_player_by_location(dest_space)
-                # if space_info is empty, return True
-            # else return True
-        # else
-        # return True;
-        return False
+        location = player_info['location']
+        return location
 
-    def move_player(self, name, dest_space, is_suggestion=False):
-        if not is_suggestion:
-            is_legal = self.check_if_legal_move(name, dest_space)
-            if not is_legal:
-                # throw some error
-                return False
-        self.update_player_by_name(name, None, None, dest_space)
+

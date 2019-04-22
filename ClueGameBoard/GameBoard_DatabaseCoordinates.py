@@ -1,3 +1,5 @@
+from Databases.DBController import *
+
 # Current GUI is set to Width = 600 and Height = 600. 75,75 is currently static middle position of top left room. All other rooms are 225 in either direction.
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
 class Room:
@@ -63,6 +65,9 @@ class GameBoard:
     def set_game_winner(self,player):
         self.winner = player.name
 
+    def get_halls(self):
+        return self.hallways
+
 # Current GUI is set to Width = 600 and Height = 600, 225 currently static distance of closes room in either direction.
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
     def get_connected_rooms(self, room):
@@ -84,11 +89,36 @@ class GameBoard:
 
         return connected
 
-#   def move(player,location)
-#       #each move would be 112.5
-        #if abs(player.location - location.location) <= (dice_roll)112.5
-        #check if player is in the way
-        #else: player.location = location.location
+
+    def check_if_legal_move(self, current_location, dest_location):
+        # TODO: Is this the right way to access the DBController?
+        db_conn = DBController("../Databases/players.db", 0)
+
+        #if moving to a connected room
+        if dest_location in self.get_connected_rooms(current_location):
+
+            #if moving to a hall, check if it's empty
+            if dest_location in self.get_halls():
+                space_info = db_conn.get_player_by_location(dest_location)
+                if not space_info:
+                    return True
+                else:
+                    return False
+            else:
+                return True
+
+        return False
+
+    def move_player(self, name, dest_space, is_suggestion=False):
+        db_conn = DBController("../Databases/players.db", 0)
+        if not is_suggestion:
+            is_legal = self.check_if_legal_move(name, dest_space)
+            if not is_legal:
+                # throw some error
+                print("This move is illegal")
+                return False
+        db_conn.update_player_by_name(name, None, None, dest_space)
+
 
 if __name__ == '__main__':
     kitchen = Room('Kitchen',5,5)
