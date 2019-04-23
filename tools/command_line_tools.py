@@ -6,6 +6,7 @@ import argparse
 import shlex
 import cmd
 import requests
+import time
 import json
 from Networking.client import ClientSession
 
@@ -77,6 +78,8 @@ class CommandShell(cmd.Cmd):
         # r = requests.post(self.address + '/players', json={"name": self.name})
         ClientSession.CLIENT_SESSION_INFO = r.json()
         print(f"Server Response To Login: {r.text}")
+        # TODO: Socket IO stuff
+        self.wait_for_my_turn()
 
     def do_suggest(self, args):
         '''sugest - Suggest player name'''
@@ -98,6 +101,8 @@ class CommandShell(cmd.Cmd):
             print(f"Session is empty")
     def do_quit(self, arg):
         '''quit - quit the ClueLess game and exit'''
+        # Notify server
+
         sys.exit(0)
 
     def do_send(self, args):
@@ -126,6 +131,24 @@ class CommandShell(cmd.Cmd):
 
     def send_message(self, data: dict):
         self.outbound_q.put(data)
+
+    def wait_for_my_turn(self, tick=0.1):
+        """
+        The loop that listens for other players turns after a player makes a turn
+        Breakes when inbound_q has a message saying its my turn
+        :param tick: Sleep time between loops in seconds
+        :return:
+        """
+        print(f"Waiting for my turn....")
+        while True:
+            if ClientSession.CLIENT_SESSION_INFO['server_player_info']['my_turn'] == True:
+                # TODO: Server never updates player when its not their turn (this can be done client side)
+                print("Its your turn")
+                break
+            time.sleep(tick)
+
+
+
 
     @staticmethod
     def set_name(name):

@@ -32,6 +32,19 @@ def on_namespace_msg(message):
     logger.debug(f"Received message on namespace /chat: {message}")
     # logger.debug(f"SEssion: {session.get('room')}")
 
+"""
+Clueless Websocket Game Message handlers
+"""
+@socketio.on('new_player_joined', namespace="games")
+def on_new_player_joined(join_message):
+    """
+    Broadcast to players that new player joined
+    :param join_message: May be unused
+    :return: None
+    """
+    logger.debug(f"New player joined message on namespace 'games'. Broadcasting - {join_message}")
+
+
 
 @socketio.on('connect')
 def on_connect():
@@ -67,7 +80,7 @@ def on_join(data):
     username = data['username']
     room = data['room']
     # TODO: Logic for joining room
-    flask_socketio.join_room((room))
+    flask_socketio.join_room(room)
     print(f"User {username} has joined room: {room}")
     flask_socketio.send(f"{username} has entered the room.", room=room, broadcast=True)
 

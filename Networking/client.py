@@ -14,7 +14,7 @@ class ClientNetworking(threading.Thread):
     inbound_q = None
     outbound_q = None
 
-    CLIENT_SESSION_INFO = None
+    # CLIENT_SESSION_INFO = None
 
     def __init__(self, url, name, inbound_q, outbound_q):
         threading.Thread.__init__(self)
@@ -39,6 +39,13 @@ class ClientNetworking(threading.Thread):
     @staticmethod
     def broadcast_message(data: dict, namespace: str = None, callback=None):
         ClientNetworking.sio.send(data, namespace, callback)
+
+    @staticmethod
+    def sio_join_game(event: str, data: dict, namespace: str = None, callback=None):
+        if not namespace and ClientSession.CLIENT_SESSION_INFO:
+            namespace = ClientSession.CLIENT_SESSION_INFO['game']
+            data = {} #todo
+            ClientNetworking.sio.emit('new player', data)
 
     def run(self):
 

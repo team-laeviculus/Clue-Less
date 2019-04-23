@@ -10,9 +10,11 @@ import traceback
 
 log = create_logger("ClueLessCLI", "Logs")
 
+
 class ClueLess(object):
     name = None # Username
     address = None # server address, unused here
+    CLUE_CLI_NET = None
 
     def __init__(self, address, *args):
         """
@@ -49,9 +51,9 @@ class ClueLess(object):
 
         # 2. Start Client Networking Thread
         #TODO: Update name passed to ClientNetworking
-        cli_net = ClientNetworking(self.address, self.name, self.inbound_q, self.outbound_q)
-        cli_net.set_message_queues(self.inbound_q, self.outbound_q)
-        cli_net.start()
+        ClueLess.CLUE_CLI_NET = ClientNetworking(self.address, self.name, self.inbound_q, self.outbound_q)
+        ClueLess.CLUE_CLI_NET.set_message_queues(self.inbound_q, self.outbound_q)
+        ClueLess.CLUE_CLI_NET.start()
         # 3. Start the CommandShell class
         c = CommandShell()
         c.set_name(self.name)
@@ -67,9 +69,9 @@ class ClueLess(object):
                 print(f"Message in outbound q: {msg}")
                 if "namespace" in msg:
                     print(f"Sending message [{msg['namespace']}]: {msg['data']}")
-                    cli_net.emit_message('message', msg["data"], namespace=msg["namespace"])
+                    ClueLess.CLUE_CLI_NET.emit_message('message', msg["data"], namespace=msg["namespace"])
                 else:
-                    cli_net.emit_message('message', msg)
+                    ClueLess.CLUE_CLI_NET.emit_message('message', msg)
             time.sleep(0.1)
 
     def login_to_server(self, desired_username):

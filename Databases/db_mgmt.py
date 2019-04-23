@@ -4,7 +4,7 @@ import random
 import datetime
 import sys
 import traceback
-
+import os
 
 class CluelessDB(object):
     # this class is used to create an empty database with 10 tables for the game
@@ -43,6 +43,7 @@ class CluelessDB(object):
 
     def create_games_table(self):
         print("Trying to create games_table")
+        print(f"CWD for DB: {os.getcwd()}")
         print(f"Connection Status: {self.conn}")
         c = self.conn.cursor()
         c.execute('''DROP TABLE IF EXISTS games''')
