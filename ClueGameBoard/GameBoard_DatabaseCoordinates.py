@@ -65,10 +65,6 @@ class GameBoard:
     br_b = Hall("billard room_ballroom", 4, 3)
     dr_k = Hall("dining room_kitchen", 4, 5)
 
-    name = None
-    rooms = []
-    hallways = []
-    winner = None
 
     def __init__(self, db_controller):
         self.name = "Clue-Less GameBoard"
