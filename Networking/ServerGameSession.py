@@ -177,10 +177,11 @@ class GameSession:
         self.db_controller.init_suspects(1)
         self.db_controller.create_weapon_table()
         self.db_controller.init_weapons(1)
-        self.db_controller.db.create_room_table()
+        self.db_controller.create_room_table()
         self.db_controller.init_rooms(1)
         self.db_controller.create_cards_table()
         self.db_controller.init_cards(1)
+        self.db_controller.create_notebook_table()
 
         # initialize case file
         self.db_controller.create_case_file_table()

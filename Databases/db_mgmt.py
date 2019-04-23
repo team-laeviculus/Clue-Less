@@ -9,7 +9,7 @@ class CluelessDB(object):
     # this class is used to create an empty database with 10 tables for the game
     def __init__(self):
         try:
-            self.conn = sqlite3.connect('file::memory:?cache=shared', uri=True)
+            self.conn = sqlite3.connect('file::memory:?cache=shared', check_same_thread=False)
         except Error as e:
             print(e)
         pass
@@ -591,7 +591,7 @@ class CluelessDB(object):
                 else:
                     player_num = 1
             self.conn.commit()
-            c.close()
+            # c.close()
 
     def make_suggestion(self, g_id, player_num, player_cnt, suggest_suspect, suggest_weapon, suggest_room):
         # suggest_suspect = str(input("Please enter a suspect?"))
