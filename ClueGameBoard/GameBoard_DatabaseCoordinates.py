@@ -146,7 +146,7 @@ class GameBoard:
                 # throw some error
                 print("This move is illegal")
                 return False
-        self.db_conn.update_player_by_name(name, None, None, dest_space)
+        self.db_conn.update_player_location(name, dest_space)
 
     @staticmethod
     def create_game_board(db_controller: DBController, print_board=False):

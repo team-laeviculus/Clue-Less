@@ -59,7 +59,7 @@ class CluelessDB(object):
         createts TIMESTAMP NOT NULL,
         suspect_id INTEGER,
         active_turn INTEGER NOT NULL,
-        location INTEGER,
+        location VARCHAR(20),
         num_suggest INTEGER NOT NULL,
         num_accuse INTEGER NOT NULL,
         last_suggest VARCHAR(20),
@@ -685,16 +685,16 @@ class CluelessDB(object):
         g4_player_count = c.fetchone()[0]
 
         if g1_player_count < 6:
-            self.players_add(1, name, g1_player_count + 1, dt, g1_player_count + 1, 0, 0, 0, 0, None, None, 1)
+            self.players_add(1, name, g1_player_count + 1, dt, g1_player_count + 1, 0, 'Library', 0, 0, None, None, 1)
             return 1, g1_player_count + 1
         elif g2_player_count < 6:
-            self.players_add(2, name, g2_player_count + 1, dt, g2_player_count + 1, 0, None, 0, 0, None, None, 1)
+            self.players_add(2, name, g2_player_count + 1, dt, g2_player_count + 1, 0, 'Study', 0, 0, None, None, 1)
             return 2, g2_player_count + 1
         elif g3_player_count < 6:
-            self.players_add(3, name, g3_player_count + 1, dt, g3_player_count + 1, 0, None, 0, 0, None, None, 1)
+            self.players_add(3, name, g3_player_count + 1, dt, g3_player_count + 1, 0, 'Kitchen', 0, 0, None, None, 1)
             return 3, g3_player_count + 1
         elif g4_player_count < 6:
-            self.players_add(4, name, g4_player_count + 1, dt, g4_player_count + 1, 0, None, 0, 0, None, None, 1)
+            self.players_add(4, name, g4_player_count + 1, dt, g4_player_count + 1, 0, 'Kitchen', 0, 0, None, None, 1)
             return 4, g4_player_count + 1
         else:
             return 0, 0
@@ -710,12 +710,13 @@ class CluelessDB(object):
     def get_player_by_location(self, location):
         cur = self.conn.cursor()
         cur.execute("SELECT * FROM players WHERE location=?", (location,))
-        rows = cur.fetchone()
+        rows = cur.fetchall()
         return rows
 
     def get_player_location(self, name):
-        player_info = self.get_player_by_name(name)
-        location = player_info['location']
+        cur = self.conn.cursor()
+        cur.execute("SELECT location FROM players WHERE name=?", (name,))
+        location = cur.fetchall()
         return location
 
     # Get all values in the specified table
@@ -730,23 +731,13 @@ class CluelessDB(object):
         return self.get_table_values("players")
 
 
-    def update_player_by_name(self, name, weapon=None, suspect=None, space=None):
-        #TODO: Validate suspect exists before updating
-        print(f"POST Request: Updating vals for {name}")
-        player_info = self.get_player_by_name(name)
-        if player_info:
-            player = player_info['name']
-            wep = player_info['weapon'] if weapon is None else weapon
-            sus = player_info['suspect'] if suspect is None else suspect
-            current_space = player_info['current_space'] if space is None else space
-            player_id = player_info['ID']
-            print(f"PUT Query: id={player_id}, player={player}, weapon={wep}, suspect={sus}, space={current_space}")
+    def update_player_location(self, name, location):
+        c = self.conn.cursor()
+        c.execute("UPDATE players SET location = ? "
+                  "WHERE name = ?", (location, name))
+        self.conn.commit()
+        c.close()
 
-            cur = self.conn.cursor()
-            cur.execute(f"UPDATE players SET weapon='{weapon}', suspect='{sus}', current_space='{current_space}' WHERE ID={player_id}")
-            self.conn.commit()
-            return True
-        return False
 # ------------------------------------------------------------------------------------------------------
 # functions utilizing database tables
 # #below lines used for test purposes only
@@ -892,10 +883,12 @@ if __name__ == '__main__':
     print(msg)
 
     print(db.get_player_by_name('Paul'))
-    #print(db.get_player_location('Paul'))
+    print(db.get_player_location('Paul'))
     print(db.get_game_state())
-    print(db.get_player_by_location(1))
-    print(db.get_player_by_location(0))
+    #
+    print(db.get_player_by_location('Library'))
+    db.update_player_location('Paul', 'Study')
+    print(db.get_player_by_location('Study'))
     print('test okay')
 
 
