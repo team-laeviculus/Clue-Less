@@ -223,6 +223,44 @@ class GameSession:
 
 
 
+class GameSessionManager:
+    """
+    Manages all the games on the server. Each player will locally store the game name they are a member of
+    to keep things simple. This is a singleton.
+    """
+    __instance = None
+    @staticmethod
+    def getInstance():
+        if GameSessionManager.__instance == None:
+            GameSessionManager()
+        return GameSessionManager.__instance
+
+    def __init__(self, db_controller, number_games=4):
+        if not GameSessionManager.__instance is None:
+            raise Exception("GameSessionManager object has already been created. Use getInsance")
+        else:
+            self.db_controller = db_controller
+            self.game_sessions = self.__create_game_sessions(number_games)
+            GameSessionManager.__instance = self
+
+    def __create_game_sessions(self, num_games):
+        res = {}
+        for i in range(num_games):
+            name = f"game_{i}" #Unique Game Identifier
+            res[name] = GameSession(name, self.db_controller)
+        return res
+
+    def get_game_sessions(self):
+        return self.game_sessions
+
+
+
+
+
+
+
+
+
 
 
 

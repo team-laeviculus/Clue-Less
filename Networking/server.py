@@ -115,7 +115,7 @@ def end_game():
 # db = SQLAlchemy(app)
 api = Api(app)
 # Create Database Connection
-db_conn = DBController("../Databases/players.db", 0)
+# db_conn = DBController("../Databases/players.db", 0)
 # Attach our resources for HTTP Requests
 api.add_resource(HandlePlayers, '/players', resource_class_kwargs={'db_connection': db_conn})
 api.add_resource(HandleIndividualPlayerManagement, '/players/<playername>',
