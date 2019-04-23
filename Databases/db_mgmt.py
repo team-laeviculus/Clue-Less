@@ -685,7 +685,7 @@ class CluelessDB(object):
         g4_player_count = c.fetchone()[0]
 
         if g1_player_count < 6:
-            self.players_add(1, name, g1_player_count + 1, dt, g1_player_count + 1, 0, None, 0, 0, None, None, 1)
+            self.players_add(1, name, g1_player_count + 1, dt, g1_player_count + 1, 0, 0, 0, 0, None, None, 1)
             return 1, g1_player_count + 1
         elif g2_player_count < 6:
             self.players_add(2, name, g2_player_count + 1, dt, g2_player_count + 1, 0, None, 0, 0, None, None, 1)
@@ -699,6 +699,54 @@ class CluelessDB(object):
         else:
             return 0, 0
 
+    #  Get player in the player table by name
+    def get_player_by_name(self, name):
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM players WHERE name=?", (name,))
+        rows = cur.fetchone()
+        return rows
+
+    #  Get player in the player table by location
+    def get_player_by_location(self, location):
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM players WHERE location=?", (location,))
+        rows = cur.fetchone()
+        return rows
+
+    def get_player_location(self, name):
+        player_info = self.get_player_by_name(name)
+        location = player_info['location']
+        return location
+
+    # Get all values in the specified table
+    def get_table_values(self, table_name):
+        cur = self.conn.cursor()
+        all_values = cur.execute('SELECT * FROM ' + table_name + ';').fetchall()
+        return all_values
+
+    # Get all values in the players db
+    # TODO: After minimal, we may want to limit this information
+    def get_game_state(self):
+        return self.get_table_values("players")
+
+
+    def update_player_by_name(self, name, weapon=None, suspect=None, space=None):
+        #TODO: Validate suspect exists before updating
+        print(f"POST Request: Updating vals for {name}")
+        player_info = self.get_player_by_name(name)
+        if player_info:
+            player = player_info['name']
+            wep = player_info['weapon'] if weapon is None else weapon
+            sus = player_info['suspect'] if suspect is None else suspect
+            current_space = player_info['current_space'] if space is None else space
+            player_id = player_info['ID']
+            print(f"PUT Query: id={player_id}, player={player}, weapon={wep}, suspect={sus}, space={current_space}")
+
+            cur = self.conn.cursor()
+            cur.execute(f"UPDATE players SET weapon='{weapon}', suspect='{sus}', current_space='{current_space}' WHERE ID={player_id}")
+            self.conn.commit()
+            return True
+        return False
 # ------------------------------------------------------------------------------------------------------
 # functions utilizing database tables
 # #below lines used for test purposes only
@@ -707,7 +755,7 @@ class CluelessDB(object):
 
 
 
-try:
+if __name__ == '__main__':
     db = CluelessDB()
 
 # game setup
@@ -843,7 +891,11 @@ try:
     msg = db.make_accusation(test_game_num, test_player_num, "Miss Scarlet", "Lead Pipe", "Ballroom")
     print(msg)
 
+    print(db.get_player_by_name('Paul'))
+    #print(db.get_player_location('Paul'))
+    print(db.get_game_state())
+    print(db.get_player_by_location(1))
+    print(db.get_player_by_location(0))
     print('test okay')
 
-except Error as e:
-    print(e)
+
