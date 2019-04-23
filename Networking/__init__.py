@@ -6,21 +6,18 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Logs import Logging
 from Networking.ServerGameSession import GameSessionManager
-from Databases.DBController import DBController
-server_logger = None
-# Create a Global Server Logger
-def create_server_logger():
-    global server_logger
-    if not server_logger:
-        server_logger = Logging.create_logger("server", "../Logs")
-    return server_logger
+# from Networking.RESTResources import HandlePlayerModification
+# from Databases.DBController import DBController
+from Databases.db_mgmt import CluelessDB
+
 # Initialize flask app
 app = Flask(__name__)
 app.config["DEBUG"] = True
 SESSION_TYPE = 'filesystem'
 app.config.from_object(__name__)
 
-DB_CONTROLLER_CONN = DBController("../Databases/players.db", 0)
+# DB_CONTROLLER_CONN = DBController("../Databases/players.db", 0)
+DB_CONTROLLER_CONN = CluelessDB()
 GAME_SESSION_MANAGER = GameSessionManager(DB_CONTROLLER_CONN)
 
 socketio = SocketIO(app, manage_session=False)

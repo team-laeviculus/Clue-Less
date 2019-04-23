@@ -1,11 +1,11 @@
 import logging
 import os
+import pathlib
 """
 Logging utility class
 """
 
-
-
+file_path = pathlib.Path(__file__).parent
 def create_logger(name: str, path: str = None):
     """
     create_logger: Creates a logger
@@ -18,9 +18,9 @@ def create_logger(name: str, path: str = None):
     logger.setLevel(logging.DEBUG)
     # create file handler which logs even debug messages
     # log files are located in the current working directory (Logs)
-    file_path = "../Logs"
-    if path:
-        file_path = path
+
+    # if path:
+    #     file_path = path
 
     print(f"LOGGING CWD: {os.getcwd()}")
     fh = logging.FileHandler(f"{file_path}/{name}-dev.log")
@@ -49,3 +49,13 @@ def create_background_logger(name: str, path: str):
     logger.addHandler(fh)
     return logger
 
+# server_logger = None
+# Create a Global Server Logger
+server_logger = None
+def create_server_logger():
+    global server_logger
+    if not server_logger:
+        server_logger = create_logger("server", file_path)
+    return server_logger
+
+# server_logger = create_logger("server", "../Logs")

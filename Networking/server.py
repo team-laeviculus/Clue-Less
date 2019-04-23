@@ -1,21 +1,23 @@
 from flask_restful import Resource, Api, reqparse
 from flask_socketio import SocketIO, emit
 import flask_socketio
-from flask import session
 # from Networking import logger
 
 from http import HTTPStatus
 import os
 import sys
+import logging
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Logs import Logging
 # Ensure you have your virtual environment properly set up and activated
 # PyCharm should automatically do this for you
+from Logs.Logging import create_server_logger
 from Databases.DBController import *
 from Networking.RESTResources import *
 from Networking import socketio, app
 
+logger = create_server_logger()
 
 
 
@@ -30,7 +32,7 @@ def on_message(message):
 @socketio.on('message', namespace='/chat')
 def on_namespace_msg(message):
     logger.debug(f"Received message on namespace /chat: {message}")
-    logger.debug(f"SEssion: {session.get('room')}")
+    # logger.debug(f"SEssion: {session.get('room')}")
 
 
 @socketio.on('connect')
@@ -115,8 +117,9 @@ def end_game():
 # db = SQLAlchemy(app)
 api = Api(app)
 # Create Database Connection
-# db_conn = DBController("../Databases/players.db", 0)
+db_conn = DBController("../Databases/players.db", 0)
 # Attach our resources for HTTP Requests
+# db_conn = DB_CONTROLLER_CONN
 api.add_resource(HandlePlayers, '/players', resource_class_kwargs={'db_connection': db_conn})
 api.add_resource(HandleIndividualPlayerManagement, '/players/<playername>',
                  resource_class_kwargs={'db_connection': db_conn})

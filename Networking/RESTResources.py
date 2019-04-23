@@ -1,8 +1,12 @@
 from flask_restful import Resource, reqparse
 from flask import jsonify, request, make_response, session
-from Networking import server_logger, create_server_logger
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# from . import create_server_logger
 from http import HTTPStatus
 from Networking import app
+from Logs.Logging import create_server_logger
 
 
 ##############################################
@@ -26,25 +30,9 @@ mock_games = {
 }
 
 def create_user_session(username, **kwargs):
-    session['name'] = username
-    session.modified = True
-
-
-@app.route('/visits-counter/')
-def visits():
-    print(f"Session info: {session.items()}")
-    if 'visits' in session:
-        print("Found visits")
-        session['visits'] = session.get('visits') + 1  # reading and updating session data
-    else:
-        session['visits'] = 1  # setting session data
-        # session.permanent = True
-        # session.permanent_session_lifetime = True
-        print(f"Added new visits session: {session}")
-    print(f"Session info: {session.items()}")
-
-    return "Total visits: {}".format(session.get('visits'))
-
+    # session['name'] = username
+    # session.modified = True
+    pass
 
 
 @app.route('/delete-visits/')
@@ -59,10 +47,10 @@ def join_game():
 
 @app.route('/foo/')
 def set_session():
-    session['tmp'] = 'hey it is working'
+    # session['tmp'] = 'hey it is working'
     # session.set('test',
     logger.debug(f"Session item added")
-    return f"session item added: {session}"
+    # return f"session item added: {session}"
 
 # Access to the player database
 # Posts new players to the database, gets lists of all active players
@@ -74,7 +62,7 @@ class HandlePlayers(Resource):
     def get(self):
         all_players = self.db_connection.get_table_values('players')
         logger.debug(f"Getting All Players")
-        logger.debug(f"Get SEssion info: {session.items()}")
+        # logger.debug(f"Get SEssion info: {session.items()}")
         return jsonify(all_players)
 
     # TAP: Not sure how to link this command with a http call
@@ -93,15 +81,14 @@ class HandlePlayers(Resource):
             name = values["name"].split()
 
             logger.debug(f"Name: {name}")
-            if not name[0] in session:
-                logger.info("Adding name to session")
-                session['name'] = name[0]
-            else:
-                return f"{name} Already in the table"
-            logger.debug(f"SESSION INFO: {session}")
-            logger.debug((f"SESSION ITEMS: {session.items()}"))
+            # if not name[0] in session:
+            #     logger.info("Adding name to session")
+            #     # session['name'] = name[0]
+            # else:
+            #     return f"{name} Already in the table"
+
             logger.debug(f"Added {values} to table")
-            logger.debug(f"Created session for {name}: {session['name']}")
+            # logger.debug(f"Created session for {name}: {session['name']}")
             return f"Added {values} to table 'players'", HTTPStatus.OK
         logger.warning(f"Error! Could not add {values} to table!")
         return f'Error! Could not add {values} to table', HTTPStatus.BAD_REQUEST
@@ -131,8 +118,9 @@ class HandleJoinGame(Resource):
         values = request.json
         logger.debug(f"Data recvd JSON: {values}")
         # playername = values["playername"]
-        logger.debug(f"SESSION INFO: {session.items()}")
-        playername = session.get('name')
+        # logger.debug(f"SESSION INFO: {session.items()}")
+        # playername = session.get('name')
+        playername = "NULL SESSION"
         logger.debug(f"Data recvd: {playername}")
         mock_games["game1"]["players"].append(playername)#session["name"]) # Real joining of game in Database
         logger.debug(f"Player joined game: {mock_games['game1']['players']}")

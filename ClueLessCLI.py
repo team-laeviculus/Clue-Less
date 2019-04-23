@@ -64,11 +64,12 @@ class ClueLess(object):
         while True:
             if not self.outbound_q.empty():
                 msg = self.outbound_q.get()
+                print(f"Message in outbound q: {msg}")
                 if "namespace" in msg:
                     print(f"Sending message [{msg['namespace']}]: {msg['data']}")
                     cli_net.emit_message('message', msg["data"], namespace=msg["namespace"])
                 else:
-                    cli_net.emit_message('message', self.outbound_q.get())
+                    cli_net.emit_message('message', msg)
             time.sleep(0.1)
 
     def login_to_server(self, desired_username):

@@ -1,10 +1,14 @@
 from collections import OrderedDict
-from Networking import create_server_logger
 from enum import Enum
 import threading
 import time
 import random
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ClueGameBoard.GameBoard_DatabaseCoordinates import GameBoard
+from Logs.Logging import create_server_logger
+
 
 log = create_server_logger()
 
@@ -212,8 +216,8 @@ class GameSession:
         """
         if self.game_state == GameState.READY or self.game_state == GameState.ACTIVE:
             #TODO:Bug, everyone gets set as my_turn being true. so dont use it
-            this_players_turn = list(self.players.values())[self.player_turn]
-            this_players_turn["my_turn"] = True
+            this_players_turn = list(self.players.items())[self.player_turn]
+            this_players_turn[1]["my_turn"] = True
             log.info(f"New Player Turn: {this_players_turn}")
             self.player_turn = (self.player_turn + 1) % self.player_count
             return this_players_turn
