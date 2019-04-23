@@ -684,6 +684,7 @@ class CluelessDB(object):
         c.execute("SELECT COUNT(*) FROM games WHERE game_id = 4")
         g4_player_count = c.fetchone()[0]
 
+        dt = datetime.datetime.now()
         if g1_player_count < 6:
             self.players_add(1, name, g1_player_count + 1, dt, g1_player_count + 1, 0, 'Library', 0, 0, None, None, 1)
             return 1, g1_player_count + 1

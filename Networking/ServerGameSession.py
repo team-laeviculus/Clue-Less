@@ -60,10 +60,12 @@ class GameSession:
         self.player_turn = 0
         self.player_count = 0
         self.db_controller = db_controller
+        self.db_controller.create_games_table()
 
         self.game_tokens = create_game_tokens()
 
         self.game_board = GameBoard.create_game_board(db_controller)
+        self.db_controller.create_player_table()
         self.game_state = GameState.STOPPED
 
         self.timeout_timer_thread = threading.Timer(GameSession.TIMEOUT_TIME, self.__start_game)
@@ -171,14 +173,12 @@ class GameSession:
     def __start_game(self):
         print("Starting Game! No new players can join")
         self.game_state = GameState.READY
-        self.db_controller.create_games_table()
         self.db_controller.create_suspect_table()
         self.db_controller.init_suspects(1)
         self.db_controller.create_weapon_table()
         self.db_controller.init_weapons(1)
         self.db_controller.db.create_room_table()
         self.db_controller.init_rooms(1)
-        self.db_controller.create_player_table()
         self.db_controller.create_cards_table()
         self.db_controller.init_cards(1)
 
