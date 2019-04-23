@@ -89,24 +89,35 @@ class GameBoard:
     def get_halls(self):
         return self.hallways
 
+    def get_hall_names(self):
+        hall_objs = self.get_halls()
+        hall_names = []
+        for hall in hall_objs:
+            hall_names.append(hall.name)
+        return hall_names
+
 # Current GUI is set to Width = 600 and Height = 600, 225 currently static distance of closes room in either direction.
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
-    def get_connected_rooms(self, room):
+    def get_connected_rooms(self, room_name):
+        room_obj = self.get_room_object(room_name)
+        if room_obj is None:
+            print("No room object found")
+            return None
         connected = []
         current = self.rooms + self.hallways
-        current.remove(room)
+        current.remove(room_obj)
         for rooms in current:
-            if room.positionX == rooms.positionX:
-                if rooms.positionY -1 <= room.positionY <= rooms.positionY +1:
-                    connected.append(rooms)
+            if room_obj.positionX == rooms.positionX:
+                if rooms.positionY -1 <= room_obj.positionY <= rooms.positionY +1:
+                    connected.append(rooms.name)
 
-            if room.positionY == rooms.positionY:
-                if rooms.positionX - 1 <= room.positionX <= rooms.positionX + 1:
-                    connected.append(rooms)
+            if room_obj.positionY == rooms.positionY:
+                if rooms.positionX - 1 <= room_obj.positionX <= rooms.positionX + 1:
+                    connected.append(rooms.name)
 
-            if abs(room.positionX - rooms.positionX) == 4:
-                if abs(room.positionY - rooms.positionY) == 4:
-                    connected.append(rooms)
+            if abs(room_obj.positionX - rooms.positionX) == 4:
+                if abs(room_obj.positionY - rooms.positionY) == 4:
+                    connected.append(rooms.name)
 
         return connected
 
@@ -117,7 +128,7 @@ class GameBoard:
         if dest_location in self.get_connected_rooms(current_location):
 
             #if moving to a hall, check if it's empty
-            if dest_location in self.get_halls():
+            if dest_location in self.get_hall_names():
                 space_info = self.db_conn.get_player_by_location(dest_location)
                 if not space_info:
                     return True
@@ -171,6 +182,11 @@ class GameBoard:
 
         return game_board
 
+    def get_room_object(self, room_name):
+        current = self.rooms + self.hallways
+        for room in current:
+            if room.name == room_name:
+                return room
 
 if __name__ == '__main__':
     db_conn = DBController("../Databases/players.db", 0)
@@ -183,11 +199,19 @@ if __name__ == '__main__':
     john.set_player_position(game_board.study.positionY, game_board.study.positionX)
     print(john.positionX, john.positionY)
 
-    room_list = game_board.get_connected_rooms(game_board.kitchen)
+    room_list = game_board.get_connected_rooms("Kitchen")
     for room in room_list:
-        print(room.name)
+        print(room)
 
-    print(game_board.check_if_legal_move(game_board.kitchen, game_board.study))
-    print(game_board.check_if_legal_move(game_board.kitchen, game_board.dr_k))
 
+    #print(game_board.check_if_legal_move(game_board.kitchen, game_board.study))
+    #print(game_board.check_if_legal_move(game_board.kitchen, game_board.dr_k))
+
+    print("Getting object")
+    room_obj = game_board.get_room_object('Kitchen')
+    print(room_obj.name)
+    print(room_obj.positionX)
+    print(room_obj.positionY)
+
+    print(game_board.get_connected_rooms("conservatory_ballroom"))
 
