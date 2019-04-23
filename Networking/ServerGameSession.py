@@ -222,9 +222,26 @@ class GameSession:
 
 
 
+    def turn_mechanics(self):
+        while(True):
+            log.info("Getting next turn")
+            players_turn = self.get_next_turn()
+            # notify player of turn, get his movement
+            players_movement = None #change this to actual player's movement
+            self.game_board.move_player(players_turn, players_movement)
+            #For now, assume move is valid( no error handling )
 
+            # ask player if he wants to make a suggestion
+            # From player, get g_id, player_num, player_cnt, suggest_suspect, suggest_weapon, suggest_room
+            # use hard-coded values for now
+            player_cnt = self.players[players_turn].turn
+            self.db_controller.make_suggestion(1, self.player_count, player_cnt, "Miss Scarlet", "Lead Pipe", "Ballroom")
 
-
+            # ask player if he wants to make an accusation
+            # for now, hard code values
+            self.db_controller.make_accusation(1, player_cnt, "Miss Scarlet", "Lead Pipe", "Ballroom")
+            time.sleep(2.5)
+            #end turn
 
 
 
@@ -280,6 +297,6 @@ if __name__ == "__main__":
     print("Test set")
     print(f"Available Tokens: {sess.get_available_tokens()}")
 
-
+    #sess.turn_mechanics()
 
 

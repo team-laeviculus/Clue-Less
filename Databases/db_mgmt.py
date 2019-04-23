@@ -602,7 +602,7 @@ class CluelessDB(object):
         # suggest_suspect = 'suspect1'
         # suggest_weapon = 'weapon3'
         # suggest_room = 'room4'
-
+        self.update_player_location(suggest_suspect, suggest_room)
         active_player = player_num
         suggest_match = 1    # assume it is a match; attempt to disprove
         list_elements = ['S', 'W', 'R'];
