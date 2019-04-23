@@ -213,8 +213,8 @@ class GameSession:
         """
         if self.game_state == GameState.READY or self.game_state == GameState.ACTIVE:
             #TODO:Bug, everyone gets set as my_turn being true. so dont use it
-            this_players_turn = list(self.players.values())[self.player_turn]
-            this_players_turn["my_turn"] = True
+            this_players_turn = list(self.players.items())[self.player_turn]
+            this_players_turn[1]["my_turn"] = True
             log.info(f"New Player Turn: {this_players_turn}")
             self.player_turn = (self.player_turn + 1) % self.player_count
             return this_players_turn
@@ -227,20 +227,23 @@ class GameSession:
         while(True):
             log.info("Getting next turn")
             players_turn = self.get_next_turn()
+            players_name = players_turn[0]
             # notify player of turn, get his movement
-            players_movement = None #change this to actual player's movement
-            self.game_board.move_player(players_turn, players_movement)
+            players_movement = 'Library' #change this to actual player's movement
+            self.game_board.move_player(players_name, players_movement, True)
             #For now, assume move is valid( no error handling )
-
+            time.sleep(2)
             # ask player if he wants to make a suggestion
             # From player, get g_id, player_num, player_cnt, suggest_suspect, suggest_weapon, suggest_room
             # use hard-coded values for now
-            player_cnt = self.players[players_turn].turn
-            self.db_controller.make_suggestion(1, self.player_count, player_cnt, "Miss Scarlet", "Lead Pipe", "Ballroom")
+            player_cnt = self.players[players_name].get('turn')
+            print("printing player_cnt")
+            print(player_cnt)
+            self.db_controller.make_suggestion(1, self.player_count, player_cnt, "Miss Scarlet", "Lead Pipe", "Study")
 
             # ask player if he wants to make an accusation
             # for now, hard code values
-            self.db_controller.make_accusation(1, player_cnt, "Miss Scarlet", "Lead Pipe", "Ballroom")
+            #self.db_controller.make_accusation(1, player_cnt, "Miss Scarlet", "Lead Pipe", "Ballroom")
             time.sleep(2.5)
             #end turn
 
@@ -293,11 +296,12 @@ if __name__ == "__main__":
     #TODO: Integrate with get_next_turn()
     time.sleep(0.2)
     print("Token GET and SET test")
-    print(f"Available Tokens: {sess.get_available_tokens()}")
+    #print(f"Available Tokens: {sess.get_available_tokens()}")
     sess.set_players_token("player3", "Mrs. White")
     print("Test set")
-    print(f"Available Tokens: {sess.get_available_tokens()}")
+    #print(f"Available Tokens: {sess.get_available_tokens()}")
 
-    #sess.turn_mechanics()
+    print("Main game mechanics")
+    sess.turn_mechanics()
 
 

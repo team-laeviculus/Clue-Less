@@ -496,11 +496,12 @@ class CluelessDB(object):
         c.close()
 
     def update_weapons(self, g_id, cnum):
-        c = self.conn.cursor()
-        c.execute("UPDATE weapon SET case_match = 1 "
-                  "WHERE ref_id = ? and game_id = ?", (cnum - 6, g_id))
-        self.conn.commit()
-        c.close()
+        pass
+        #c = self.conn.cursor()
+        #c.execute("UPDATE weapon SET case_match = 1 "
+        #          "WHERE ref_id = ? and game_id = ?", (cnum - 6, g_id))
+        #self.conn.commit()
+        #c.close()
 
     def update_rooms(self, g_id, cnum):
         c = self.conn.cursor()
@@ -737,6 +738,7 @@ class CluelessDB(object):
         c.execute("UPDATE players SET location = ? "
                   "WHERE name = ?", (location, name))
         self.conn.commit()
+
         c.close()
 
 # ------------------------------------------------------------------------------------------------------
