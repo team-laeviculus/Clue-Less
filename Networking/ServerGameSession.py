@@ -3,6 +3,7 @@ from Networking import create_server_logger
 from enum import Enum
 import threading
 import time
+import random
 from ClueGameBoard.GameBoard_DatabaseCoordinates import GameBoard
 
 log = create_server_logger()
@@ -58,10 +59,11 @@ class GameSession:
         self.players = OrderedDict() # Preserves order of items added
         self.player_turn = 0
         self.player_count = 0
+        self.db_controller = db_controller
 
         self.game_tokens = create_game_tokens()
 
-        self.game_board = GameBoard(db_controller)
+        self.game_board = GameBoard.create_game_board(db_controller)
         self.game_state = GameState.STOPPED
 
         self.timeout_timer_thread = threading.Timer(GameSession.TIMEOUT_TIME, self.__start_game)
@@ -79,10 +81,12 @@ class GameSession:
         """
         #TODO: DB Controller Stuff
 
+
         if self.player_count < GameSession.MAX_PLAYERS:
             log.info(f"Attempting to Add player {username}")
             log.info(f"Game [{self.game_name}] now has {self.player_count} players.")
             # TODO: Database adds player to game
+            self.db_controller.put_player_in_game(username)
 
             # Add the player
             self.player_count += 1
@@ -143,6 +147,35 @@ class GameSession:
     def __start_game(self):
         print("Starting Game! No new players can join")
         self.game_state = GameState.READY
+        self.db_controller.create_games_table()
+        self.db_controller.create_suspect_table()
+        self.db_controller.init_suspects(1)
+        self.db_controller.create_weapon_table()
+        self.db_controller.init_weapons(1)
+        self.db_controller.db.create_room_table()
+        self.db_controller.init_rooms(1)
+        self.db_controller.create_player_table()
+        self.db_controller.create_cards_table()
+        self.db_controller.init_cards(1)
+
+        # initialize case file
+        self.db_controller.create_case_file_table()
+
+        # establish the solution for a game
+        solution_s = random.randint(1, 6)
+        solution_w = random.randint(7, 12)
+        solution_r = random.randint(13, 21)
+
+        self.db_controller.init_case_file(1, solution_s, solution_w, solution_r)
+
+        self.db_controller.update_suspects(1, solution_s)
+        self.db_controller.update_weapons(1, solution_w)
+        self.db_controller.update_rooms(1, solution_r)
+        self.db_controller.shuffle_deal_cards(1, self.player_count, solution_s, solution_w, solution_r)
+
+        self.db_controller.create_suggest_log_table()  # only do this at the beginning of the game
+        self.db_controller.create_accuse_log_table()
+
         #TODO: Ask each player what token they want by order they joined
         #TODO: Store choice in DB
         #TODO: Once each player has a token,
@@ -174,8 +207,8 @@ class GameSession:
 
 if __name__ == "__main__":
     print("Starting test")
-    from Databases.DBController import  DBController
-    db_conn = DBController("../Databases/players.db", 0)
+    from Databases.db_mgmt import  CluelessDB
+    db_conn = CluelessDB()
     print("DB controller created")
     sess = GameSession("testgame", db_controller=db_conn)
 
