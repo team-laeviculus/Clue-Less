@@ -32,7 +32,7 @@ class GameState(Enum):
 def create_game_tokens():
     #TODO: We might need to do more with this
     # Token_Name, Player Associated
-    tokens_map = OrderedDict({
+    tokens_map = {
         "Prof Plum" : None,
         "Mrs. Peacock" : None,
         "Mr. Green" : None,
@@ -40,7 +40,7 @@ def create_game_tokens():
         "Col. Mustard" : None,
         "Miss Scarlet" : None
 
-    })
+    }
     return tokens_map
 
 class GameSession:
@@ -138,7 +138,31 @@ class GameSession:
         if self.player_count == 6 or self.game_state == GameState.ACTIVE:
             return True
         return False
-    # TODO: Get Next Turn
+
+    def get_available_tokens(self):
+        """
+        For server and client to interact and choose tokens
+        :return: (integer, token_name) dictionary for clients to select token they want
+        """
+        #TODO: Fix enumerate issue where we get 0,1,4,5 returned instead of 0,1,2,3,4
+        return dict({num: tok for num, tok in enumerate(self.game_tokens) if self.game_tokens[tok] is None})
+
+    def set_players_token(self, playername, token_choice):
+        """
+        Sets a token as chosen by a player
+        :param playername: The player who is chosing the token
+        :param token_choice: the game token (i.e. 'miss peach')
+        :return: True if success, False if taken (hopefully not an issue)
+        """
+        if token_choice in self.game_tokens and playername in self.players:
+            log.info(f"Player {playername} chose token {token_choice}")
+            # This is a bad way of doing all this stuff but w/e
+            #TODO: Probably check both if none before we overwrite
+            self.game_tokens[token_choice] = playername
+            self.players[playername]['tokens'] = token_choice
+            return True
+        return False
+
     #TODO integrate game logic
     def __start_game(self):
         print("Starting Game! No new players can join")
@@ -212,5 +236,17 @@ if __name__ == "__main__":
     sess.get_next_turn()
     sess.get_next_turn()
     sess.get_next_turn()
+
+
+    # Test Token functionality
+    #TODO: Integrate with get_next_turn()
+    time.sleep(0.2)
+    print("Token GET and SET test")
+    print(f"Available Tokens: {sess.get_available_tokens()}")
+    sess.set_players_token("player3", "Mrs. White")
+    print("Test set")
+    print(f"Available Tokens: {sess.get_available_tokens()}")
+
+
 
 
