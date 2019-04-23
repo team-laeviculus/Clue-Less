@@ -6,8 +6,8 @@ import argparse
 import shlex
 import cmd
 import requests
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import json
+from Networking.client import ClientSession
 
 class CommandShell(cmd.Cmd):
     '''
@@ -75,6 +75,7 @@ class CommandShell(cmd.Cmd):
     def do_join(self, args):
         r = requests.post('http://localhost:5000' + '/games', json={"playername": self.name})
         # r = requests.post(self.address + '/players', json={"name": self.name})
+        ClientSession.CLIENT_SESSION_INFO = r.json()
         print(f"Server Response To Login: {r.text}")
 
     def do_suggest(self, args):
@@ -89,6 +90,12 @@ class CommandShell(cmd.Cmd):
         if not self.inbound_q.empty():
             print(f"Queue Item: {self.inbound_q.get()}")
 
+    def do_get_session(self, args):
+        '''get_session - displays the CLIENT_SESSION_INFO '''
+        if ClientSession.CLIENT_SESSION_INFO:
+            print(f"client session info: {ClientSession.CLIENT_SESSION_INFO}")
+        else:
+            print(f"Session is empty")
     def do_quit(self, arg):
         '''quit - quit the ClueLess game and exit'''
         sys.exit(0)

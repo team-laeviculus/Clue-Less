@@ -12,10 +12,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Logs import Logging
 # Ensure you have your virtual environment properly set up and activated
 # PyCharm should automatically do this for you
-from Logs.Logging import create_server_logger
-from Databases.DBController import *
 from Networking.RESTResources import *
-from Networking import socketio, app
+from Networking import socketio, app, ServerConfig
 
 logger = create_server_logger()
 
@@ -117,9 +115,9 @@ def end_game():
 # db = SQLAlchemy(app)
 api = Api(app)
 # Create Database Connection
-db_conn = DBController("../Databases/players.db", 0)
+# db_conn = DBController("../Databases/players.db", 0)
 # Attach our resources for HTTP Requests
-# db_conn = DB_CONTROLLER_CONN
+db_conn = ServerConfig.DB_CONTROLLER_CONN
 api.add_resource(HandlePlayers, '/players', resource_class_kwargs={'db_connection': db_conn})
 api.add_resource(HandleIndividualPlayerManagement, '/players/<playername>',
                  resource_class_kwargs={'db_connection': db_conn})

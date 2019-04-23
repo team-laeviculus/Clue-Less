@@ -3,15 +3,21 @@ from sqlite3 import Error
 import random
 import datetime
 import sys
+import traceback
 
 
 class CluelessDB(object):
     # this class is used to create an empty database with 10 tables for the game
     def __init__(self):
         try:
-            self.conn = sqlite3.connect('file::memory:?cache=shared', uri=True)
-        except Error as e:
-            print(e)
+            print(f"CluelessDB object created")
+            #self.conn = sqlite3.connect('file::memory:?cache=shared', check_same_thread=False)
+            self.conn = sqlite3.connect('game_data.db', check_same_thread=False)
+            print(f"Conn info for new DB: {self.conn}")
+
+            traceback.print_exc()
+        except Exception as e:
+            print(f"DB Exception: {e}")
         pass
 
 # ------------------------------------------------------------------------------------------------------
@@ -36,6 +42,8 @@ class CluelessDB(object):
         self.create_accuse_log_table()
 
     def create_games_table(self):
+        print("Trying to create games_table")
+        print(f"Connection Status: {self.conn}")
         c = self.conn.cursor()
         c.execute('''DROP TABLE IF EXISTS games''')
 
@@ -496,11 +504,12 @@ class CluelessDB(object):
         c.close()
 
     def update_weapons(self, g_id, cnum):
-        c = self.conn.cursor()
-        c.execute("UPDATE weapon SET case_match = 1 "
-                  "WHERE ref_id = ? and game_id = ?", (cnum - 6, g_id))
-        self.conn.commit()
-        c.close()
+        pass
+        #c = self.conn.cursor()
+        #c.execute("UPDATE weapon SET case_match = 1 "
+        #          "WHERE ref_id = ? and game_id = ?", (cnum - 6, g_id))
+        #self.conn.commit()
+        #c.close()
 
     def update_rooms(self, g_id, cnum):
         c = self.conn.cursor()
@@ -591,7 +600,7 @@ class CluelessDB(object):
                 else:
                     player_num = 1
             self.conn.commit()
-            c.close()
+            # c.close()
 
     def make_suggestion(self, g_id, player_num, player_cnt, suggest_suspect, suggest_weapon, suggest_room):
         # suggest_suspect = str(input("Please enter a suspect?"))
@@ -602,7 +611,7 @@ class CluelessDB(object):
         # suggest_suspect = 'suspect1'
         # suggest_weapon = 'weapon3'
         # suggest_room = 'room4'
-
+        self.update_player_location(suggest_suspect, suggest_room)
         active_player = player_num
         suggest_match = 1    # assume it is a match; attempt to disprove
         list_elements = ['S', 'W', 'R'];
@@ -737,6 +746,7 @@ class CluelessDB(object):
         c.execute("UPDATE players SET location = ? "
                   "WHERE name = ?", (location, name))
         self.conn.commit()
+
         c.close()
 
 # ------------------------------------------------------------------------------------------------------

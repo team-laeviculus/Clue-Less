@@ -71,6 +71,7 @@ class GameSession:
         self.game_board = GameBoard.create_game_board(db_controller)
         self.db_controller.create_player_table()
         self.game_state = GameState.STOPPED
+        self.db_mutex = threading.Lock()
 
         self.timeout_timer_thread = threading.Timer(GameSession.TIMEOUT_TIME, self.__start_game)
 
@@ -97,7 +98,7 @@ class GameSession:
             # Add the player
             self.player_count += 1
             # Add player as dictionary item in local datastruct
-            self.__add_player(username)
+            player_info = self.__add_player(username)
 
             if self.game_state == GameState.STOPPED:
                 log.info("Updating Game state")
@@ -119,7 +120,7 @@ class GameSession:
                     log.info("Starting timeout timer for first time")
                     self.timeout_timer_thread.start()
                     self.game_state = GameState.TIMEOUT_STARTED
-
+            return player_info
 
 
     def __add_player(self, username):
@@ -177,32 +178,39 @@ class GameSession:
     def __start_game(self):
         print("Starting Game! No new players can join")
         self.game_state = GameState.READY
-        self.db_controller.create_suspect_table()
-        self.db_controller.init_suspects(1)
-        self.db_controller.create_weapon_table()
-        self.db_controller.init_weapons(1)
-        self.db_controller.db.create_room_table()
-        self.db_controller.init_rooms(1)
-        self.db_controller.create_cards_table()
-        self.db_controller.init_cards(1)
 
-        # initialize case file
-        self.db_controller.create_case_file_table()
+        self.db_mutex.acquire() # LOCK the thread
+        try:
+            self.db_controller.create_suspect_table()
+            self.db_controller.init_suspects(1)
+            self.db_controller.create_weapon_table()
+            self.db_controller.init_weapons(1)
+            self.db_controller.create_room_table()
+            self.db_controller.init_rooms(1)
+            self.db_controller.create_cards_table()
+            self.db_controller.init_cards(1)
+            self.db_controller.create_notebook_table()
 
-        # establish the solution for a game
-        solution_s = random.randint(1, 6)
-        solution_w = random.randint(7, 12)
-        solution_r = random.randint(13, 21)
+            # initialize case file
+            self.db_controller.create_case_file_table()
 
-        self.db_controller.init_case_file(1, solution_s, solution_w, solution_r)
+            # establish the solution for a game
+            solution_s = random.randint(1, 6)
+            solution_w = random.randint(7, 12)
+            solution_r = random.randint(13, 21)
 
-        self.db_controller.update_suspects(1, solution_s)
-        self.db_controller.update_weapons(1, solution_w)
-        self.db_controller.update_rooms(1, solution_r)
-        self.db_controller.shuffle_deal_cards(1, self.player_count, solution_s, solution_w, solution_r)
+            self.db_controller.init_case_file(1, solution_s, solution_w, solution_r)
 
-        self.db_controller.create_suggest_log_table()  # only do this at the beginning of the game
-        self.db_controller.create_accuse_log_table()
+            self.db_controller.update_suspects(1, solution_s)
+            self.db_controller.update_weapons(1, solution_w)
+            self.db_controller.update_rooms(1, solution_r)
+            self.db_controller.shuffle_deal_cards(1, self.player_count, solution_s, solution_w, solution_r)
+
+            self.db_controller.create_suggest_log_table()  # only do this at the beginning of the game
+            self.db_controller.create_accuse_log_table()
+        # Unlock thread
+        finally:
+            self.db_mutex.release()
 
         #TODO: Ask each player what token they want by order they joined
         #TODO: Store choice in DB
@@ -226,6 +234,23 @@ class GameSession:
 
 
 
+    def turn_mechanics(self):
+        while(True):
+            log.info("Getting next turn")
+            players_turn = self.get_next_turn()
+            players_name = players_turn[0]
+            # notify player of turn, get his movement
+            players_movement = 'Library' #change this to actual player's movement
+            self.game_board.move_player(players_name, players_movement, True)
+            #For now, assume move is valid( no error handling )
+            time.sleep(2)
+            # ask player if he wants to make a suggestion
+            # From player, get g_id, player_num, player_cnt, suggest_suspect, suggest_weapon, suggest_room
+            # use hard-coded values for now
+            player_cnt = self.players[players_name].get('turn')
+            print("printing player_cnt")
+            print(player_cnt)
+            self.db_controller.make_suggestion(1, self.player_count, player_cnt, "Miss Scarlet", "Lead Pipe", "Study")
 
 class GameSessionManager:
     """
@@ -244,6 +269,8 @@ class GameSessionManager:
             raise Exception("GameSessionManager object has already been created. Use getInsance")
         else:
             self.db_controller = db_controller
+            print(f"DB Controller: {self.db_controller}")
+
             self.game_sessions = self.__create_game_sessions(number_games)
             GameSessionManager.__instance = self
 
@@ -256,17 +283,6 @@ class GameSessionManager:
 
     def get_game_sessions(self):
         return self.game_sessions
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -317,11 +333,12 @@ if __name__ == "__main__":
     #TODO: Integrate with get_next_turn()
     time.sleep(0.2)
     print("Token GET and SET test")
-    print(f"Available Tokens: {sess.get_available_tokens()}")
+    #print(f"Available Tokens: {sess.get_available_tokens()}")
     sess.set_players_token("player3", "Mrs. White")
     print("Test set")
-    print(f"Available Tokens: {sess.get_available_tokens()}")
+    #print(f"Available Tokens: {sess.get_available_tokens()}")
 
-
+    print("Main game mechanics")
+    sess.turn_mechanics()
 
 

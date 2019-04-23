@@ -5,12 +5,16 @@ from queue import Queue
 from Logs.Logging import create_background_logger
 import asyncio
 
+class ClientSession:
+    CLIENT_SESSION_INFO = None
 
 class ClientNetworking(threading.Thread):
     log = create_background_logger("sio", "Logs")
     sio = Client(engineio_logger=log)
     inbound_q = None
     outbound_q = None
+
+    CLIENT_SESSION_INFO = None
 
     def __init__(self, url, name, inbound_q, outbound_q):
         threading.Thread.__init__(self)
@@ -62,7 +66,7 @@ class ClientNetworking(threading.Thread):
     @sio.on('join')
     def on_connect(self, data):
         print('connection established')
-        print(data)
+        print(f"SIO JOIN: {data}")
         # sio.emit('message', {'message': 'Hello World!'})
         # self.sio.emit('join', data={'username': 'Bob', 'room': "SuperAwesomeRoom"})
         # self.emit('chat message', data={
@@ -116,6 +120,7 @@ class ClientNetworking(threading.Thread):
         print(r.json())
 
     def join_game(self):
+        print("Sending Join Request from ClientNetworking")
         data = {'name': self.name}
         r = requests.post(self.server_url + 'players', json=data)
 

@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # from . import create_server_logger
 from http import HTTPStatus
-from Networking import app
+from Networking import app, ServerConfig
 from Logs.Logging import create_server_logger
 
 
@@ -35,22 +35,14 @@ def create_user_session(username, **kwargs):
     pass
 
 
-@app.route('/delete-visits/')
-def delete_visits():
-    session.pop('visits', None)  # delete visits
-    return 'Visits deleted'
+
 
 @app.route('/games/join/')
 def join_game():
     # if ''
     pass
 
-@app.route('/foo/')
-def set_session():
-    # session['tmp'] = 'hey it is working'
-    # session.set('test',
-    logger.debug(f"Session item added")
-    # return f"session item added: {session}"
+
 
 # Access to the player database
 # Posts new players to the database, gets lists of all active players
@@ -76,9 +68,10 @@ class HandlePlayers(Resource):
         :return:
         '''
         values = request.json
-        if self.db_connection.add_table_value('players', values):
+        name = values["name"].split()
+        if not name[0] in ServerConfig.GLOBAL_USERNAMES:
             # Create Flask wide session for user
-            name = values["name"].split()
+            ServerConfig.GLOBAL_USERNAMES.add(name[0])
 
             logger.debug(f"Name: {name}")
             # if not name[0] in session:
@@ -89,7 +82,7 @@ class HandlePlayers(Resource):
 
             logger.debug(f"Added {values} to table")
             # logger.debug(f"Created session for {name}: {session['name']}")
-            return f"Added {values} to table 'players'", HTTPStatus.OK
+            return f"Added {values} to table 'players'. Players: {ServerConfig.GLOBAL_USERNAMES}", HTTPStatus.OK
         logger.warning(f"Error! Could not add {values} to table!")
         return f'Error! Could not add {values} to table', HTTPStatus.BAD_REQUEST
 
@@ -117,14 +110,19 @@ class HandleJoinGame(Resource):
     def post(self):
         values = request.json
         logger.debug(f"Data recvd JSON: {values}")
-        # playername = values["playername"]
-        # logger.debug(f"SESSION INFO: {session.items()}")
-        # playername = session.get('name')
-        playername = "NULL SESSION"
-        logger.debug(f"Data recvd: {playername}")
-        mock_games["game1"]["players"].append(playername)#session["name"]) # Real joining of game in Database
-        logger.debug(f"Player joined game: {mock_games['game1']['players']}")
-        return f"you joined game1. Current players: {mock_games['game1']['players']}", HTTPStatus.OK
+        playername = values["playername"]
+
+        print(f"POST playername stuff: {playername}")
+        sess = ServerConfig.GAME_SESSION_MANAGER.get_game_sessions()["game_1"]
+        print(f"Adding to session: {sess}")
+
+        player_info = sess.add_player(playername)
+        # logger.debug(f"Player joined game: {mock_games['game1']['players']}")
+        # return f"you joined game1. Current players: {mock_games['game1']['players']}", HTTPStatus.OK
+        return {
+            "game_joined": "game_1",
+            "server_player_info": player_info
+        }
 
     def get(self):
         logger.debug("Get request for /games")
