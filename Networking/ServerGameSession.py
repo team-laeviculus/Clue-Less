@@ -5,6 +5,7 @@ import time
 import random
 import os
 import sys
+from flask_socketio import emit
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ClueGameBoard.GameBoard_DatabaseCoordinates import GameBoard
 from Logs.Logging import create_server_logger
@@ -233,6 +234,33 @@ class GameSession:
         return False
 
 
+    # TRANSMIT FUNCTIONS
+
+    def notify_all_players(self, event, data, game="game_1"):
+        """
+        Send a message to everyone in one game
+        :param event: name of event for callback
+        :param data: a dict, should be standard
+        :param game: game_id
+        :return: none
+        """
+        log.debug(f"Notifying all players in game {self.game_name} with event {event} and data {data}")
+        emit(event=event, data=data, namespace="/games", room=game, broadcast=True)
+
+    def notify_one_player(self, name, event, data, game="game_1"):
+        """
+        Send message to one player
+        :param name: player name
+        :param event: event name
+        :param data: dict, should be standard
+        :param game: game_id
+        :return:
+        """
+        data['name'] = name
+        emit(event=event, data=data, namespace="/games", room=game, broadcast=True)
+
+
+
 
     def turn_mechanics(self):
         while(True):
@@ -240,6 +268,7 @@ class GameSession:
             players_turn = self.get_next_turn()
             players_name = players_turn[0]
             # notify player of turn, get his movement
+            self.notify_one_player(players_name, data={})
             players_movement = 'Library' #change this to actual player's movement
             self.game_board.move_player(players_name, players_movement, True)
             #For now, assume move is valid( no error handling )

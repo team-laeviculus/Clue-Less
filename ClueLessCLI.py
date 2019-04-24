@@ -67,7 +67,11 @@ class ClueLess(object):
             if not self.outbound_q.empty():
                 msg = self.outbound_q.get()
                 print(f"Message in outbound q: {msg}")
-                if "namespace" in msg:
+                if "event" in msg and "namespace" in msg:
+                    print(f"Message event is: {msg['event']}. Namespace: {msg['namespace']}")
+                    ClueLess.CLUE_CLI_NET.emit_message(msg['event'], msg['data'], namespace=msg['namespace'])#, namespace=msg['namespace'])
+                    print(f"Message fired!")
+                elif "namespace" in msg:
                     print(f"Sending message [{msg['namespace']}]: {msg['data']}")
                     ClueLess.CLUE_CLI_NET.emit_message('message', msg["data"], namespace=msg["namespace"])
                 else:

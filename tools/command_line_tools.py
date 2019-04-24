@@ -79,6 +79,13 @@ class CommandShell(cmd.Cmd):
         ClientSession.CLIENT_SESSION_INFO = r.json()
         print(f"Server Response To Login: {r.text}")
         # TODO: Socket IO stuff
+        data_contents = {
+                "name": self.name,
+                "message": "Put me in the game",
+                "game_joined": ClientSession.CLIENT_SESSION_INFO['game_joined']
+        }
+        payload = self.create_message_for_server(event="new player joined", data=data_contents)
+        self.send_message(payload)
         self.wait_for_my_turn()
 
     def do_suggest(self, args):
@@ -127,6 +134,19 @@ class CommandShell(cmd.Cmd):
             print("Invalid send namespace message")
 
 
+    #### WEBSOCKET SERVER INTERACTION
+    def create_message_for_server(self, event, data, namespace = "/games"):
+        payload = {
+            "event": event,
+            "namespace": namespace,
+            "data": data
+            # "data": {
+            #     "name": self.name,
+            #     "message": "Put me in the game"
+            # }
+        }
+        return payload
+
 
 
     def send_message(self, data: dict):
@@ -144,8 +164,15 @@ class CommandShell(cmd.Cmd):
             if ClientSession.CLIENT_SESSION_INFO['server_player_info']['my_turn'] == True:
                 # TODO: Server never updates player when its not their turn (this can be done client side)
                 print("Its your turn")
+                # TODO: Some logic
                 break
             time.sleep(tick)
+        # Update local player telling them to wait for next turn
+        print("Done with my turn. Waiting Again...")
+        ClientSession.CLIENT_SESSION_INFO['server_player_info']['my_turn'] = False
+
+        # start loop again
+        self.wait_for_my_turn()
 
 
 

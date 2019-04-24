@@ -35,14 +35,20 @@ def on_namespace_msg(message):
 """
 Clueless Websocket Game Message handlers
 """
-@socketio.on('new_player_joined', namespace="games")
+@socketio.on('new player joined', namespace="/games")
 def on_new_player_joined(join_message):
     """
-    Broadcast to players that new player joined
+    Broadcast to players that new player joined only for people in that same game
     :param join_message: May be unused
     :return: None
     """
     logger.debug(f"New player joined message on namespace 'games'. Broadcasting - {join_message}")
+    # for k,v in join_message.items():
+    #     print(f"{k}: {v}")
+    # logger.debug(f"Player info: {request.sid}")
+    flask_socketio.join_room(room=join_message['game_joined'])
+    logger.debug(f"Joined room {join_message['game_joined']}")
+    flask_socketio.send("A new player has joined", room=join_message['game_joined'])
 
 
 
