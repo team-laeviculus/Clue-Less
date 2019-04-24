@@ -143,4 +143,6 @@ api.add_resource(HandleJoinGame, "/games")
 api.add_resource(HandleHTTPCodes, '/')
 
 if __name__ == "__main__":
+    # Create ServerSession
+    ServerConfig.create_server_config()
     socketio.run(app)

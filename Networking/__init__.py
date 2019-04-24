@@ -13,9 +13,18 @@ from Databases.db_mgmt import CluelessDB
 CLIENT_SESSION_INFO = None # Idk where to put this. Its for the client to store local info about what the server knows.
 
 class ServerConfig:
-    DB_CONTROLLER_CONN = CluelessDB()
-    GAME_SESSION_MANAGER = GameSessionManager(DB_CONTROLLER_CONN)
-    GLOBAL_USERNAMES = set()
+    # Should only have one instance created server Side
+    DB_CONTROLLER_CONN = None
+    GAME_SESSION_MANAGER = None
+    GLOBAL_USERNAMES = None
+    @staticmethod
+    def create_server_config():
+        if not (ServerConfig.DB_CONTROLLER_CONN and \
+                ServerConfig.GLOBAL_USERNAMES and \
+                ServerConfig.GAME_SESSION_MANAGER):
+            ServerConfig.DB_CONTROLLER_CONN = CluelessDB()
+            ServerConfig.GLOBAL_USERNAMES = set()
+            ServerConfig.GAME_SESSION_MANAGER = GameSessionManager(ServerConfig.DB_CONTROLLER_CONN)
 # Initialize flask app
 app = Flask(__name__)
 app.config["DEBUG"] = True

@@ -1,5 +1,6 @@
 venv/ 
 *.exe
+*.db
 *.pyc
 .idea/
 *.log
