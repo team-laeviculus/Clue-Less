@@ -750,6 +750,16 @@ class CluelessDB(object):
 
         c.close()
 
+
+
+    def update_active_turn(self, name):
+        c = self.conn.cursor()
+        c.execute("UPDATE players SET active_turn = '0' ")
+        c.execute("UPDATE players SET active_turn = '1' "
+                  "WHERE name = ?", (name,))
+        self.conn.commit()
+
+        c.close()
 # ------------------------------------------------------------------------------------------------------
 # functions utilizing database tables
 # #below lines used for test purposes only
