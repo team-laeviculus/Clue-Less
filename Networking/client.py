@@ -62,13 +62,7 @@ class ClientNetworking(threading.Thread):
         except Exception as e:
             print(f"An exception occurred: {e}")
 
-    # socket-io tags receiving data must be marked static methods
-
-    @sio.on('test')
-    def test(self):
-        print("Test")
-
-
+    # socket-io tags receiving data must be marked static method
 
     @sio.on('join')
     def on_connect(self, data):
@@ -87,17 +81,82 @@ class ClientNetworking(threading.Thread):
     @sio.on('message')
     def on_message(data):
         print('Message Received: ', data)
+        ClientNetworking.inbound_q.put(data)
 
         # await sio.emit('my response', {'response': 'my response'})
 
     @staticmethod
+    @sio.on('message', namespace='/games')
+    def on_games_msg(data):
+        """
+        Currently the callback everything is using
+        :param data:
+        :return:
+        """
+        print(f"[CALLBACK] messsage: New message received for games")
+        ClientNetworking.inbound_q.put(data)
+
+    @staticmethod
     @sio.on('server reply')
     def on_server_reply(data):
+        print(f"[CALLBACK: on_server_reply")
         ClientNetworking.inbound_q.put(data)
         # print(f"Queue empty? {ClientNetworking.inbound_q.empty()}")
         # print(f"Message Enqueued. Queue Size: {ClientNetworking.inbound_q.get()}")
         ClientNetworking.sio.emit('my response', {'response': 'my response'})
         # print(f"The Server Replied with: {data}")
+
+    @staticmethod
+    @sio.on('new player joined', namespace='/games')
+    def on_new_player_message(data):
+        print(f"[CALLBACK] NEW PLAYER JOINED message: {data}")
+        ClientNetworking.inbound_q.put(data)
+
+    @staticmethod
+    @sio.on('game start', namespace='/games')
+    def on_game_start(data):
+        '''
+        Data contains first players turn info. Client acts accordingly
+        :param data:
+        :return:
+        '''
+        print(f"[CALLBACK]: on_game_start: {data}")
+        ClientNetworking.inbound_q.put(data)
+
+    @staticmethod
+    @sio.on('next players turn', namespace='/games')
+    def on_next_players_turn(data):
+        """
+        Data contains player whose turn is up
+        :param data:
+        :return:
+        """
+        print(f"[CALLBACK]: on_next_players_turn: {data}")
+        ClientNetworking.inbound_q.put(data)
+
+    @staticmethod
+    @sio.on('choose game token', namespace='/games')
+    def on_choose_game_token(data):
+        """
+        Allow player to choose a game token. Should be on a one by one basis
+        :return:
+        """
+        print(f"[CALLBACK]: on_choose_game_token: {data}")
+        ClientNetworking.inbound_q.put(data)
+
+class ClientNetworkHelper:
+    """
+    Helper Class
+    """
+    @staticmethod
+    def create_message_for_server(event, data, namespace="/games"):
+        payload = {
+            "event": event,
+            "namespace": namespace,
+            "data": data
+        }
+        return payload
+
 
 
     # # @sio.on('join')
@@ -113,9 +172,9 @@ class ClientNetworking(threading.Thread):
     # def on_disconnect(self):
     #     print('disconnected from server')
     #
-    @sio.on('chat message')
-    def on_chat_message(self, data):
-        print(f"Chat Message: {data}")
+    # @sio.on('chat message')
+    # def on_chat_message(self, data):
+    #     print(f"Chat Message: {data}")
 
 
 

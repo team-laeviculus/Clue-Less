@@ -48,7 +48,19 @@ def on_new_player_joined(join_message):
     # logger.debug(f"Player info: {request.sid}")
     flask_socketio.join_room(room=join_message['game_joined'])
     logger.debug(f"Joined room {join_message['game_joined']}")
-    flask_socketio.send("A new player has joined", room=join_message['game_joined'])
+    print(f"JOIN MESSAGE DATA: {join_message}")
+    flask_socketio.send(f"A new player has joined: {join_message}", room=join_message['game_joined'], broadcast=True)
+    #emit(event='message', data=join_message, namespace="/games", broadcast=True)
+    emit(event='new player joined', data=join_message, namespace="/games", broadcast=True)
+
+@socketio.on('player finished turn', namespace='/games')
+def on_player_finished_turn(data):
+    """
+    Callback for when a player finishes their turn
+    :param data:
+    :return:
+    """
+    print(f"[CALLBACK]: player_finished_turn: {data}")
 
 
 
@@ -151,4 +163,5 @@ api.add_resource(HandleHTTPCodes, '/')
 if __name__ == "__main__":
     # Create ServerSession
     ServerConfig.create_server_config()
+
     socketio.run(app)

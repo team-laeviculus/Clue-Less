@@ -8,7 +8,7 @@ import cmd
 import requests
 import time
 import json
-from Networking.client import ClientSession
+from Networking.client import ClientSession, ClientNetworkHelper
 
 class CommandShell(cmd.Cmd):
     '''
@@ -84,7 +84,7 @@ class CommandShell(cmd.Cmd):
                 "message": "Put me in the game",
                 "game_joined": ClientSession.CLIENT_SESSION_INFO['game_joined']
         }
-        payload = self.create_message_for_server(event="new player joined", data=data_contents)
+        payload = ClientNetworkHelper.create_message_for_server(event="new player joined", data=data_contents)
         self.send_message(payload)
         self.wait_for_my_turn()
 
@@ -133,23 +133,17 @@ class CommandShell(cmd.Cmd):
         else:
             print("Invalid send namespace message")
 
+    def do_get_q(self, args):
+        if not self.inbound_q.empty():
+            while not self.inbound_q.empty():
+                print(f"QUEUE ITEMN: {self.inbound_q.get()}")
+
 
     #### WEBSOCKET SERVER INTERACTION
-    def create_message_for_server(self, event, data, namespace = "/games"):
-        payload = {
-            "event": event,
-            "namespace": namespace,
-            "data": data
-            # "data": {
-            #     "name": self.name,
-            #     "message": "Put me in the game"
-            # }
-        }
-        return payload
-
 
 
     def send_message(self, data: dict):
+        print("[send_message] adding item to outbound q")
         self.outbound_q.put(data)
 
     def wait_for_my_turn(self, tick=0.1):
@@ -161,7 +155,10 @@ class CommandShell(cmd.Cmd):
         """
         print(f"Waiting for my turn....")
         while True:
-            if ClientSession.CLIENT_SESSION_INFO['server_player_info']['my_turn'] == True:
+            if not self.inbound_q.empty():
+                data = self.inbound_q.get()
+                print(f"I Got a Message! {data}")
+            if ClientSession.CLIENT_SESSION_INFO['server_player_info']['my_turn'] is True:
                 # TODO: Server never updates player when its not their turn (this can be done client side)
                 print("Its your turn")
                 # TODO: Some logic
@@ -173,6 +170,15 @@ class CommandShell(cmd.Cmd):
 
         # start loop again
         self.wait_for_my_turn()
+
+
+    def handle_inbound_message(self, message):
+        """
+        Parse inbound messages that dont have a callback
+        :param message:
+        :return:
+        """
+
 
 
 

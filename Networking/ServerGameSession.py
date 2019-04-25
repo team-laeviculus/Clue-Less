@@ -6,7 +6,11 @@ import random
 import os
 import sys
 from flask_socketio import emit
+import flask_socketio
+
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from ClueGameBoard.GameBoard_DatabaseCoordinates import GameBoard
 from Logs.Logging import create_server_logger
 
@@ -58,6 +62,7 @@ class GameSession:
     MAX_PLAYERS = 6
     MIN_PLAYER_COUNT = 3 # Min number of players to start a game
     TIMEOUT_TIME = 2 # 30 seconds
+    SOCKETIO = None
 
     def __init__(self, game_name, db_controller):
         self.game_name = game_name
@@ -78,6 +83,9 @@ class GameSession:
 
         log.debug(f"Game Session Instance Created")
 
+    @staticmethod
+    def set_socketio_ctx(ctx):
+        GameSession.SOCKETIO = ctx
 
     def add_player(self, username):
         """
@@ -121,6 +129,7 @@ class GameSession:
                     log.info("Starting timeout timer for first time")
                     self.timeout_timer_thread.start()
                     self.game_state = GameState.TIMEOUT_STARTED
+
             return player_info
 
 
@@ -131,6 +140,7 @@ class GameSession:
         :return: Dict item
         """
         self.players[username] = {
+            "name": username,
             "turn" : self.player_count,
             "my_turn" : False,
             "is_active" : True, # hasnt lost
@@ -213,9 +223,26 @@ class GameSession:
         finally:
             self.db_mutex.release()
 
+
         #TODO: Ask each player what token they want by order they joined
+        for p in self.players:
+            print(f"Asking Player {p} for token choice")
+            self.__ask_player_for_token(p)
         #TODO: Store choice in DB
         #TODO: Once each player has a token,
+
+    def __ask_player_for_token(self, playername):
+        """
+        Ask player for token choice in order
+        :return: None
+        """
+        log.debug(f"asking player for token: {playername}")
+        avail = self.get_available_tokens()
+        data = {
+            "player": self.players[playername],
+            "available": avail
+        }
+        # .emit(event='choose game token', data=data, namespace='/games', broadcast=True)
 
     def get_next_turn(self):
         """
@@ -223,13 +250,16 @@ class GameSession:
 
         :return: the self.player[<playername>] object of player whose turn it is
         """
+        print("get_next_turn")
         if self.game_state == GameState.READY or self.game_state == GameState.ACTIVE:
-            #TODO:Bug, everyone gets set as my_turn being true. so dont use it
             this_players_turn = list(self.players.items())[self.player_turn]
             this_players_turn[1]["my_turn"] = True
             log.info(f"New Player Turn: {this_players_turn}")
             self.player_turn = (self.player_turn + 1) % self.player_count
+            # TODO: Notify player its their turn
+
             return this_players_turn
+
         log.info("Game state is not ready to return a players turn")
         return False
 
@@ -262,13 +292,14 @@ class GameSession:
 
 
 
+
     def turn_mechanics(self):
         while(True):
             log.info("Getting next turn")
             players_turn = self.get_next_turn()
             players_name = players_turn[0]
             # notify player of turn, get his movement
-            self.notify_one_player(players_name, data={})
+            self.notify_one_player(players_name, data=players_turn)
             players_movement = 'Library' #change this to actual player's movement
             self.game_board.move_player(players_name, players_movement, True)
             #For now, assume move is valid( no error handling )

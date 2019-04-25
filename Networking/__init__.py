@@ -5,7 +5,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Logs import Logging
-from Networking.ServerGameSession import GameSessionManager
+from Networking.ServerGameSession import GameSessionManager, GameSession
 # from Networking.RESTResources import HandlePlayerModification
 # from Databases.DBController import DBController
 from Databases.db_mgmt import CluelessDB
@@ -35,4 +35,5 @@ app.config.from_object(__name__)
 
 
 socketio = SocketIO(app, manage_session=False)
+GameSession.set_socketio_ctx(socketio)
 # session["test_stupid_object"] = "hello world please store"
