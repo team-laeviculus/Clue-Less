@@ -289,8 +289,13 @@ class GameSession:
         data['name'] = name
         emit(event=event, data=data, namespace="/games", room=game, broadcast=True)
 
-
-
+    def print_game_state(self):
+        game_state = self.db_controller.get_game_state()
+        for player_info in game_state:
+            name = str(player_info[1])
+            active_turn = str(player_info[4])
+            location = str(player_info[6])
+            print("Player name: " + name + " active turn: " + active_turn + " location: " + location)
 
 
     def turn_mechanics(self):
@@ -299,7 +304,7 @@ class GameSession:
             players_turn = self.get_next_turn()
             players_name = players_turn[0]
             # notify player of turn, get his movement
-            self.notify_one_player(players_name, data=players_turn)
+
             players_movement = 'Library' #change this to actual player's movement
             self.game_board.move_player(players_name, players_movement, True)
             #For now, assume move is valid( no error handling )
@@ -308,9 +313,10 @@ class GameSession:
             # From player, get g_id, player_num, player_cnt, suggest_suspect, suggest_weapon, suggest_room
             # use hard-coded values for now
             player_cnt = self.players[players_name].get('turn')
-            print("printing player_cnt")
-            print(player_cnt)
             self.db_controller.make_suggestion(1, self.player_count, player_cnt, "Miss Scarlet", "Lead Pipe", "Study")
+            print("Printing Game State")
+            self.print_game_state()
+            time.sleep(2)
 
 class GameSessionManager:
     """
