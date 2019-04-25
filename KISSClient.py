@@ -70,15 +70,17 @@ class CommandShell(cmd.Cmd):
         while True:
             data = Player.local_info
             data['request'] = 'get_next_turn'
-            r = requests.get(ServerInfo.address, data)
+            r = requests.get(ServerInfo.address, json=data)
             print(f"response: {r}")
             r_data = r.json()
             print(r.text)
             # if "game_stae"
             # print(f"game state: {}")
 
-            if 'turn' in r_data and r_data['turn'] == Player.local_info['token']:
+            # if 'turn' in r_data and r_data['turn'] == Player.local_info['token']:
+            if 'turn' in r_data and r_data['turn']['name'] == Player.local_info['name']:
                 print("Its my turn!!")
+                break
                 # input()
                 # request.put
                 # parse response
