@@ -255,6 +255,7 @@ class GameSession:
             this_players_turn = list(self.players.items())[self.player_turn]
             this_players_turn[1]["my_turn"] = True
             log.info(f"New Player Turn: {this_players_turn}")
+            self.db_controller.update_active_turn(this_players_turn[0])
             self.player_turn = (self.player_turn + 1) % self.player_count
             # TODO: Notify player its their turn
 
@@ -293,7 +294,7 @@ class GameSession:
         game_state = self.db_controller.get_game_state()
         for player_info in game_state:
             name = str(player_info[1])
-            active_turn = str(player_info[4])
+            active_turn = str(player_info[5])
             location = str(player_info[6])
             print("Player name: " + name + " active turn: " + active_turn + " location: " + location)
 
