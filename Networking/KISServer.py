@@ -207,6 +207,15 @@ def on_get_turn_request_info():
         return jsonify({"turn": GameInfo.players_turn_name[1]})
 
 
+@app.route("/games/turn", methods=["POST"])
+def on_post_turn_info():
+    req = request.get_json()
+    print(f"[POST][Turn]: {req}")
+    return jsonify(get_next_turn())
+
+    # if
+
+
 
 
 @app.route("/games/players", methods=["GET", "POST", "DELETE"])

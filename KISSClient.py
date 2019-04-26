@@ -56,7 +56,7 @@ class LocalGameInfo:
         'Billard Room',
     ]
 
-    ROOM_MAP = OrderedDict({k: v for k,v in enumerate(ROOMS)})
+    ROOM_MAP = OrderedDict({k: v for k ,v in enumerate(ROOMS)})
 
 
     def __init__(self):
@@ -85,6 +85,7 @@ class CommandShell(cmd.Cmd):
         # print(f"Server Response: {r.json()}")
         print(f"Server Response To Login: {r.text}")
         # TODO: Socket IO stuff
+        # self.ask_player_for_move()
         self.wait_for_my_turn()
 
     def do_j(self, args):
@@ -146,12 +147,14 @@ class CommandShell(cmd.Cmd):
         for k,v in LocalGameInfo.ROOM_MAP.items():
             print(f"{k}: {v}")
         room = input("make a choice: ")
-        print(f"You CHose: {room}")
+        print(f"You Chose: {room}")
         parsed_r = int(room)#shlex.split(room)
         print(f"PArsed: {parsed_r}")
+
         if room and int(room) in LocalGameInfo.ROOM_MAP:
+            print(f"You Chose: {LocalGameInfo.ROOM_MAP[parsed_r]}")
             return {
-                "move_to_location": LocalGameInfo[(room[0])]
+                "move_to_location": LocalGameInfo.ROOM_MAP[parsed_r]
             }
         return None
 
@@ -166,15 +169,15 @@ class CommandShell(cmd.Cmd):
     def ask_player_for_move(self):
         put_request = None
         moves = OrderedDict({
-            1: ("Move To a Location", self.move_to_loc),
-            2: ("Make a Suggestion", self.make_suggestion),
-            3: ("Make an Accusation", self.make_accuse)
+            1: "Move To a Location",
+            2: "Make a Suggestion",
+            3: "Make an Accusation"
         })
 
 
         print("Choose A Move To Make")
         for k,v in moves.items():
-            print(f"{k}: {v[0]}")
+            print(f"{k}: {v}")
 
         response = input("Choose A Move To Make> ")
         print(f"REsponse: {response}")
@@ -186,10 +189,25 @@ class CommandShell(cmd.Cmd):
                 num_r = int(parsed_r[0])
                 print(f"Num: {num_r}")
                 if num_r in moves:
-                    put_request = moves[num_r][1](parsed_r)
+                    if num_r == 1:
+                        move_choice = self.move_to_loc(num_r)
+                        req = dict(Player.local_info)
+                        req['request'] = move_choice
+                        r = requests.post(ServerInfo.address + "/turn", json=req)
+
+                        if not (r.status_code == HTTPStatus.OK):
+                            self.move_to_loc(num_r)
+                        else:
+                            self.wait_for_my_turn()
+
+                    elif num_r == 2:
+                        self.make_suggestion()
+                    else:
+                        self.make_accuse()
+
             except:
                 print(f"Error! Invalid response {parsed_r}")
-                self.ask_player_for_move()
+                #self.ask_player_for_move()
                 traceback.print_exc()
         req = dict(Player.local_info)
         req['request'] = put_request
@@ -202,4 +220,5 @@ class CommandShell(cmd.Cmd):
 
 
 c = CommandShell()
+# c.ask_player_for_move()
 c.cmdloop()
