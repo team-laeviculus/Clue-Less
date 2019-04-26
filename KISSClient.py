@@ -8,6 +8,7 @@ import sys
 import shlex
 import time
 import traceback
+
 from collections import OrderedDict
 from http import HTTPStatus
 class Player:
@@ -67,14 +68,19 @@ class CommandShell(cmd.Cmd):
     intro = "Welcome to ClueLess by Team Laeviculus. Type help or ? for a list of commands\n"
     prompt = "Enter a command> "
 
-
+    def do_get_players(self, args):
+        r = requests.get(ServerInfo.address + "/players", data={})
+        if not (r.status_code == HTTPStatus.OK):
+            print(f"Error! {r.status_code}")
+        else:
+            print(f"[{r.status_code}]: Players in Game: {r.text}")
 
     def do_join(self, args):
         '''join - Join a game'''
         name = input("enter a username: ").split()[0]
         Player.local_info['name'] = name
 
-        r = requests.post('http://127.0.0.1:5000' + '/games', json=Player.local_info)
+        r = requests.post(ServerInfo.address + '/players', json=Player.local_info)
         # r = requests.post(self.address + '/players', json={"name": self.name})
         # print(f"Server Response: {r.json()}")
         print(f"Server Response To Login: {r.text}")
@@ -109,9 +115,10 @@ class CommandShell(cmd.Cmd):
         while True:
             data = Player.local_info
             data['request'] = 'get_next_turn'
-            r = requests.get(ServerInfo.address, json=data)
-            if r.status_code == 500:
-                print(f"ERROR WITH REQUEST")
+            # r = requests.get(ServerInfo.address, json=data)
+            r = requests.get(ServerInfo.address + "/turn")
+            if not (r.status_code == HTTPStatus.OK):
+                print(f"ERROR WITH REQUEST: {r.status_code}")
             print(f"response: {r}")
             r_data = r.json()
             print(r.text)
@@ -119,7 +126,8 @@ class CommandShell(cmd.Cmd):
             # print(f"game state: {}")
 
             # if 'turn' in r_data and r_data['turn'] == Player.local_info['token']:
-            if 'turn' in r_data and r_data['turn']['name'] == Player.local_info['name']:
+            # if 'turn' in r_data and r_data['turn']['name'] == Player.local_info['name']:
+            if r_data and r_data['turn']['name'] == Player.local_info['name']:
                 print("Its my turn!!")
                 self.ask_player_for_move()
                 # Get Game Board:

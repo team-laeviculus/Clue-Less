@@ -185,6 +185,48 @@ def get_game_info():
             #return jsonify("Game is ready to Start!!!!!")
         return jsonify(GameInfo.game)
 
+@app.route("/games/game_state", methods=["GET"])
+def on_get_game_state():
+    return jsonify("NULL")
+
+@app.route("/games/turn", methods=["GET"])
+def on_get_turn_request_info():
+    print(f"[GET][Turn]: {request.get_json()}")
+    if GameState.CURRENT_STATE == GameState.WAITING_FOR_PLAYERS:
+        print(f"Waiting for players....")
+        return jsonify({
+            "turn":{
+                "name": "None",
+                "status": "Waiting for players"
+            }
+        })
+    elif GameState.CURRENT_STATE == GameState.GAME_RUNNING:
+        print("Game Running")
+        if GameInfo.players_turn_name is None:
+            get_next_turn()
+        return jsonify({"turn": GameInfo.players_turn_name[1]})
+
+
+
+
+@app.route("/games/players", methods=["GET", "POST", "DELETE"])
+def on_players_request_method():
+
+    # req_data = req.get_json()
+    print(f"on_players_request: {request.get_json()}")
+    if request.method == "GET":
+        # Returns the Players
+        print(f"Getting players")
+        return jsonify(GameInfo.game['players'])
+
+    if request.method == "POST":
+        # Adds a new player
+        content = request.get_json()
+        player = content['name']
+        print(f"Player joined: {player}")
+        res = handle_player_join(content)
+        return jsonify(res)
+
 
 
 def handle_player_join(rquest_data):
@@ -209,7 +251,7 @@ def handle_player_join(rquest_data):
     response_msg = {
                 "game_state": GameState.WAITING_FOR_PLAYERS,
                 "token": p['token'],
-                "location": p['location']
+                "location": p['location'],
             }
     return response_msg
 
@@ -222,13 +264,26 @@ def handle_game_running_request(request_data):
         print("players turn is none")
         GameInfo.players_turn_name = list(GameInfo.game['players'].items())[0]
         print(f"There was no player set for first turn. Now it is: {GameInfo.players_turn_name}")
-    if GameInfo.players_turn_name == player:
-        turn_info = request_data['request']
-        # TODO: Update Game Board
-        print(f"Turn Info: {turn_info}")
 
-        return {"turn": GameInfo.players_turn_name[1]}
     print(f"player whose turn it is: {GameInfo.players_turn_name}")
+    return {"turn": GameInfo.players_turn_name[1]}
+
+
+def get_turn(request_data):
+    print(f"[GET][Turn]: {request_data}")
+    player = request_data['name']
+
+    player_token = request_data['token']
+
+    if GameInfo.players_turn_name is None:
+        print("players turn is none")
+        GameInfo.players_turn_name = list(GameInfo.game['players'].items())[0]
+        print(f"There was no player set for first turn. Now it is: {GameInfo.players_turn_name}")
+    # if GameInfo.players_turn_name == player:
+    #     turn_info = request_data['request']
+    #     # TODO: Update Game Board
+    #     print(f"Turn Info: {turn_info}")
+
     return {"turn": GameInfo.players_turn_name[1]}
 
 def get_next_turn():
@@ -241,6 +296,10 @@ def get_next_turn():
 
     print("get_next_turn")
     if GameState.CURRENT_STATE == GameState.GAME_RUNNING:
+        if GameInfo.players_turn_name is None:
+            print("players turn is none")
+            GameInfo.players_turn_name = list(GameInfo.game['players'].items())[0]
+            print(f"There was no player set for first turn. Now it is: {GameInfo.players_turn_name}")
         this_players_turn = list(GameInfo.game['players'].items())[GameInfo.current_players_turn]
         try:
             # this_players_turn[1]["my_turn"] = True
@@ -258,6 +317,14 @@ def get_next_turn():
             ClueLessCommon.CLUELESS_MUTEX.release()
 
         return this_players_turn
+    elif GameState.CURRENT_STATE == GameState.WAITING_FOR_PLAYERS:
+        print("Waiting for players")
+        return {
+            "turn": "None",
+            "status": "Waiting for players"
+        }
+    else:
+        print(f"ERROR: Undefined state")
     # log.info("Game state is not ready to return a players turn")
     return False
 
