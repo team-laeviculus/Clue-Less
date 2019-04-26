@@ -491,10 +491,13 @@ class CluelessDB(object):
         c = self.conn.cursor()
         c.execute("SELECT name As CNT FROM cards WHERE assign_to = ? "
                   "and category = ? and name = ? and game_id = ?", (player_no, type_chk, val, g_id,))
-        if c.fetchone() is None:
+        v = c.fetchone()
+        print(str(v) + ':' + str(player_no) + ':' + type_chk + ':' + val + ':' + str(g_id))
+        # print("Player " + str(player_no) + " disproved the suggestion with: " + str(v))
+        if v is None:
             return None
         else:
-            return c.fetchone()
+            return v[0]
         c.close()
 
     def update_suspects(self, g_id, cnum):
@@ -628,7 +631,10 @@ class CluelessDB(object):
 
         ret_str = ''
 
-        for v in range(0, player_cnt):
+        bRun = True
+
+        for v in range(1, player_cnt + 1):
+            print(str(v) + ' of ' + str(player_cnt))
             if v != active_player:
                 for x in range(0, len(list_elements)):
                     if list_elements[x] == 'S':
@@ -640,8 +646,10 @@ class CluelessDB(object):
                     if result is not None:
                         suggest_match = 0
                         ret_str = "Player " + str(v) + " disproved the suggestion with: " + str(result)
+                        bRun = False
                         break
-                break
+                if bRun is False:
+                    break
 
         if suggest_match == 0:
             self.suggest_log_add(g_id, suggest_suspect + ', ' + suggest_weapon + ', ' + suggest_room, active_player, dt, 0)
@@ -912,5 +920,3 @@ if __name__ == '__main__':
     db.update_player_location('Paul', 'Study')
     print(db.get_player_by_location('Study'))
     print('test okay')
-
-
