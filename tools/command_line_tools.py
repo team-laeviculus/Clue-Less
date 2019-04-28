@@ -10,6 +10,8 @@ import time
 import json
 from Networking.client import ClientSession, ClientNetworkHelper
 
+
+# noinspection PyUnusedLocal
 class CommandShell(cmd.Cmd):
     '''
     @class CommandShell: The command line ClueLess Game.

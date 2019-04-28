@@ -11,7 +11,7 @@ import flask_socketio
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ClueGameBoard.GameBoard_DatabaseCoordinates import GameBoard
+from ClueGameBoard.LocalGameBoard import GameBoard
 from Logs.Logging import create_server_logger
 
 
@@ -300,7 +300,7 @@ class GameSession:
 
 
     def turn_mechanics(self):
-        while(True):
+        while True:
             log.info("Getting next turn")
             players_turn = self.get_next_turn()
             players_name = players_turn[0]

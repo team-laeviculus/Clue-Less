@@ -28,6 +28,7 @@ class CluelessDB(object):
             self.conn = sqlite3.connect('file::memory:?cache=shared', uri=True)
         except Error as e:
             print(e)
+            traceback.print_exc()
 
     def create_all_tables(self):
         self.create_games_table()
@@ -494,11 +495,13 @@ class CluelessDB(object):
         v = c.fetchone()
         print(str(v) + ':' + str(player_no) + ':' + type_chk + ':' + val + ':' + str(g_id))
         # print("Player " + str(player_no) + " disproved the suggestion with: " + str(v))
+        ret_val = None
         if v is None:
-            return None
+            ret_val = None
         else:
-            return v[0]
+            ret_val = v[0]
         c.close()
+        return ret_val
 
     def update_suspects(self, g_id, cnum):
         c = self.conn.cursor()
@@ -567,7 +570,7 @@ class CluelessDB(object):
 
     def shuffle_deal_cards(self, g_id, player_cnt, s_s, s_w, s_r):
         # shuffle the deck 3 times
-        list_cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+        list_cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
         random.shuffle(list_cards)
         print("List:  ", list_cards)
 
@@ -618,7 +621,7 @@ class CluelessDB(object):
         self.update_player_location(suggest_suspect, suggest_room)
         active_player = player_num
         suggest_match = 1    # assume it is a match; attempt to disprove
-        list_elements = ['S', 'W', 'R'];
+        list_elements = ['S', 'W', 'R']
 
         # shuffle element list twice
         random.shuffle(list_elements)

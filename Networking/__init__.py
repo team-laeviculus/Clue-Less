@@ -19,8 +19,8 @@ class ServerConfig:
     GLOBAL_USERNAMES = None
     @staticmethod
     def create_server_config():
-        if not (ServerConfig.DB_CONTROLLER_CONN and \
-                ServerConfig.GLOBAL_USERNAMES and \
+        if not (ServerConfig.DB_CONTROLLER_CONN and
+                ServerConfig.GLOBAL_USERNAMES and
                 ServerConfig.GAME_SESSION_MANAGER):
             ServerConfig.DB_CONTROLLER_CONN = CluelessDB()
             ServerConfig.GLOBAL_USERNAMES = set()

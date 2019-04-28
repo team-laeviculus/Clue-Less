@@ -11,14 +11,18 @@ import traceback
 
 from collections import OrderedDict
 from http import HTTPStatus
+
+
 class Player:
     local_info = {
         "name": None,
         "token": None,
         "game name": None,
         "in_game": False,
+        "location": None,
         "request": None
     }
+
 
 class ServerInfo:
     game_info = {
@@ -40,9 +44,10 @@ class LocalGameInfo:
                 "lounge_dining room",
                 "library_conservatory",
                 "billard room_ballroom",
-                "dining room_kitchen",
-    ]
-    HALLWAYS_MAP = OrderedDict({k: v for k,v in enumerate(HALLWAYS)})
+                "dining room_kitchen"
+                ]
+
+    HALLWAYS_MAP = OrderedDict({k: v for k, v in enumerate(HALLWAYS)})
 
     ROOMS = [
         'Kitchen',
@@ -56,14 +61,14 @@ class LocalGameInfo:
         'Billard Room',
     ]
 
-    ROOM_MAP = OrderedDict({k: v for k ,v in enumerate(ROOMS)})
-
+    ROOM_MAP = OrderedDict({k: v for k, v in enumerate(ROOMS)})
 
     def __init__(self):
         pass
 
 
 class CommandShell(cmd.Cmd):
+    # TODO: Decouple Shell functionality into its own class
 
     intro = "Welcome to ClueLess by Team Laeviculus. Type help or ? for a list of commands\n"
     prompt = "Enter a command> "
@@ -84,6 +89,10 @@ class CommandShell(cmd.Cmd):
         # r = requests.post(self.address + '/players', json={"name": self.name})
         # print(f"Server Response: {r.json()}")
         print(f"Server Response To Login: {r.text}")
+        if r.status_code == HTTPStatus.OK:
+            data = r.json()
+            Player.local_info['location'] = data['location']
+            Player.local_info['token'] = data['token']
         # TODO: Socket IO stuff
         # self.ask_player_for_move()
         self.wait_for_my_turn()
@@ -93,7 +102,7 @@ class CommandShell(cmd.Cmd):
 
     def do_suggest(self, args):
         '''sugest - Suggest player name'''
-        for k,v in self.players.items():
+        for k, v in self.players.items():
             print(f"{k}: {v}")
         name = input("enter player num")
         print(f"You suggested: {self.players[int(name)]}")
@@ -103,7 +112,6 @@ class CommandShell(cmd.Cmd):
         # Notify server
 
         sys.exit(0)
-
 
     def wait_for_my_turn(self, tick=0.4):
         """
@@ -137,18 +145,17 @@ class CommandShell(cmd.Cmd):
                 # parse response
             time.sleep(tick)
 
-
     ###################
     ## stupid parser
     ###################
     def move_to_loc(self, args=None):
         print(f"move {args}")
         # Do some client side validation
-        for k,v in LocalGameInfo.ROOM_MAP.items():
+        for k, v in LocalGameInfo.ROOM_MAP.items():
             print(f"{k}: {v}")
         room = input("make a choice: ")
         print(f"You Chose: {room}")
-        parsed_r = int(room)#shlex.split(room)
+        parsed_r = int(room)  # shlex.split(room)
         print(f"PArsed: {parsed_r}")
 
         if room and int(room) in LocalGameInfo.ROOM_MAP:
@@ -174,9 +181,8 @@ class CommandShell(cmd.Cmd):
             3: "Make an Accusation"
         })
 
-
         print("Choose A Move To Make")
-        for k,v in moves.items():
+        for k, v in moves.items():
             print(f"{k}: {v}")
 
         response = input("Choose A Move To Make> ")
@@ -194,10 +200,11 @@ class CommandShell(cmd.Cmd):
                         req = dict(Player.local_info)
                         req['request'] = move_choice
                         r = requests.post(ServerInfo.address + "/turn", json=req)
-
+                        print(f"Server Reply: {r.text}")
                         if not (r.status_code == HTTPStatus.OK):
                             self.move_to_loc(num_r)
                         else:
+                            Player.local_info = move_choice
                             self.wait_for_my_turn()
 
                     elif num_r == 2:
@@ -207,16 +214,12 @@ class CommandShell(cmd.Cmd):
 
             except:
                 print(f"Error! Invalid response {parsed_r}")
-                #self.ask_player_for_move()
+                # self.ask_player_for_move()
                 traceback.print_exc()
         req = dict(Player.local_info)
         req['request'] = put_request
         r = requests.put('http://127.0.0.1:5000' + '/games', json=req)
         print(f'server reply: {r.text}')
-
-
-
-
 
 
 c = CommandShell()
