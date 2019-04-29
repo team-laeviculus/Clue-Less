@@ -570,7 +570,7 @@ class CluelessDB(object):
 
     def shuffle_deal_cards(self, g_id, player_cnt, s_s, s_w, s_r):
         # shuffle the deck 3 times
-        list_cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+        list_cards = [i for i in range(1,22)]
         random.shuffle(list_cards)
         print("List:  ", list_cards)
 

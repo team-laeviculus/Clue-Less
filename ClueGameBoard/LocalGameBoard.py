@@ -2,24 +2,33 @@
 from Databases.db_mgmt import CluelessDB
 # Current GUI is set to Width = 600 and Height = 600. 75,75 is currently static middle position of top left room. All other rooms are 225 in either direction.
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
-class Room:
 
-    def __init__(self, room_name, room_position_x, room_position_y):
-        self.name = room_name
-        self.positionX = room_position_x
-        self.positionY = room_position_y
+
+class BoardLocation:
+
+    def __init__(self, name, position_x, position_y):
+        self.name = name
+        self.positionX = position_x
+        self.positionY = position_y
+
+
+class Room(BoardLocation):
+
+    def __init__(self, name, x, y):
+        self.room_type = "Room"
+        BoardLocation.__init__(self, name, x, y)
 
 # Current GUI is set to Width = 600 and Height = 600. 187.5,75 is currently static middle position of hallway from top left room to top middle room. All other rooms are 225 in either direction.
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
 #Hallways are 75 in pixels in length. (75/2) + length of room (150)...
 
-class Hall:
 
+class Hall(BoardLocation):
 
-    def __init__(self, hall_name, hall_position_x, hall_position_y):
-        self.name = hall_name
-        self.positionX = hall_position_x
-        self.positionY = hall_position_y
+    def __init__(self, name, x, y):
+        self.room_type = "Hall"
+        BoardLocation.__init__(self, name, x, y)
+
 
 class Player:
 
@@ -27,13 +36,27 @@ class Player:
         self.name = player_name
         self.positionX = player_position_x
         self.positionY = player_position_y
+        # TODO: Update stuff to take Board Location object for location info
+        self.board_location = None
 
-    def set_player_position(self,player_position_x, player_position_y):
+    def set_board_location(self, board_location: BoardLocation):
+        """
+
+        :param board_location:
+        :return:
+        """
+        self.board_location = board_location
+        self.set_player_position(board_location.positionX, board_location.positionY)
+
+    def set_player_position(self, player_position_x, player_position_y):
         self.positionX = player_position_x
         self.positionY = player_position_y
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
+
+    def get_board_location(self) -> BoardLocation:
+        return self.board_location
 
     def __str__(self):
         return (f'Name: {self.name}'
@@ -76,7 +99,6 @@ class GameBoard:
     br_b = Hall("billard room_ballroom", 4, 3)
     dr_k = Hall("dining room_kitchen", 4, 5)
 
-
     def __init__(self, db_controller):
         self.name = "Clue-Less GameBoard"
         self.rooms = []
@@ -84,10 +106,10 @@ class GameBoard:
         self.winner = None
         self.db_conn = db_controller
 
-    def add_room(self,room):
+    def add_room(self, room):
         self.rooms.append(room)
 
-    def add_hall(self,hall):
+    def add_hall(self, hall):
         self.hallways.append(hall)
 
     def set_game_winner(self, player):
@@ -132,7 +154,6 @@ class GameBoard:
                     connected.append(rooms.name)
 
         return connected
-
 
     def check_if_legal_move(self, current_location, dest_location):
 
@@ -232,4 +253,6 @@ if __name__ == '__main__':
     print(room_obj.positionY)
 
     print(game_board.get_connected_rooms("conservatory_ballroom"))
+
+    print(game_board.check_if_legal_move("Kitchen", "Study"))
 
