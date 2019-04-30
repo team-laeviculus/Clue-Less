@@ -11,7 +11,7 @@ from http import HTTPStatus
 import traceback
 from Databases.db_mgmt import CluelessDB
 from ClueGameBoard.LocalGameBoard import GameBoard
-
+import json
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
@@ -285,10 +285,19 @@ def on_players_request_method():
     if request.method == "POST":
         # Adds a new player
         content = request.get_json()
-        player = content['name']
-        print(f"Player joined: {player}")
-        res, status = handle_player_join(content)
-        return jsonify(res), status
+        if not content:
+            # Used for Unit Testing, because for some reason get_json doesnt work out of the box
+            try:
+                content = json.loads(request.data)
+            except:
+                pass
+        if content and 'name' in content:
+            player = content['name']
+            print(f"Player joined: {player}")
+            res, status = handle_player_join(content)
+            return jsonify(res), status
+
+        return "Error! Invalid Player Message.", HTTPStatus.BAD_REQUEST
 
 
 
@@ -415,7 +424,10 @@ def get_next_turn():
 """
 Initialize server constants
 """
+def start_server():
+    print("Starting Server......")
+    ClueLessCommon.initialize()
+    app.run()
 
-
-ClueLessCommon.initialize()
-app.run()
+if __name__ == "__main__":
+    start_server()

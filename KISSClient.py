@@ -84,7 +84,7 @@ class CommandShell(cmd.Cmd):
         '''join - Join a game'''
         name = input("enter a username: ").split()[0]
         Player.local_info['name'] = name
-
+        "post to addr:5000/games/players"
         r = requests.post(ServerInfo.address + '/players', json=Player.local_info)
         # r = requests.post(self.address + '/players', json={"name": self.name})
         # print(f"Server Response: {r.json()}")
@@ -216,6 +216,7 @@ class CommandShell(cmd.Cmd):
                 print(f"Error! Invalid response {parsed_r}")
                 # self.ask_player_for_move()
                 traceback.print_exc()
+        # TODO: I forget when the code below gets used
         req = dict(Player.local_info)
         req['request'] = put_request
         r = requests.put('http://127.0.0.1:5000' + '/games', json=req)
