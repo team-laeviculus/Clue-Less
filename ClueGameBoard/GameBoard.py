@@ -67,7 +67,7 @@ class GameBoard:
 # Width and Height need to be class attribute passed into this class for 225 to be variable...
     def get_connected_rooms(self, room):
         connected = []
-        current = self.rooms
+        current = self.rooms + self.hallways
         current.remove(room)
         for rooms in current:
             if room.positionX == rooms.positionX:
