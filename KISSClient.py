@@ -23,6 +23,12 @@ class Player:
         "request": None
     }
 
+notebook = {
+    "suggestions": None,
+    "rooms": None,
+    "weapons": None
+}
+
 
 class ServerInfo:
     game_info = {

@@ -158,6 +158,7 @@ class GameBoard:
     def check_if_legal_move(self, current_location, dest_location):
 
         #if moving to a connected room
+        print(self.get_connected_rooms(current_location))
         if dest_location in self.get_connected_rooms(current_location):
 
             #if moving to a hall, check if it's empty

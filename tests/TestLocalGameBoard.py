@@ -138,13 +138,13 @@ class BasicLocalGameboardTest(unittest.TestCase):
         # print("Dumping Player Table")
         # self.printPlayersTable()
         # Move player
-        self.game_board.move_player(john.name, "Kitchen")
+        self.game_board.move_player(john.board_location, "study_hall")
         print("Moving Player...")
         db_location = self.db_conn.get_player_location(john.name)
         print(f"DB Location: {db_location}")
         self.assertEqual(
             db_location,
-            "ballroom_kitchen"
+            "study_hall"
         )
 
 

@@ -15,7 +15,9 @@ import json
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
+
 class GameState:
+
     WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS",
     GAME_RUNNING = "GAME_RUNNING",
     GAME_VER = "GAME_OVER"
@@ -173,6 +175,11 @@ class ClueLessCommon:
     ROOM_MAP = OrderedDict({k: v for k, v in enumerate(ROOMS)})
 
 
+@app.route("/games/<game_number>", methods=["GET"])
+def get_game_n_info(game_number):
+    # TODO: This is temporary
+    return f"<h1>This is a test. You posted: {game_number}</h1>", HTTPStatus.OK
+
 
 @app.route("/games", methods=["GET", "POST", "PUT"])
 def get_game_info():
@@ -208,8 +215,8 @@ def get_game_info():
         return jsonify(GameInfo.game)
 
 
-@app.route("/games/game_state", methods=["GET"])
-def on_get_game_state():
+@app.route("/games/<game_id>/game_state", methods=["GET"])
+def on_get_game_state(game_id):
     return jsonify("NULL")
 
 
