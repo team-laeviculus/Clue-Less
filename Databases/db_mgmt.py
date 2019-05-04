@@ -738,8 +738,10 @@ class CluelessDB(object):
     def get_player_location(self, name):
         cur = self.conn.cursor()
         cur.execute("SELECT location FROM players WHERE name=?", (name,))
-        location = cur.fetchall()
-        return location
+        location = cur.fetchone()
+        if location:
+            return location[0] # A tuple is always returned, we just want the name
+        return None
 
     # Get all values in the specified table
     def get_table_values(self, table_name):

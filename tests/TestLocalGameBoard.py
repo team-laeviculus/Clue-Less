@@ -138,7 +138,7 @@ class BasicLocalGameboardTest(unittest.TestCase):
         # print("Dumping Player Table")
         # self.printPlayersTable()
         # Move player
-        self.game_board.move_player(john.board_location, "study_hall")
+        self.game_board.move_player(john, "study_hall")
         print("Moving Player...")
         db_location = self.db_conn.get_player_location(john.name)
         print(f"DB Location: {db_location}")

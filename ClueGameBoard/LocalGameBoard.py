@@ -173,14 +173,14 @@ class GameBoard:
 
         return False
 
-    def move_player(self, name, dest_space, is_suggestion=False):
+    def move_player(self, player: Player, dest_space, is_suggestion=False):
         if not is_suggestion:
-            is_legal = self.check_if_legal_move(name, dest_space)
+            is_legal = self.check_if_legal_move(player.board_location.name, dest_space)
             if not is_legal:
                 # throw some error
                 print("This move is illegal")
                 return False
-        self.db_conn.update_player_location(name, dest_space)
+        self.db_conn.update_player_location(player.name, dest_space)
 
     @staticmethod
     def create_game_board(db_controller: CluelessDB, print_board=False):
@@ -217,6 +217,7 @@ class GameBoard:
         return game_board
 
     def get_room_object(self, room_name):
+        # TODO: This can be optimized
         current = self.rooms + self.hallways
         for room in current:
             if room.name == room_name:
