@@ -44,7 +44,7 @@ class BasicLocalGameboardTest(unittest.TestCase):
 
     # print rooms helper function
     def printRooms(self):
-        c = self.conn.cursor()  # only added to show results
+        c = self.db_conn.conn.cursor()  # only added to show results
         c.execute("SELECT * FROM room WHERE game_id = ?", (self.test_game_num,))
         print("room table: ")
         for row in c:
@@ -62,11 +62,11 @@ class BasicLocalGameboardTest(unittest.TestCase):
         self.assertEqual(john.get_name(), self.game_board.winner)
 
     def test_playerUpdatePosition(self):
-        john = Player('John', 5, 5)
-        print(f"New Player: {john}")
-
-        john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
-
+        # print(f"New Player: {john}")
+        #
+        # john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
+        john = self.game_board.add_player('John', 5, 5)
+        john = self.game_board.update_player_location(john, 'Study')
         self.assertNotEqual(john.positionX, 5)
         self.assertNotEqual(john.positionY, 5)
         self.assertEqual(john.positionX, self.game_board.study.positionX)
@@ -81,9 +81,14 @@ class BasicLocalGameboardTest(unittest.TestCase):
 
     def test_checkMovePlayerToLegalLocation(self):
         print("Test moving player to LEGAL location")
-        john = Player('John', 5, 5)
-        john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
-        john.set_board_location(GameBoard.study)
+        # john = Player('John', 5, 5)
+        # john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
+        # john.set_board_location(GameBoard.study)
+        # johns_current_location = john.get_board_location().name
+
+        john = self.game_board.add_player('John', 5, 5)
+        john = self.game_board.get_player_obj_by_name('John')
+        john = self.game_board.update_player_location(john, 'Study')
         johns_current_location = john.get_board_location().name
         print(f"Current Location: {johns_current_location}")
         print(f"Adjacent Rooms: {self.game_board.get_connected_rooms(johns_current_location)}")
@@ -104,9 +109,14 @@ class BasicLocalGameboardTest(unittest.TestCase):
 
     def test_checkMovePlayerToIllegalLocation(self):
         print("Test moving player to ILLEGAL location")
-        john = Player('John', 5, 5)
-        john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
-        john.set_board_location(GameBoard.study)
+        # john = Player('John', 5, 5)
+        # john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
+        # john.set_board_location(GameBoard.study)
+        # johns_current_location = john.get_board_location().name
+
+        john = self.game_board.add_player('John', 5, 5)
+        john = self.game_board.get_player_obj_by_name('John')
+        john = self.game_board.update_player_location(john, 'Study')
         johns_current_location = john.get_board_location().name
         print(f"Current Location: {johns_current_location}")
         print(f"Adjacent Rooms: {self.game_board.get_connected_rooms(johns_current_location)}")
@@ -123,16 +133,19 @@ class BasicLocalGameboardTest(unittest.TestCase):
 
     def test_movePlayerToLegalLocation(self):
         print("Test moving player to LEGAL location")
-        john = Player('John', 5, 5)
-        john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
-        john.set_board_location(GameBoard.study)
+        # john = Player('John', 5, 5)
+        # john.set_player_position(self.game_board.study.positionY, self.game_board.study.positionX)
+        # john.set_board_location(GameBoard.study)
+        # johns_current_location = john.get_board_location().name
+        john = self.game_board.add_player('John', 5, 5)
+        john = self.game_board.update_player_location(john, 'Study')
         johns_current_location = john.get_board_location().name
         print(f"Current Location: {johns_current_location}")
         print(f"Adjacent Rooms: {self.game_board.get_connected_rooms(johns_current_location)}")
 
         # Insert Player into DB
-        self.db_conn.put_player_in_game(john.name)
-        self.db_conn.update_player_location(john.name, johns_current_location)
+        # self.db_conn.put_player_in_game(john.name)
+        # self.db_conn.update_player_location(john.name, johns_current_location)
         print(f"Testing If player in location in DB: {self.db_conn.get_player_by_location('Study')}")
 
         # print("Dumping Player Table")

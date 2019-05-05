@@ -12,15 +12,12 @@ class BoardLocation:
         self.positionY = position_y
 
 
+
 class Room(BoardLocation):
 
     def __init__(self, name, x, y):
         self.room_type = "Room"
         BoardLocation.__init__(self, name, x, y)
-
-# Current GUI is set to Width = 600 and Height = 600. 187.5,75 is currently static middle position of hallway from top left room to top middle room. All other rooms are 225 in either direction.
-# Width and Height need to be class attribute passed into this class for 225 to be variable...
-#Hallways are 75 in pixels in length. (75/2) + length of room (150)...
 
 
 class Hall(BoardLocation):
@@ -103,11 +100,24 @@ class GameBoard:
         self.name = "Clue-Less GameBoard"
         self.rooms = []
         self.hallways = []
+        self.players = []
         self.winner = None
         self.db_conn = db_controller
 
     def add_room(self, room):
         self.rooms.append(room)
+
+    def add_player(self, name, player_position_x, player_position_y):
+        location = self.get_board_location_obj_by_coords(player_position_x, player_position_y)
+        player = Player(name, player_position_x, player_position_y)
+        player.set_board_location(location)
+        self.players.append(player)
+        self.db_conn.put_player_in_game(name)
+        self.db_conn.update_player_location(player.name, player.get_board_location().name)
+        return player
+
+    def remove_player(self, name):
+        pass
 
     def add_hall(self, hall):
         self.hallways.append(hall)
@@ -130,8 +140,54 @@ class GameBoard:
             hall_names.append(hall.name)
         return hall_names
 
-# Current GUI is set to Width = 600 and Height = 600, 225 currently static distance of closes room in either direction.
-# Width and Height need to be class attribute passed into this class for 225 to be variable...
+    def get_players(self):
+        return self.players
+
+    def get_player_names(self):
+        player_objs = self.get_players()
+        player_names = []
+        for player in player_objs:
+            player_names.append(player.name)
+        return player_names
+
+    def get_player_obj_by_name(self, name):
+        player_objs = self.get_players()
+        for player in player_objs:
+            if player.name == name:
+                return player
+
+    def get_player_location(self, name):
+        obj = self.get_player_obj_by_name(name)
+        return obj.board_location
+
+
+    def update_player_location(self, player: Player, dest_name):
+        location_obj = self.get_board_location_obj_by_name(dest_name)
+        for p in self.players:
+            if player.name == p.name:
+                p.set_board_location(location_obj)
+                self.db_conn.update_player_location(player.name, dest_name)
+                return p
+
+        print("No player found in player list")
+        return None
+
+    def get_board_location_obj_by_coords(self, position_x, position_y):
+        location_list = self.rooms + self.hallways
+        for location in location_list:
+            if location.positionX == position_x and location.positionY == position_y:
+                return location
+        print("No location at these coordinates")
+        return None
+
+    def get_board_location_obj_by_name(self, name):
+        location_list = self.rooms + self.hallways
+        for location in location_list:
+            if location.name == name:
+                return location
+        print("No location by this name")
+        return None
+
     def get_connected_rooms(self, room_name):
         room_obj = self.get_room_object(room_name)
         if room_obj is None:
@@ -180,7 +236,7 @@ class GameBoard:
                 # throw some error
                 print("This move is illegal")
                 return False
-        self.db_conn.update_player_location(player.name, dest_space)
+        self.update_player_location(player, dest_space)
 
     @staticmethod
     def create_game_board(db_controller: CluelessDB, print_board=False):
