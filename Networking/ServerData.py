@@ -85,6 +85,8 @@ class ClueLessCommon:
         'Billard Room',
     }
 
+    # Ensures Only a single instance of this class will exist over lifetime of the server
+
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -102,14 +104,7 @@ class ClueLessCommon:
 
         try:
             self.db_controller = CluelessDB()
-            self.db_controller.create_games_table()
-            self.db_controller.create_player_table()
-            self.db_controller.create_suspect_table()
-            self.db_controller.create_weapon_table()
-            self.db_controller.create_room_table()
-            self.db_controller.create_cards_table()
-            self.db_controller.create_notebook_table()
-            self.db_controller.create_case_file_table()
+            self.db_controller.create_all_tables()
         finally:
             self.CLUELESS_MUTEX.release()
 
@@ -146,8 +141,15 @@ class GameSession:
 
     def __init__(self, game_id: int):
         self.game_id = game_id
-        self.player_count = 0
+        self.player_count = -1
+        self.current_player_turn = -1
         self.player_data = OrderedDict()
+
+        # TODO: Deal with this
+        # self.timeout_timer_thread = threading.Timer(
+        #     GameSession.TIMEOUT_TIME,
+        #     self.__start_game
+        # )
 
         game_session = ClueLessCommon() # Singleton, so if it already exists, we just return it
         game_session.CLUELESS_MUTEX.acquire()
@@ -188,6 +190,10 @@ class GameSession:
         return solution_suspect, solution_weapon, solution_room
 
     def start_game(self):
+        """
+        Starts the game
+        :return:
+        """
         db_conn = self.game_session.db_controller
 
         self.game_session.CLUELESS_MUTEX.acquire()
@@ -215,6 +221,7 @@ class GameSession:
         :return:
         """
         # TODO: Figure out how to add players better?
+        # TODO: Integrate timeout timer into this
         if self.player_count < 6:
             self.player_data[player_name] = Player(player_name)
             self.player_count += 1

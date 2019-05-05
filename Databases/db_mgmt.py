@@ -11,8 +11,8 @@ class CluelessDB(object):
     def __init__(self):
         try:
             print(f"CluelessDB object created")
-            #self.conn = sqlite3.connect('file::memory:?cache=shared', check_same_thread=False)
-            self.conn = sqlite3.connect('game_data.db', check_same_thread=False)
+            self.conn = sqlite3.connect('file::memory:?cache=shared', check_same_thread=False)
+            # self.conn = sqlite3.connect('game_data.db', check_same_thread=False)
             print(f"Conn info for new DB: {self.conn}")
 
             traceback.print_exc()
