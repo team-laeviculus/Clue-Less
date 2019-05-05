@@ -8,24 +8,26 @@ import os
 
 class CluelessDB(object):
     # this class is used to create an empty database with 10 tables for the game
-    def __init__(self):
+    def __init__(self, db_name='file::memory:?cache=shared'):
         try:
             print(f"CluelessDB object created")
-            self.conn = sqlite3.connect('file::memory:?cache=shared', check_same_thread=False)
+            if not db_name:
+                raise Exception("CluelessDB Exception - db_name cant be None")
+            with sqlite3.connect(db_name, uri=True) as conn:
+                self.conn = conn
+            # self.conn = sqlite3.connect('file::memory:', check_same_thread=False, uri=True)
             # self.conn = sqlite3.connect('game_data.db', check_same_thread=False)
             print(f"Conn info for new DB: {self.conn}")
-
-            traceback.print_exc()
         except Exception as e:
             print(f"DB Exception: {e}")
-        pass
+            traceback.print_exc()
 
 # ------------------------------------------------------------------------------------------------------
 # create tables
 
-    def recreate_db(self):
+    def recreate_db(self, db_name='file::memory:?cache=shared'):
         try:
-            self.conn = sqlite3.connect('file::memory:?cache=shared', uri=True)
+            self.conn = sqlite3.connect(db_name, uri=True)
         except Error as e:
             print(e)
             traceback.print_exc()
