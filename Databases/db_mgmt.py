@@ -339,6 +339,11 @@ class CluelessDB(object):
         self.conn.commit()
         c.close()
 
+        # TODO: IDK what these do, but update_weapons doesnt do anything right now
+        self.update_suspects(g_id, s)
+        self.update_weapons(g_id, w)
+        self.update_rooms(g_id, r)
+
     def init_suspects(self, g_id):
         c = self.conn.cursor()
         c.execute("DELETE FROM suspect WHERE game_id = ?", (g_id,))

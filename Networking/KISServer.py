@@ -38,6 +38,7 @@ def create_game_tokens():
     }
     return tokens_map
 
+
 class Player:
 
     def __init__(self, name):
@@ -47,6 +48,7 @@ class Player:
             "token": None,
             "location": None
         }
+
     def get_player(self):
         return self.data
 
