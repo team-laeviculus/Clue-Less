@@ -4,6 +4,7 @@ import traceback
 
 from collections import OrderedDict
 from Databases.db_mgmt import CluelessDB
+from ClueGameBoard.LocalGameBoard import GameBoard
 
 """
 This file contains common classes each game might need,
@@ -47,6 +48,7 @@ class ClueLessCommon:
 
     db_controller = None
     CLUELESS_MUTEX = None
+    TIMEOUT_TIME = 30  # Timeout timer for players to join
 
     # Sets (not lists)
     TOKENS = {
@@ -126,9 +128,11 @@ class Player:
         return self.data
 
     def set_token(self, token):
+        # TODO: Tokens get assigned by order joined
         self.data['token'] = token
 
     def set_location(self, location):
+        # TODO: Starting location fixed by token. Not a player choice
         self.data['location'] = location
 
 
@@ -141,17 +145,18 @@ class GameSession:
 
     def __init__(self, game_id: int):
         self.game_id = game_id
-        self.player_count = -1
+        self.player_count = 0
         self.current_player_turn = -1
         self.player_data = OrderedDict()
+        self.game_board = GameBoard(ClueLessCommon.db_controller)
 
-        # TODO: Deal with this
-        # self.timeout_timer_thread = threading.Timer(
-        #     GameSession.TIMEOUT_TIME,
-        #     self.__start_game
-        # )
+        # Timeout timer with callback to start game
+        self.timeout_timer_thread = threading.Timer(
+            ClueLessCommon.TIMEOUT_TIME,
+            self.start_game
+        )
 
-        game_session = ClueLessCommon() # Singleton, so if it already exists, we just return it
+        game_session = ClueLessCommon()  # Singleton, so if it already exists, we just return it
         game_session.CLUELESS_MUTEX.acquire()
 
         try:
@@ -235,6 +240,12 @@ class GameSession:
             # This should never happen, if games being full is properly handled
             # at the server level.
             raise Exception(f"Game-{self.game_id}: add_player exception! Game Full")
+
+    def __add_player(self):
+        """
+        Private helper method for adding player and checking if game should start
+        :return:
+        """
 
 
 

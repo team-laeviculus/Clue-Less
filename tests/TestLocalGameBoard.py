@@ -16,7 +16,7 @@ class BasicLocalGameboardTest(unittest.TestCase):
         print("Setting up for Local Gameboard Test")
         # Create DB instance
         self.db_conn = CluelessDB()
-        self.game_board = GameBoard.create_game_board(self.db_conn, print_board=False)
+        self.game_board = GameBoard(self.db_conn)  # GameBoard.create_game_board(self.db_conn, print_board=False)
         self.test_game_num = 1
         self.db_conn.create_games_table()
         self.db_conn.create_suspect_table()

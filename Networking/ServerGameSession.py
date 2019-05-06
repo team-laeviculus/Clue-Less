@@ -74,7 +74,7 @@ class GameSession:
 
         self.game_tokens = create_game_tokens()
 
-        self.game_board = GameBoard.create_game_board(db_controller)
+        self.game_board = GameBoard(self.db_controller)  # GameBoard.create_game_board(db_controller)
         self.db_controller.create_player_table()
         self.game_state = GameState.STOPPED
         self.db_mutex = threading.Lock()

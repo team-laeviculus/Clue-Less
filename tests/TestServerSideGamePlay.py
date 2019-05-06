@@ -18,18 +18,21 @@ class TestServerFunctionality(unittest.TestCase):
         print("setting up TestServerFunctionality case")
         KISServer.app.config["TESTING"] = True
         KISServer.app.config["DEBUG"] = True
-        KISServer.ClueLessCommon.initialize()
+        KISServer.ClueLessCommon.initialize(reset=True)
 
         self.app = KISServer.app.test_client()
         self.server_url = "http://127.0.0.1:5000/"
 
     def tearDown(self) -> None:
-        # TODO: Reset Static Variables. Breaks test cases otherwise
-        pass
+        KISServer.GameState.CURRENT_STATE = KISServer.GameState.WAITING_FOR_PLAYERS
+        KISServer.GameInfo.game = dict(KISServer.GameInfo.initial_state)
+        KISServer.GameInfo.players_turn_name = None
+        KISServer.GameInfo.current_players_turn = 0
 
     """
     Helper Functions
     """
+
 
     def createPlayerJSON(self, name, token=None, game_name="game1", in_game=False, location=None, request_msg=None):
         """
@@ -52,7 +55,7 @@ class TestServerFunctionality(unittest.TestCase):
             "request": request_msg
         }
 
-    def createPlayerHelper(self, player_data):
+    def postProfileToServerHelper(self, player_data):
         """
         Posts a request to server to add a player to a game
         :param player_data: a player JSON object AND HTTP status code
@@ -99,13 +102,22 @@ class TestServerFunctionality(unittest.TestCase):
         :return: player_1, player_2, player_3
         """
         player_1 = self.createPlayerJSON(name="John")
-        self.createPlayerHelper(player_1)
+        self.postProfileToServerHelper(player_1)
         player_2 = self.createPlayerJSON(name="Salley")
-        self.createPlayerHelper(player_2)
+        self.postProfileToServerHelper(player_2)
         player_3 = self.createPlayerJSON(name="Ben")
-        self.createPlayerHelper(player_3)
+        self.postProfileToServerHelper(player_3)
 
         return player_1, player_2, player_3
+
+    def create_players_helper(self, num_players):
+        """
+        Just creates and returns JSON messages for players
+        :param num_players:
+        :return: list of player JSON objects
+        """
+        return [self.createPlayerJSON(name=f"player_{i+1}") for i in range(num_players)]
+
 
 
     #-------------------------------------------------------------
@@ -118,7 +130,7 @@ class TestServerFunctionality(unittest.TestCase):
     def testAddOnePlayer(self):
         player = self.createPlayerJSON(name="John")
         print(f"Creating Player JSON: {player}")
-        create_post = self.createPlayerHelper(player)
+        create_post = self.postProfileToServerHelper(player)
 
         print(f"Creating Player On Server: {create_post}")
         self.assertEqual(create_post.status_code, HTTPStatus.OK)
@@ -129,14 +141,14 @@ class TestServerFunctionality(unittest.TestCase):
         self.assertIsNotNone(data['location'])
         self.assertIsNotNone(data['token'])
 
-
+    # @unittest.expectedFailure
     def testAddThreePlayers(self):
         """
         Tests starting a game by having 3 players join a game
         :return:
         """
         player_1 = self.createPlayerJSON(name="John")
-        create_post = self.createPlayerHelper(player_1)
+        create_post = self.postProfileToServerHelper(player_1)
         self.assertEqual(create_post.status_code, HTTPStatus.OK)
         data_1 = create_post.get_json()
         self.assertEqual(data_1['game_state'], ['WAITING_FOR_PLAYERS'])
@@ -145,7 +157,7 @@ class TestServerFunctionality(unittest.TestCase):
         self.assertIsNotNone(data_1['token'])
 
         player_2 = self.createPlayerJSON(name="Salley")
-        create_post = self.createPlayerHelper(player_2)
+        create_post = self.postProfileToServerHelper(player_2)
         self.assertEqual(create_post.status_code, HTTPStatus.OK)
         data_2 = create_post.get_json()
         self.assertEqual(data_2['game_state'], ['WAITING_FOR_PLAYERS'])
@@ -153,7 +165,7 @@ class TestServerFunctionality(unittest.TestCase):
         self.assertIsNotNone(data_2['token'])
 
         player_3 = self.createPlayerJSON(name="Ben")
-        create_post = self.createPlayerHelper(player_3)
+        create_post = self.postProfileToServerHelper(player_3)
         self.assertEqual(create_post.status_code, HTTPStatus.OK)
         data_3 = create_post.get_json()
         self.assertEqual(data_3['game_state'], ['GAME_RUNNING'])
@@ -162,6 +174,30 @@ class TestServerFunctionality(unittest.TestCase):
 
         # NOTE: This is hard coded to always be first player who joins
         print(f"First Players Turn: {self.getTurnHelper()}")
+
+    def testGameStartedAndJoinWithExpectedError(self):
+        """
+        Tests having a started game and having another player trying to join (and hopefully failing)
+        :return:
+        """
+
+        players = self.create_players_helper(3)
+        print(f"players: {players}")
+        r = None
+        for p in players:
+            r = self.postProfileToServerHelper(p)
+            print(f"Response: {r}")
+
+        self.assertEqual(r.get_json()['game_state'], ['GAME_RUNNING'])
+        # Game should have started. Adding a new player to running game should fail
+
+        p4 = self.createPlayerJSON(name="player_4")
+        r = self.postProfileToServerHelper(p4)
+
+        print(f"Response 4: {r}")
+        self.assertEqual(r.status_code, HTTPStatus.BAD_REQUEST)
+
+
 
 
 

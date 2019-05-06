@@ -59,11 +59,12 @@ class Player:
         self.data['location'] = location
 
 class GameInfo:
-    game = {
+    initial_state = {
         "players": OrderedDict(),
         "player_count": 0,
         "game_state": str(GameState.CURRENT_STATE)
     }
+    game = dict(initial_state)
 
     current_players_turn = 0 # Player dict
     players_turn_name = None
@@ -89,22 +90,22 @@ class ClueLessCommon:
     PLAYER_TOKEN_MAP = OrderedDict()
 
     @staticmethod
-    def initialize():
+    def initialize(reset=False):
         """
         Static method to initialize a game board
         :return:
         """
         # TODO: Change this from static to instance based so we can have multiple games
-        if not (ClueLessCommon.db_controller and ClueLessCommon.game_board):
+        if not (ClueLessCommon.db_controller and ClueLessCommon.game_board) or reset is True:
             ClueLessCommon.db_controller = CluelessDB()
             ClueLessCommon.db_controller.create_games_table()
             ClueLessCommon.db_controller.create_player_table()
-            ClueLessCommon.game_board = GameBoard.create_game_board(ClueLessCommon.db_controller, print_board=True)
+            ClueLessCommon.game_board = GameBoard(ClueLessCommon.db_controller)  # GameBoard.create_game_board(ClueLessCommon.db_controller, print_board=True)
             ClueLessCommon.CLUELESS_MUTEX = threading.Lock()
             print(ClueLessCommon.TOKENS)
             ClueLessCommon.PLAYER_RANDOM_TOKENS = random.sample(ClueLessCommon.TOKENS, len(ClueLessCommon.TOKENS))
             ClueLessCommon.PLAYER_RANDOM_LOCATION = random.sample(ClueLessCommon.ROOMS, len(ClueLessCommon.TOKENS))
-            print(ClueLessCommon.PLAYER_RANDOM_TOKENS)
+            print(f" Random Tokens: {ClueLessCommon.PLAYER_RANDOM_TOKENS}")
 
 
     @staticmethod
@@ -177,11 +178,15 @@ class ClueLessCommon:
     ROOM_MAP = OrderedDict({k: v for k, v in enumerate(ROOMS)})
 
 
-@app.route("/games/<game_number>", methods=["GET"])
-def get_game_n_info(game_number):
-    # TODO: This is temporary
-    return f"<h1>This is a test. You posted: {game_number}</h1>", HTTPStatus.OK
-
+@app.route("/games/<game_id>/status", methods=["GET"])
+def get_status(game_id):
+    """
+    Returns the status of the games state machine
+    :param game_id:
+    :return: HTTP response with game status
+    """
+    #TODO: Update this to return actual status for game
+    return game_id, HTTPStatus.OK
 
 @app.route("/games", methods=["GET", "POST", "PUT"])
 def get_game_info():
@@ -234,7 +239,7 @@ def on_get_turn_request_info():
     if GameState.CURRENT_STATE == GameState.WAITING_FOR_PLAYERS:
         print(f"Waiting for players....")
         return jsonify({
-            "turn":{
+            "turn": {
                 "name": "None",
                 "status": "Waiting for players"
             }

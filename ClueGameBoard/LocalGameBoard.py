@@ -28,7 +28,7 @@ class Hall(BoardLocation):
 
 
 class Player:
-
+    # TODO: Common Player Class
     def __init__(self, player_name, player_position_x, player_position_y):
         self.name = player_name
         self.positionX = player_position_x
@@ -70,7 +70,6 @@ class GameBoard:
     """
 
     # Static Variables
-
     # Rooms
     kitchen = Room('Kitchen', 5, 5)
     conservatory = Room('Conservatory', 5, 1)
@@ -96,17 +95,19 @@ class GameBoard:
     br_b = Hall("billard room_ballroom", 4, 3)
     dr_k = Hall("dining room_kitchen", 4, 5)
 
+    ROOMS = [kitchen, conservatory, dining_room, ballroom, study, hall, lounge, library, billard_room]
+    HALLWAYS = [s_h, h_l, li_br, br_dr, c_b, b_k, s_li, h_br, l_dr, li_c, br_b, dr_k]
+
     def __init__(self, db_controller):
         self.name = "Clue-Less GameBoard"
-        self.rooms = []
-        self.hallways = []
+        self.rooms = list(GameBoard.ROOMS)
+        self.hallways = list(GameBoard.HALLWAYS)
         self.players = []
         self.winner = None
         self.db_conn = db_controller
 
-    def add_room(self, room):
-        self.rooms.append(room)
-
+    def add_player(self, name: str, location: BoardLocation):
+        pass
     def add_player(self, name, player_position_x, player_position_y):
         location = self.get_board_location_obj_by_coords(player_position_x, player_position_y)
         player = Player(name, player_position_x, player_position_y)
@@ -118,9 +119,6 @@ class GameBoard:
 
     def remove_player(self, name):
         pass
-
-    def add_hall(self, hall):
-        self.hallways.append(hall)
 
     def set_game_winner(self, player):
         """
@@ -159,7 +157,6 @@ class GameBoard:
     def get_player_location(self, name):
         obj = self.get_player_obj_by_name(name)
         return obj.board_location
-
 
     def update_player_location(self, player: Player, dest_name):
         location_obj = self.get_board_location_obj_by_name(dest_name)
@@ -238,40 +235,6 @@ class GameBoard:
                 return False
         self.update_player_location(player, dest_space)
 
-    @staticmethod
-    def create_game_board(db_controller: CluelessDB, print_board=False):
-
-        game_board = GameBoard(db_controller)
-
-        game_board.add_room(GameBoard.kitchen)
-        game_board.add_room(GameBoard.conservatory)
-        game_board.add_room(GameBoard.dining_room)
-        game_board.add_room(GameBoard.ballroom)
-        game_board.add_room(GameBoard.study)
-        game_board.add_room(GameBoard.hall)
-        game_board.add_room(GameBoard.lounge)
-        game_board.add_room(GameBoard.library)
-        game_board.add_room(GameBoard.billard_room)
-
-        game_board.add_hall(GameBoard.s_h)
-        game_board.add_hall(GameBoard.h_l)
-        game_board.add_hall(GameBoard.li_br)
-        game_board.add_hall(GameBoard.br_dr)
-        game_board.add_hall(GameBoard.c_b)
-        game_board.add_hall(GameBoard.b_k)
-        game_board.add_hall(GameBoard.s_li)
-        game_board.add_hall(GameBoard.h_br)
-        game_board.add_hall(GameBoard.l_dr)
-        game_board.add_hall(GameBoard.li_c)
-        game_board.add_hall(GameBoard.br_b)
-        game_board.add_hall(GameBoard.dr_k)
-
-        if print_board:
-            for room in game_board.rooms:
-                print(room.name)
-
-        return game_board
-
     def get_room_object(self, room_name):
         # TODO: This can be optimized
         current = self.rooms + self.hallways
@@ -283,7 +246,7 @@ class GameBoard:
 if __name__ == '__main__':
     # db_conn = DBController("../Databases/players.db", 0)
     db_conn = CluelessDB()
-    game_board = GameBoard.create_game_board(db_conn, print_board=True)
+    game_board = GameBoard(db_controller=db_conn)  # GameBoard.create_game_board(db_conn, print_board=True)
 
     print("="*30)
     print("Creating player John. Setting John as winner.")
