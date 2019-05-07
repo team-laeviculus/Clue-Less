@@ -37,7 +37,7 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(38, 38, 38);</string>
   </property>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="make_suggestion_button">
    <property name="geometry">
     <rect>
      <x>1210</x>
@@ -59,7 +59,7 @@
     <string>Make Suggestion</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="make_accusation_button">
    <property name="geometry">
     <rect>
      <x>1210</x>
@@ -81,7 +81,7 @@
     <string>Make Accusation</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="quit_game_button">
    <property name="geometry">
     <rect>
      <x>40</x>
@@ -124,7 +124,7 @@
    <property name="title">
     <string>Player 1 Notebook</string>
    </property>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="notebook_col_mustard">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -134,13 +134,13 @@
      </rect>
     </property>
     <property name="text">
-     <string>Suspect 1</string>
+     <string>Col. Mustard</string>
     </property>
     <property name="checked">
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="notebook_prof_plum">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -150,10 +150,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>Suspect 1</string>
+     <string>Prof. Plum</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_4">
+   <widget class="QCheckBox" name="notebook_mr_green">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -163,10 +163,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>Suspect 1</string>
+     <string>Mr. Green</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_5">
+   <widget class="QCheckBox" name="notebook_mrs_peacock">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -176,10 +176,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>Suspect 1</string>
+     <string>Mrs. Peacock</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_6">
+   <widget class="QCheckBox" name="notebook_miss_scarlet">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -189,10 +189,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>Suspect 1</string>
+     <string>Miss Scarlet</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_7">
+   <widget class="QCheckBox" name="notebook_mrs_white">
     <property name="geometry">
      <rect>
       <x>40</x>
@@ -202,7 +202,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Suspect 1</string>
+     <string>Mrs. White</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_8">
@@ -445,7 +445,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_26">
+   <widget class="QCheckBox" name="server_checkbox_mrs_white">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -456,6 +456,9 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_27">
@@ -484,7 +487,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_29">
+   <widget class="QCheckBox" name="server_checkbox_col_mustard">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -495,6 +498,9 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
     </property>
     <property name="checked">
      <bool>false</bool>
@@ -513,7 +519,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_31">
+   <widget class="QCheckBox" name="server_checkbox_miss_scarlet">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -525,8 +531,11 @@
     <property name="text">
      <string/>
     </property>
+    <property name="checkable">
+     <bool>false</bool>
+    </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_32">
+   <widget class="QCheckBox" name="server_checkbox_mrs_peacock">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -537,6 +546,9 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_33">
@@ -591,7 +603,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_37">
+   <widget class="QCheckBox" name="server_checkbox_mr_green">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -602,6 +614,9 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_38">
@@ -662,7 +677,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_42">
+   <widget class="QCheckBox" name="server_checkbox_prof_plum">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -673,6 +688,9 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="checkable">
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_43">
@@ -1218,7 +1236,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>blue_game_piece.png</pixmap>
+     <pixmap>Assets/blue_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1240,7 +1258,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>red_game_piece.png</pixmap>
+     <pixmap>Assets/red_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1262,7 +1280,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>purple_game_piece.png</pixmap>
+     <pixmap>Assets/purple_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1284,7 +1302,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>yellow_game_piece.png</pixmap>
+     <pixmap>Assets/yellow_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1306,7 +1324,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>candlestick_game_piece.png</pixmap>
+     <pixmap>Assets/candlestick_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1328,7 +1346,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>knife_game_piece.png</pixmap>
+     <pixmap>Assets/knife_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1350,7 +1368,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>lead_pipe_game_piece.png</pixmap>
+     <pixmap>Assets/lead_pipe_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1372,7 +1390,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>rope_game_piece.png</pixmap>
+     <pixmap>Assets/rope_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1394,7 +1412,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>revolver_game_piece.png</pixmap>
+     <pixmap>Assets/revolver_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1419,7 +1437,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>wrench_game_piece.png</pixmap>
+     <pixmap>Assets/wrench_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1441,7 +1459,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>green_game_piece.png</pixmap>
+     <pixmap>Assets/green_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1463,7 +1481,7 @@ color: rgb(0, 0, 0);</string>
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>orange_game_piece.png</pixmap>
+     <pixmap>Assets/orange_game_piece.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1503,7 +1521,7 @@ color: rgb(0, 0, 0);</string>
    <zorder>label_41</zorder>
    <zorder>label_42</zorder>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="game_status_window">
    <property name="geometry">
     <rect>
      <x>350</x>
@@ -1552,7 +1570,7 @@ border: 1px solid black;</string>
    <property name="title">
     <string>Messages</string>
    </property>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="chat_text_display_box">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -1574,6 +1592,9 @@ color: rgb(0, 0, 0);</string>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
     </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
     <property name="margin">
      <number>2</number>
     </property>
@@ -1582,7 +1603,7 @@ color: rgb(0, 0, 0);</string>
     </property>
    </widget>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
+  <widget class="QTextEdit" name="message_input_text_box">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -1595,8 +1616,20 @@ color: rgb(0, 0, 0);</string>
     <string notr="true">color: rgb(0, 0, 0);
 background-color: rgb(255, 255, 127);</string>
    </property>
+   <property name="inputMethodHints">
+    <set>Qt::ImhNone</set>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="lineWrapMode">
+    <enum>QTextEdit::NoWrap</enum>
+   </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_5">
+  <widget class="QPushButton" name="send_message_button">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -1618,7 +1651,7 @@ background-color: rgb(255, 255, 127);</string>
     <string>Send</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_25">
+  <widget class="QLabel" name="card_1">
    <property name="geometry">
     <rect>
      <x>300</x>
@@ -1648,7 +1681,7 @@ border: 1px solid brown;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_26">
+  <widget class="QLabel" name="card_2">
    <property name="geometry">
     <rect>
      <x>450</x>
@@ -1675,7 +1708,7 @@ border: 1px solid brown;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_27">
+  <widget class="QLabel" name="card_3">
    <property name="geometry">
     <rect>
      <x>600</x>
@@ -1702,7 +1735,7 @@ border: 1px solid brown;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_28">
+  <widget class="QLabel" name="card_4">
    <property name="geometry">
     <rect>
      <x>750</x>
@@ -1729,7 +1762,7 @@ border: 1px solid brown;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_29">
+  <widget class="QLabel" name="card_5">
    <property name="geometry">
     <rect>
      <x>900</x>
@@ -1756,7 +1789,7 @@ border: 1px solid brown;</string>
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_30">
+  <widget class="QLabel" name="card_6">
    <property name="geometry">
     <rect>
      <x>1050</x>
