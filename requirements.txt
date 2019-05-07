@@ -22,6 +22,8 @@ openapi-spec-validator==0.2.6
 pathlib==1.0.1
 pygame==1.9.4
 pygame-menu==1.96.1
+PyQt5==5.11.3
+PyQt5-sip==4.19.17
 python-engineio==3.5.1
 python-socketio==3.1.2
 pytz==2018.9
