@@ -13,7 +13,7 @@ class CluelessDB(object):
             print(f"CluelessDB object created")
             if not db_name:
                 raise Exception("CluelessDB Exception - db_name cant be None")
-            with sqlite3.connect(db_name, uri=True) as conn:
+            with sqlite3.connect(db_name, uri=True, check_same_thread=False) as conn:
                 self.conn = conn
             # self.conn = sqlite3.connect('file::memory:', check_same_thread=False, uri=True)
             # self.conn = sqlite3.connect('game_data.db', check_same_thread=False)
@@ -27,7 +27,7 @@ class CluelessDB(object):
 
     def recreate_db(self, db_name='file::memory:?cache=shared'):
         try:
-            self.conn = sqlite3.connect(db_name, uri=True)
+            self.conn = sqlite3.connect(db_name, uri=True, check_same_thread=False)
         except Error as e:
             print(e)
             traceback.print_exc()
@@ -733,6 +733,7 @@ class CluelessDB(object):
         p_cards = cur.execute("SELECT card_id FROM cards WHERE game_id = ? and assign_to = ?", (g_id, player_num,)).fetchall()
         clist = []
         for pc in p_cards:
+            print(f"Player Card: {pc}")
             for p in pc:
                 clist.append(p)
         return clist
@@ -941,3 +942,7 @@ if __name__ == '__main__':
     db.update_player_location('Paul', 'Study')
     print(db.get_player_by_location('Study'))
     print('test okay')
+
+    print(db.get_player_cards(1, 1))
+
+

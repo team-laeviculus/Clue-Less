@@ -1,7 +1,9 @@
 import unittest
 import sys, os
+import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Networking.ServerData import *
+
 
 
 class TestGameState(unittest.TestCase):
@@ -85,8 +87,11 @@ class TestGameSession(unittest.TestCase):
         sess.add_player("1")
         sess.add_player("2")
         sess.add_player("3")
+        time.sleep(2)
         sess.add_player("4")
+        time.sleep(4)
         sess.add_player("5")
+        time.sleep(5.2)
         sess.add_player("6")
 
         with self.assertRaises(Exception):

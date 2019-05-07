@@ -5,19 +5,21 @@ import traceback
 from collections import OrderedDict
 from Databases.db_mgmt import CluelessDB
 from ClueGameBoard.LocalGameBoard import GameBoard
+from Logs.Logging import create_server_logger
 
 """
 This file contains common classes each game might need,
 or the Server needs to keep track of persistently.
 """
 
+log = create_server_logger()
 
 # State Machine Data
 class GameState:
     # STATES
     WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS"
     GAME_RUNNING = "GAME_RUNNING"
-    GAME_VER = "GAME_OVER"
+    GAME_OVER = "GAME_OVER"
 
     def __init__(self):
         self.CURRENT_STATE = self.WAITING_FOR_PLAYERS
@@ -48,7 +50,12 @@ class ClueLessCommon:
 
     db_controller = None
     CLUELESS_MUTEX = None
-    TIMEOUT_TIME = 30  # Timeout timer for players to join
+    # TODO: Remember to set timer to 30s
+    #TIMEOUT_TIME = 30  # Timeout timer for players to join
+    TIMEOUT_TIME = 5
+    MIN_NUMBER_OF_PLAYERS = 3
+    MAX_NUMBER_OF_PLAYERS = 6
+
 
     # Sets (not lists)
     TOKENS = {
@@ -149,8 +156,10 @@ class GameSession:
         self.current_player_turn = -1
         self.player_data = OrderedDict()
         self.game_board = GameBoard(ClueLessCommon.db_controller)
+        self.game_state = GameState()
 
         # Timeout timer with callback to start game
+        self.timer_running = False
         self.timeout_timer_thread = threading.Timer(
             ClueLessCommon.TIMEOUT_TIME,
             self.start_game
@@ -199,6 +208,8 @@ class GameSession:
         Starts the game
         :return:
         """
+        if self.timer_running:
+            self.timeout_timer_thread.cancel()
         db_conn = self.game_session.db_controller
 
         self.game_session.CLUELESS_MUTEX.acquire()
@@ -225,9 +236,9 @@ class GameSession:
         :param player_name:
         :return:
         """
-        # TODO: Figure out how to add players better?
-        # TODO: Integrate timeout timer into this
-        if self.player_count < 6:
+        # TODO: Figure out how to add players better? Integrate with Game Board
+        if self.player_count < ClueLessCommon.MAX_NUMBER_OF_PLAYERS:
+            log.debug(f"Adding player {player_name}")
             self.player_data[player_name] = Player(player_name)
             self.player_count += 1
             self.game_session.CLUELESS_MUTEX.acquire()
@@ -236,6 +247,9 @@ class GameSession:
                 self.game_session.db_controller.put_player_in_game(player_name)
             finally:
                 self.game_session.CLUELESS_MUTEX.release()
+
+            self.__add_player()
+
         else:
             # This should never happen, if games being full is properly handled
             # at the server level.
@@ -246,6 +260,20 @@ class GameSession:
         Private helper method for adding player and checking if game should start
         :return:
         """
+        if self.player_count >= ClueLessCommon.MIN_NUMBER_OF_PLAYERS:
+            log.info("Starting timeout timer")
+            if self.timer_running:
+                self.timeout_timer_thread.cancel()
+                self.timeout_timer_thread = threading.Timer(
+                    ClueLessCommon.TIMEOUT_TIME,
+                    self.start_game
+                )
+                self.timeout_timer_thread.start()
+            else:
+                log.info("Starting timeout timer for first time")
+                self.timeout_timer_thread.start()
+                self.timer_running = True
+                # self.game_state = Cl
 
 
 

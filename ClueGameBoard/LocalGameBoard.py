@@ -106,10 +106,25 @@ class GameBoard:
         self.winner = None
         self.db_conn = db_controller
 
-    def add_player(self, name: str, location: BoardLocation):
-        pass
+    def add_player_by_room(self, name: str, location: BoardLocation):
+        """
+        Helper method so we can just pass a Board Location
+        :param name: player name
+        :param location: A board location
+        :return:
+        """
+        self.add_player(name, location.positionX, location.positionY)
+
     def add_player(self, name, player_position_x, player_position_y):
+        """
+        Adds a player to game board
+        :param name: player name
+        :param player_position_x: room x value
+        :param player_position_y: room y value
+        :return:
+        """
         location = self.get_board_location_obj_by_coords(player_position_x, player_position_y)
+        # TODO: Player object already created elsewhere
         player = Player(name, player_position_x, player_position_y)
         player.set_board_location(location)
         self.players.append(player)

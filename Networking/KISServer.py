@@ -4,17 +4,22 @@ Keep It Simple Stupid.....
 """
 
 from flask import Flask, request, jsonify, make_response
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 import random
 import threading
 from http import HTTPStatus
 import traceback
 from Databases.db_mgmt import CluelessDB
 from ClueGameBoard.LocalGameBoard import GameBoard
+from Networking.ServerData import GameSession
 import json
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
+
+
+# Games. Tracks all game sessions
+GAME_SESSIONS = defaultdict()
 
 class GameState:
 
@@ -177,7 +182,15 @@ class ClueLessCommon:
 
     ROOM_MAP = OrderedDict({k: v for k, v in enumerate(ROOMS)})
 
+#### TESTING FUNCTIONS
 
+@app.route("/games/create_game/<game_id>", method=["POST"])
+def create_game_test(game_id):
+    GAME_SESSIONS[game_id] = GameSession(int(game_id))
+    return "Game Session Created", GAME_SESSIONS[game_id]
+
+
+#######
 @app.route("/games/<game_id>/status", methods=["GET"])
 def get_status(game_id):
     """
@@ -187,6 +200,14 @@ def get_status(game_id):
     """
     #TODO: Update this to return actual status for game
     return game_id, HTTPStatus.OK
+
+
+
+
+@app.route("/games/<game_id>/game_state", methods=["GET"])
+def on_get_game_state(game_id):
+    return jsonify("NULL")
+
 
 @app.route("/games", methods=["GET", "POST", "PUT"])
 def get_game_info():
@@ -220,11 +241,6 @@ def get_game_info():
 
             #return jsonify("Game is ready to Start!!!!!")
         return jsonify(GameInfo.game)
-
-
-@app.route("/games/<game_id>/game_state", methods=["GET"])
-def on_get_game_state(game_id):
-    return jsonify("NULL")
 
 
 @app.route("/games/turn", methods=["GET"])
