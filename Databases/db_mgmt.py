@@ -730,14 +730,19 @@ class CluelessDB(object):
     
     def get_player_cards(self, g_id, player_num):
         cur = self.conn.cursor()
-        p_cards = cur.execute("SELECT card_id FROM cards WHERE game_id = ? and assign_to = ?", (g_id, player_num,)).fetchall()
-        clist = []
-        for pc in p_cards:
-            print(f"Player Card: {pc}")
-            for p in pc:
-                clist.append(p)
-        return clist
+
+        p_cards = cur.execute("SELECT card_id, category, name FROM cards "
+                              "WHERE game_id = ? and assign_to = ?",
+                              (g_id, player_num,)).fetchall()
+        return p_cards
     
+    def get_card_info(self, g_id, c_id):
+        cur = self.conn.cursor()
+        c_info = cur.execute("SELECT card_id, category, ref_id, name, assign_to FROM cards "
+                              "WHERE game_id = ? and card_id = ?",
+                              (g_id, c_id,)).fetchall()
+        return c_info
+
     #  Get player in the player table by name
     def get_player_by_name(self, name):
         cur = self.conn.cursor()
