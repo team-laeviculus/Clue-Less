@@ -1,5 +1,5 @@
 import pygame
-import pygame_textinput
+from ClueLessGUI import pygame_textinput
 import thorpy
 import time
 import random
@@ -184,7 +184,7 @@ def game_join():
         gameDisplay.blit(TextSurf, TextRect)
 
         pygame.display.update()
-        clock.tick(120)
+        clock.tick(30)
 
 
 def game_wait():
