@@ -163,5 +163,5 @@ class BasicLocalGameboardTest(unittest.TestCase):
 
 
 
-
+print("DjS test")
 
