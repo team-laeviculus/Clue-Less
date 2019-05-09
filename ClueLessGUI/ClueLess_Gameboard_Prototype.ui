@@ -103,7 +103,7 @@
     <string>Quit Game</string>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QGroupBox" name="noteBookGroup">
    <property name="geometry">
     <rect>
      <x>1210</x>
