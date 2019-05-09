@@ -65,6 +65,8 @@ class TestServerFunctionality(unittest.TestCase):
         response = self.app.post("/games/players", json=player_data)
         print("Posted Request to server")
         print("Example Git commit")
+
+
         return response
 
     def moveCreator(self, playerJSON, moveStringLocation):
