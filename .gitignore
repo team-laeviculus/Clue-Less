@@ -1,5 +1,4 @@
 venv/ 
-*.exe
 *.vs/
 *.db
 *.pyc
