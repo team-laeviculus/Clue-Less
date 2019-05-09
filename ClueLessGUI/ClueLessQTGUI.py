@@ -6,8 +6,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 
 from PyQt5.QtCore import QSize
-from ClueLessGUI.ClueLess_Gameboard_Prototype import Ui_ClueGameBoard
-from ClueLessGUI.login_window import Ui_ClueLoginWindow
+from ClueLessGUI.ClueLess_QTGameboard import Ui_ClueGameBoard
+from ClueLessGUI.QTlogin_window import Ui_ClueLoginWindow
 
 class GameWindow(QtGui.QWindow):
     def __init__(self, parent=None):
@@ -54,8 +54,7 @@ class MainWindow(QMainWindow):
         # self.send_message_button.clicked.connect(self.send_message_callback)
         # self.make_suggestion_button.clicked.connect(self.make_suggestion_callback)
         # self.make_accusation_button.clicked.connect(self.make_accusation_callback)
-
-        self.clue_login_window.create_profile_button.clicked.connect(self.login_callback)
+        self.clue_login_window.create_profile_button.clicked.connect(self.start_clue_gui)
         self.clue_login_window.username_input_field.returnPressed.connect(
             self.clue_login_window.create_profile_button.click)
 
@@ -84,6 +83,7 @@ class MainWindow(QMainWindow):
         print(f"TEXT entered: {self.clue_login_window.username_input_field.text()}")
         self.login_form_widget.hide()
         self.setCentralWidget(self.game_board_widget)
+        self.game_board_widget.show()
 
 if __name__ == "__main__":
     import sys
