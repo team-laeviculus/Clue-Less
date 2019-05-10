@@ -11,15 +11,22 @@ from http import HTTPStatus
 import traceback
 from Databases.db_mgmt import CluelessDB
 from ClueGameBoard.LocalGameBoard import GameBoard
-from Networking.ServerData import GameSession
+from Networking.ServerData import GameSession, ClueLessCommon, log
+from Networking import ServerData as SERV_DAT
 import json
+
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
 
 
 # Games. Tracks all game sessions
-GAME_SESSIONS = defaultdict()
+GAME_SESSIONS = OrderedDict({
+    1: GameSession(1)
+})
+# Tracks registered users by username and game_id
+REGISTERED_PLAYERS = defaultdict()
+
 
 class GameState:
 
@@ -45,7 +52,7 @@ def create_game_tokens():
 
 
 class Player:
-
+    # TODO: Remove Me
     def __init__(self, name):
         self.name = name
         self.data = {
@@ -74,13 +81,13 @@ class GameInfo:
     current_players_turn = 0 # Player dict
     players_turn_name = None
 
-class ClueLessCommon:
+class OLDClueLessCommon:
     """
     DB Controller and game board. Initialized once
     """
     db_controller = None
     game_board = None
-    CLUELESS_MUTEX = None
+    CLUELESS_MUTEX = threading.Lock()
     PLAYER_RANDOM_TOKENS = None
     PLAYER_RANDOM_LOCATION = None
 
@@ -95,24 +102,29 @@ class ClueLessCommon:
     PLAYER_TOKEN_MAP = OrderedDict()
 
     @staticmethod
-    def initialize(reset=False):
+    def initialize(reset=False, db=None):
         """
         Static method to initialize a game board
         :return:
         """
         # TODO: Change this from static to instance based so we can have multiple games
-        if not (ClueLessCommon.db_controller and ClueLessCommon.game_board) or reset is True:
-            ClueLessCommon.db_controller = CluelessDB()
-            ClueLessCommon.db_controller.create_games_table()
-            ClueLessCommon.db_controller.create_player_table()
-            ClueLessCommon.game_board = GameBoard(ClueLessCommon.db_controller)  # GameBoard.create_game_board(ClueLessCommon.db_controller, print_board=True)
-            ClueLessCommon.CLUELESS_MUTEX = threading.Lock()
-            print(ClueLessCommon.TOKENS)
-            ClueLessCommon.PLAYER_RANDOM_TOKENS = random.sample(ClueLessCommon.TOKENS, len(ClueLessCommon.TOKENS))
-            ClueLessCommon.PLAYER_RANDOM_LOCATION = random.sample(ClueLessCommon.ROOMS, len(ClueLessCommon.TOKENS))
-            print(f" Random Tokens: {ClueLessCommon.PLAYER_RANDOM_TOKENS}")
-
-
+        if not (OLDClueLessCommon.db_controller and OLDClueLessCommon.game_board) or reset is True:
+            # OLDClueLessCommon.CLUELESS_MUTEX.acquire()
+            try:
+                OLDClueLessCommon.db_controller = db#CluelessDB()
+                # OLDClueLessCommon.db_controller.create_games_table()
+                # OLDClueLessCommon.db_controller.create_player_table()
+                OLDClueLessCommon.game_board = GameBoard(OLDClueLessCommon.db_controller)  # GameBoard.create_game_board(ClueLessCommon.db_controller, print_board=True)
+                # OLDClueLessCommon.CLUELESS_MUTEX = threading.Lock()
+                # print(OLDClueLessCommon.TOKENS)
+                OLDClueLessCommon.PLAYER_RANDOM_TOKENS = random.sample(OLDClueLessCommon.TOKENS, len(OLDClueLessCommon.TOKENS))
+                OLDClueLessCommon.PLAYER_RANDOM_LOCATION = random.sample(OLDClueLessCommon.ROOMS, len(OLDClueLessCommon.TOKENS))
+                print(f" Random Tokens: {OLDClueLessCommon.PLAYER_RANDOM_TOKENS}")
+            except:
+                traceback.print_exc()
+            finally:
+                pass
+                # OLDClueLessCommon.CLUELESS_MUTEX.release()
     @staticmethod
     def start_game():
         """
@@ -121,37 +133,8 @@ class ClueLessCommon:
         """
 
         # TODO: Change this from static to instance based so we can support multiple games
+        OLDClueLessCommon.db_controller = GAME_SESSIONS[1].game_board.db_conn
 
-        ClueLessCommon.CLUELESS_MUTEX.acquire()
-        try:
-            ClueLessCommon.db_controller.create_suspect_table()
-            ClueLessCommon.db_controller.init_suspects(1)
-            ClueLessCommon.db_controller.create_weapon_table()
-            ClueLessCommon.db_controller.init_weapons(1)
-            ClueLessCommon.db_controller.create_room_table()
-            ClueLessCommon.db_controller.init_rooms(1)
-            ClueLessCommon.db_controller.create_cards_table()
-            ClueLessCommon.db_controller.init_cards(1)
-            ClueLessCommon.db_controller.create_notebook_table()
-
-            # initialize case file
-            ClueLessCommon.db_controller.create_case_file_table()
-
-            # establish the solution for a game
-            solution_s = random.randint(1, 6)
-            solution_w = random.randint(7, 12)
-            solution_r = random.randint(13, 21)
-
-            ClueLessCommon.db_controller.init_case_file(1, solution_s, solution_w, solution_r)
-
-            ClueLessCommon.db_controller.update_suspects(1, solution_s)
-            ClueLessCommon.db_controller.update_weapons(1, solution_w)
-            ClueLessCommon.db_controller.update_rooms(1, solution_r)
-            ClueLessCommon.db_controller.shuffle_deal_cards(1, GameInfo.game['player_count'], solution_s, solution_w, solution_r)
-            ClueLessCommon.db_controller.create_suggest_log_table()  # only do this at the beginning of the game
-            ClueLessCommon.db_controller.create_accuse_log_table()
-        finally:
-            ClueLessCommon.CLUELESS_MUTEX.release()
     HALLWAYS = ["study_hall",
                 "hall_lounge"
                 "library_billard room",
@@ -184,7 +167,7 @@ class ClueLessCommon:
 
 #### TESTING FUNCTIONS
 
-@app.route("/games/create_game/<game_id>", method=["POST"])
+@app.route("/games/create_game/<game_id>/", methods=["POST"])
 def create_game_test(game_id):
     GAME_SESSIONS[game_id] = GameSession(int(game_id))
     return "Game Session Created", GAME_SESSIONS[game_id]
@@ -223,6 +206,7 @@ def get_game_info():
         player = content['name']
         print(f"Player joined: {player}")
         res = handle_player_join(content)
+        print(f"CREATE PROFILE: {res}")
         return jsonify(res)
 
     elif request.method == "PUT":
@@ -278,14 +262,14 @@ def on_post_turn_info():
     # TODO: HTTP Status Codes
     req = request.get_json()
     print(f"[POST][Turn]: {req}")
-    ClueLessCommon.CLUELESS_MUTEX.acquire()
+    OLDClueLessCommon.CLUELESS_MUTEX.acquire()
     resp = None
     try:
-        if ClueLessCommon.game_board.check_if_legal_move(
+        if OLDClueLessCommon.game_board.check_if_legal_move(
                 req['location'],
                 req['request']['move_to_location']):
             print("Move is legal")
-            ClueLessCommon.db_controller.update_player_location(req['name'], req['request']['move_to_location'])
+            OLDClueLessCommon.db_controller.update_player_location(req['name'], req['request']['move_to_location'])
             # ClueLessCommon.game_board
             resp = jsonify(get_next_turn())
         else:
@@ -293,7 +277,7 @@ def on_post_turn_info():
     except:
         traceback.print_exc()
     finally:
-        ClueLessCommon.CLUELESS_MUTEX.release()
+        OLDClueLessCommon.CLUELESS_MUTEX.release()
     print(f"Server Response to Turn: {resp}")
     return resp
 
@@ -315,6 +299,7 @@ def on_players_request_method():
     if request.method == "POST":
         # Adds a new player
         content = request.get_json()
+        print(f"/game/players [POST]: {content}")
         if not content:
             # Used for Unit Testing, because for some reason get_json doesnt work out of the box
             try:
@@ -323,9 +308,21 @@ def on_players_request_method():
                 pass
         if content and 'name' in content:
             player = content['name']
-            print(f"Player joined: {player}")
-            res, status = handle_player_join(content)
-            return jsonify(res), status
+            # If username already exists:
+            if player in REGISTERED_PLAYERS:
+                log.warning(f"Username {player} has already been registered")
+                return "Name Taken", HTTPStatus.BAD_REQUEST
+
+            log.info(f"Player joined: {player}")
+            # TODO: Do we automatically want to throw them in a game?
+            game_sess = get_game_session()
+            REGISTERED_PLAYERS[player] = game_sess
+            p_add_r = game_sess.add_player(player)
+            # res, status = handle_player_join(content)
+            print(f"Add Return: {p_add_r.data}")
+            resp = dict(p_add_r.data)
+            resp['game_id'] = game_sess.game_id
+            return jsonify(resp), HTTPStatus.OK
 
         return "Error! Invalid Player Message.", HTTPStatus.BAD_REQUEST
 
@@ -348,16 +345,16 @@ def handle_player_join(rquest_data):
         # token name and player starting location
         # TODO: Handle Client Side asking for player to pick token name and starting location
         p = Player(rquest_data['name']).get_player()
-        p['token'] = ClueLessCommon.PLAYER_RANDOM_TOKENS.pop()
-        p['location'] = ClueLessCommon.PLAYER_RANDOM_LOCATION.pop()
-        ClueLessCommon.PLAYER_TOKEN_MAP[p['token']] = p['name']
-        ClueLessCommon.db_controller.put_player_in_game(p['name'])
+        p['token'] = OLDClueLessCommon.PLAYER_RANDOM_TOKENS.pop()
+        p['location'] = OLDClueLessCommon.PLAYER_RANDOM_LOCATION.pop()
+        OLDClueLessCommon.PLAYER_TOKEN_MAP[p['token']] = p['name']
+        OLDClueLessCommon.db_controller.put_player_in_game(p['name'])
         GameInfo.game['players'][rquest_data['name']] = p
         GameInfo.game['player_count'] += 1
         # Start a game when some number of players have joined
         if GameInfo.game['player_count'] >= 3:
             GameState.CURRENT_STATE = GameState.GAME_RUNNING
-            ClueLessCommon.start_game()
+            OLDClueLessCommon.start_game()
             print("Game Full STARTING!!")
             #GameInfo.players_turn_name = get_next_turn()
             print(f"First Player is: {GameInfo.players_turn_name}")
@@ -411,7 +408,7 @@ def get_next_turn():
 
     :return: the self.player[<playername>] object of player whose turn it is
     """
-    ClueLessCommon.CLUELESS_MUTEX.acquire()
+    OLDClueLessCommon.CLUELESS_MUTEX.acquire()
 
     print("get_next_turn")
     if GameState.CURRENT_STATE == GameState.GAME_RUNNING:
@@ -430,12 +427,12 @@ def get_next_turn():
             print(f"Player: {this_players_turn} next")
 
             # TODO: Notify player its their turn
-            ClueLessCommon.db_controller.update_active_turn(this_players_turn[0])
+            OLDClueLessCommon.db_controller.update_active_turn(this_players_turn[0])
             print("DB stuff done")
         except:
             traceback.print_exc()
         finally:
-            ClueLessCommon.CLUELESS_MUTEX.release()
+            OLDClueLessCommon.CLUELESS_MUTEX.release()
 
         return this_players_turn
     elif GameState.CURRENT_STATE == GameState.WAITING_FOR_PLAYERS:
@@ -451,12 +448,29 @@ def get_next_turn():
     return False
 
 
+def get_game_session():
+    """
+    Gets a game session object to add players to, or creates a new one if full
+    :return: GameSession Reference
+    """
+    game_id = next(reversed(GAME_SESSIONS))
+    game_sess = GAME_SESSIONS[game_id]
+    # Get the last item added to sessions list, if joinable that session is returned,
+    # otherwise a new one is created
+    if game_sess.game_state.CURRENT_STATE == SERV_DAT.GameState.WAITING_FOR_PLAYERS \
+            and game_sess.player_count < ClueLessCommon.MAX_NUMBER_OF_PLAYERS:
+        print(f"get_game_session: Returned game session {game_sess.game_id}")
+        return game_sess
+    new_id = game_id + 1
+    GAME_SESSIONS[new_id] = GameSession(new_id)
+    print(f"Created a new game session with id: {new_id}")
+    return GAME_SESSIONS[new_id]
 """
 Initialize server constants
 """
 def start_server():
     print("Starting Server......")
-    ClueLessCommon.initialize()
+    OLDClueLessCommon.initialize()
     app.run()
 
 if __name__ == "__main__":

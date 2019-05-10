@@ -2,7 +2,7 @@ import threading
 import random
 import traceback
 
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from Databases.db_mgmt import CluelessDB
 from ClueGameBoard.LocalGameBoard import GameBoard
 from Logs.Logging import create_server_logger
@@ -249,6 +249,9 @@ class GameSession:
                 self.game_session.CLUELESS_MUTEX.release()
 
             self.__add_player()
+            return self.player_data[player_name]
+
+
 
         else:
             # This should never happen, if games being full is properly handled
@@ -274,6 +277,7 @@ class GameSession:
                 self.timeout_timer_thread.start()
                 self.timer_running = True
                 # self.game_state = Cl
+
 
 
 

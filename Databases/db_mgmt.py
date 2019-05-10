@@ -6,7 +6,17 @@ import sys
 import traceback
 import os
 
-class CluelessDB(object):
+
+class CluelessDB:
+    # Ensures Only a single instance of this class will exist over lifetime of the server
+
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = object.__new__(CluelessDB)
+        return cls._instance
+
     # this class is used to create an empty database with 10 tables for the game
     def __init__(self, db_name='file::memory:?cache=shared'):
         try:
