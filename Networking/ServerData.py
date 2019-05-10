@@ -277,6 +277,19 @@ class GameSession:
                 self.timeout_timer_thread.start()
                 self.timer_running = True
                 # self.game_state = Cl
+    def get_game_state_json(self):
+        current_turn = None
+        # if self.current_player_turn in self.player_data:
+        #     current_turn = self.player_data[self.current_player_turn]
+        # else:
+        #     current_turn = self.player_data[0]
+        return {
+            'game_id': self.game_id,
+            'state': self.game_state.get_state(),
+            'players': {name: pdata.data for name, pdata in self.player_data.items()},
+            'player_count': self.player_count,
+            'turn': "none"
+        }
 
 
 

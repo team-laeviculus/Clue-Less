@@ -189,6 +189,13 @@ def get_status(game_id):
 
 @app.route("/games/<game_id>/game_state", methods=["GET"])
 def on_get_game_state(game_id):
+    print(f"getting game state for game {game_id}")
+    game_id = int(game_id)
+    if game_id in GAME_SESSIONS:
+        state = GAME_SESSIONS[int(game_id)].get_game_state_json()
+        return jsonify(state), HTTPStatus.OK
+    else:
+        print(f"Couldnt find anything for game {game_id}")
     return jsonify("NULL")
 
 
@@ -311,7 +318,7 @@ def on_players_request_method():
             # If username already exists:
             if player in REGISTERED_PLAYERS:
                 log.warning(f"Username {player} has already been registered")
-                return "Name Taken", HTTPStatus.BAD_REQUEST
+                return jsonify({"name": player, "error": "name taken"}), HTTPStatus.BAD_REQUEST
 
             log.info(f"Player joined: {player}")
             # TODO: Do we automatically want to throw them in a game?

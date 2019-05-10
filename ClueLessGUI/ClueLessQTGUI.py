@@ -40,11 +40,11 @@ class MainWindow(QMainWindow):
         self.game_board_ui = Ui_ClueGameBoard()
         self.game_board_ui.setupUi(self.game_board_widget)
 
+        self.game_status = self.game_board_ui.game_status_window
+        self.chat_window = self.game_board_ui.chat_text_display_box
 
+        # Set the widget being displayed to the login form
         self.setCentralWidget(self.login_form_widget)
-
-
-
 
         self.dialogs = list()
         #
@@ -63,42 +63,58 @@ class MainWindow(QMainWindow):
         # self.send_message_button.clicked.connect(self.send_message_callback)
         # self.make_suggestion_button.clicked.connect(self.make_suggestion_callback)
         # self.make_accusation_button.clicked.connect(self.make_accusation_callback)
-        self.clue_login_window.create_profile_button.clicked.connect(self.start_clue_gui)
+
+        # Create Profile, also accepts enter button
+        self.clue_login_window.create_profile_button.clicked.connect(self.login_button_callback)
         self.clue_login_window.username_input_field.returnPressed.connect(
             self.clue_login_window.create_profile_button.click)
 
 
 
     def create_profile_callback(self, reply):
-        # print(f"Error code: {reply.error}")
+        """
+        ClientNetworking Callback for creating a profile
+        :param reply:
+        :return:
+        """
         try:
             data, er = ClientNetworking.reply_to_json(reply)
             status_window = self.clue_login_window.create_profile_server_status_label
 
+            def error_message(msg: str):
+                status_window.setStyleSheet("QLabel { font: 9pt; color: red }")
+                status_window.setText(msg)
             # Success!!!
             if er == QtNetwork.QNetworkReply.NoError:
                 print(f"Created profile for {data['name']}")
                 status_window.clear()
                 status_window.setStyleSheet("QLabel { font-weight: bold; color: green }")
-                status_window.setText(f"Profile {data['name']} created! Entering game in 3s")
+                status_window.setText(f"Profile {data['name']} created! Entering game {data['game_id']} in 1s")
                 app.processEvents()
-                time.sleep(3)
+                time.sleep(1)
 
                 self.login_form_widget.hide()
                 self.setCentralWidget(self.game_board_widget)
                 self.game_board_widget.show()
+                self.update_game_status("Waiting for players to join...")
+                self.add_message_to_chat_window(f"Player: {data['name']} joined the game!")
+                # Start repeated requests for game updates
+                self.networking.set_game_id(data['game_id'])
+                self.networking.start_server_status_tick()
 
+
+                # Populate the chat window with some initial messages
 
             elif er == QtNetwork.QNetworkReply.ProtocolInvalidOperationError:
-                print(f"Name Taken!!!")
-                status_window.setStyleSheet("QLabel { font-weight: bold; color: red }")
-                status_window.setText(f"Error! Name Already Taken.")
+                error_message(f"Error! {data['name']} Already Taken.")
 
+            elif er == QtNetwork.QNetworkReply.ConnectionRefusedError:
+                error_message(f"{reply.errorString()} - {self.networking.base_url}")
             else:
-                print(f"Other Error: {er}")
+                error_message(f"Unhandled Error: {reply.errorString()}")
 
         except Exception as e:
-            print(f"ExceptioN: {e}")
+            print(f"Exception! {e}")
             traceback.print_exc()
 
 
@@ -119,24 +135,30 @@ class MainWindow(QMainWindow):
         print("Login called")
         print(f"TEXT entered: {self.clue_login_window.username_input_field.text()}")
 
-    def start_clue_gui(self):
+    def login_button_callback(self):
         """
-        launches main game
+        login button click (or enter key press) callback. Calls ClientNetworking to register
+        another callback function.
         :return:
         """
-        requested_profile_name = self.clue_login_window.username_input_field.text()
-        print(f"TEXT entered: {requested_profile_name}")
-        try:
-            self.networking.post_json("/games/players", json.dumps({"name": requested_profile_name}), self.create_profile_callback)
-        except Exception as e:
-            print(f"ERROR {e}")
-            traceback.print_exc()
+        self.profile_name = self.clue_login_window.username_input_field.text()
+        status_label = self.clue_login_window.create_profile_server_status_label
+        status_label.setStyleSheet("QLabel { color: yellow }")
+        status_label.setText("Connecting to server...")
+
+        print(f"Profile name entered: {self.profile_name}")
+        self.networking.post_json("/games/players", json.dumps({"name": self.profile_name}), self.create_profile_callback)
 
 
-        # self.login_form_widget.hide()
-        # self.setCentralWidget(self.game_board_widget)
-        # self.game_board_widget.show()
+    def update_game_status(self, msg: str):
+        print(f"Game Status updated: {msg}")
+        self.game_status.setText(msg)
 
+    def add_message_to_chat_window(self, msg: str):
+        print(f"New game chat status {msg}")
+        self.chat_window.setText(self.chat_window.text() + f"\n{msg}")
+
+# Main application window context
 app = QtWidgets.QApplication(sys.argv)
 main_window = MainWindow()
 main_window.show()
