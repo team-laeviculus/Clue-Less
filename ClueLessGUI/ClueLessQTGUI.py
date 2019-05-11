@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         QMainWindow.__init__(self)
-        self.setMinimumSize(QtCore.QSize(1464, 949))
+        self.setMinimumSize(QtCore.QSize(900, 450))
         self.setMaximumSize(QtCore.QSize(1464, 949))
         self.networking = ClientNetworking(self)
 
@@ -96,6 +96,7 @@ class MainWindow(QMainWindow):
                 self.login_form_widget.hide()
                 self.setCentralWidget(self.game_board_widget)
                 self.game_board_widget.show()
+                self.setWindowTitle(f"ClueLess Prototype - {self.networking.game_id}")
                 self.update_game_status("Waiting for players to join...")
                 self.add_message_to_chat_window(f"Player: {data['name']} joined the game!")
                 # Start repeated requests for game updates
