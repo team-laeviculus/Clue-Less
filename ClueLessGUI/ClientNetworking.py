@@ -43,6 +43,7 @@ class ClientNetworking:
         except Exception as e:
             print(f"Error: {e}")
             traceback.print_exc()
+
     def get(self, path, callback):
         req = QtNetwork.QNetworkRequest(QUrl(self.base_url + path))
         self.net_manager.finished.connect(callback)

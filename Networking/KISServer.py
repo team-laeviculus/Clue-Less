@@ -165,10 +165,27 @@ class OLDClueLessCommon:
 
     ROOM_MAP = OrderedDict({k: v for k, v in enumerate(ROOMS)})
 
-#### TESTING FUNCTIONS
+
+def get_game_by_id(game_id):
+    """
+    Checks GAME_SESSIONS for game.
+    :param game_id: gameID passed by client
+    :return: GameSession for game_id or None if it doesnt exist
+    """
+    sess = None
+    try:
+        game_id = int(game_id)
+        if game_id in GAME_SESSIONS:
+            sess = GAME_SESSIONS[game_id]
+    except Exception as e:
+        log.error(f"Exception on __get_game_by_id: function given {game_id}. Exception - {e}")
+        traceback.print_exc()
+    finally:
+        return sess
 
 @app.route("/games/create_game/<game_id>/", methods=["POST"])
 def create_game_test(game_id):
+    # TODO: Exception handling
     GAME_SESSIONS[game_id] = GameSession(int(game_id))
     return "Game Session Created", GAME_SESSIONS[game_id]
 
@@ -185,6 +202,14 @@ def get_status(game_id):
     return game_id, HTTPStatus.OK
 
 
+@app.route("/games/<game_id>/turn", methods=["GET"])
+def get_current_turn_for_game(game_id):
+    game = get_game_by_id(game_id)
+    if game:
+        return jsonify(game.get_current_turn()), HTTPStatus.OK
+    return jsonify({
+        "error": f"game id {game_id} does not exist"
+    }), HTTPStatus.BAD_REQUEST
 
 
 @app.route("/games/<game_id>/game_state", methods=["GET"])

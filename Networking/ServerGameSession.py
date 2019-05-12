@@ -254,7 +254,7 @@ class GameSession:
         if self.game_state == GameState.READY or self.game_state == GameState.ACTIVE:
             this_players_turn = list(self.players.items())[self.player_turn]
             this_players_turn[1]["my_turn"] = True
-            log.info(f"New Player Turn: {this_players_turn}")
+            log.info(f"New Current Players Turn: {this_players_turn}")
             self.db_controller.update_active_turn(this_players_turn[0])
             self.player_turn = (self.player_turn + 1) % self.player_count
             # TODO: Notify player its their turn

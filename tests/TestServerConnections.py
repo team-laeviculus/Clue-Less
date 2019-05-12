@@ -49,10 +49,21 @@ class BasicServerTest(unittest.TestCase):
         r = self.app.delete(qry, json=player_data)
         return r
 
+    def add_player_to_game(self, player_data):
+        print(f"Adding player: {player_data}")
+        r = self.app.post(self.server_url + "/games/players", json=player_data)
+        print(f"[join][{player_data['name']} - Response: {r.get_json()}")
+        return r
 
     """
     Test Cases
     """
+
+    def test_new_addPlayers(self):
+        r1 = self.add_player_to_game({'name': "tom"})
+        r2 = self.add_player_to_game({'name': 'joe'})
+        r3 = self.add_player_to_game({'name': 'jim'})
+
 
     # Dummy test
     def test_root_query(self):

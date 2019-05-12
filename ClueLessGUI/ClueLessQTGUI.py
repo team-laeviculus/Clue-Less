@@ -14,6 +14,7 @@ import json
 import traceback
 import time
 import sys
+app = None # Main Qt context
 
 nearby_elements = ["roomStudy", "roomHall"]
 
@@ -23,9 +24,19 @@ class GameWindow(QtGui.QWindow):
         print("Creating GameWindow")
 
 
+# For updating game status text
+class StatusMessageType:
+    Good = "green"
+    Normal = "black"
+    Warning = "yellow"
+    Error = "red"
+
+
 class MainWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, qtcontext):
+        self.app = qtcontext
+
         QMainWindow.__init__(self)
         self.setMinimumSize(QtCore.QSize(900, 450))
         self.setMaximumSize(QtCore.QSize(1464, 949))
@@ -101,7 +112,7 @@ class MainWindow(QMainWindow):
                 status_window.clear()
                 status_window.setStyleSheet("QLabel { font-weight: bold; color: green }")
                 status_window.setText(f"Profile {data['name']} created! Entering game {data['game_id']} in 1s")
-                app.processEvents()
+                self.app.processEvents()
                 time.sleep(1)
 
                 self.login_form_widget.hide()
@@ -172,17 +183,19 @@ class MainWindow(QMainWindow):
         print(f"Profile name entered: {self.profile_name}")
         self.networking.post_json("/games/players", json.dumps({"name": self.profile_name}), self.create_profile_callback)
 
-
-    def update_game_status(self, msg: str):
+    def update_game_status(self, msg: str, message_type: StatusMessageType = StatusMessageType.Normal):
         print(f"Game Status updated: {msg}")
         self.game_status.setText(msg)
+        self.game_status.setStyleSheet(f"color: {message_type}")
 
-    def add_message_to_chat_window(self, msg: str):
+    def add_message_to_chat_window(self, msg: str, type: str="N"):
         print(f"New game chat status {msg}")
-        self.chat_window.setText(self.chat_window.text() + f"\n{msg}")
+        self.chat_window.setText(self.chat_window.text() + f"\n[{type}]: {msg}")
 
-# Main application window context
-app = QtWidgets.QApplication(sys.argv)
-main_window = MainWindow()
-main_window.show()
-sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    # Main application window context
+    app = QtWidgets.QApplication(sys.argv)
+    main_window = MainWindow(app)
+    main_window.show()
+    sys.exit(app.exec_())

@@ -142,6 +142,11 @@ class Player:
         # TODO: Starting location fixed by token. Not a player choice
         self.data['location'] = location
 
+    def get_json(self):
+        return {
+            'name': self.name,
+            'data': self.data
+        }
 
 
 class GameSession:
@@ -152,11 +157,14 @@ class GameSession:
 
     def __init__(self, game_id: int):
         self.game_id = game_id
-        self.player_count = 0
-        self.current_player_turn = -1
-        self.player_data = OrderedDict()
-        self.game_board = GameBoard(ClueLessCommon.db_controller)
-        self.game_state = GameState()
+
+        # Active Game Info
+        self.player_count = 0  # Number of Players
+        self.current_player_turn = -1  # Current Players turn (-1 until game starts)
+        self.players_turn_name = None
+        self.player_data = OrderedDict()  # Holds an ordered list of players
+        self.game_board = GameBoard(ClueLessCommon.db_controller)  # DB connection
+        self.game_state = GameState()  # Game State Object
 
         # Timeout timer with callback to start game
         self.timer_running = False
@@ -164,7 +172,6 @@ class GameSession:
             ClueLessCommon.TIMEOUT_TIME,
             self.start_game
         )
-
         game_session = ClueLessCommon()  # Singleton, so if it already exists, we just return it
         game_session.CLUELESS_MUTEX.acquire()
 
@@ -190,6 +197,8 @@ class GameSession:
             game_session.CLUELESS_MUTEX.release()
 
         self.game_session = game_session
+        log.debug(f"New GameSession created with object ID: {self.game_id}")
+
 
     def _generate_solution(self):
         """
@@ -210,8 +219,8 @@ class GameSession:
         """
         if self.timer_running:
             self.timeout_timer_thread.cancel()
+            log.debug(f"[game: {self.game_id}]: Canceling timer... is canceled? {self.timeout_timer_thread.is_alive()}")
         db_conn = self.game_session.db_controller
-
         self.game_session.CLUELESS_MUTEX.acquire()
         try:
             db_conn.shuffle_deal_cards(
@@ -224,18 +233,25 @@ class GameSession:
 
             db_conn.create_suggest_log_table()
             db_conn.create_accuse_log_table()
+
+            self.game_state.set_state(GameState.GAME_RUNNING)
+            self.get_next_turn()
+            log.debug(f"[game: {self.game_id}]: Game started")
         except Exception as e:
-            print(f"GameSession start_game Exception: {e}")
+            log.error(f"GameSession start_game Exception: {e}")
             traceback.print_exc()
         finally:
             self.game_session.CLUELESS_MUTEX.release()
+
+
 
     def add_player(self, player_name: str):
         """
         Adds a player to game session storage and to DB
         :param player_name:
-        :return:
+        :return: Player object which was just added
         """
+        log.debug(f"[game: {self.game_id}]: Attempting to add player {player_name}")
         # TODO: Figure out how to add players better? Integrate with Game Board
         if self.player_count < ClueLessCommon.MAX_NUMBER_OF_PLAYERS:
             log.debug(f"Adding player {player_name}")
@@ -249,13 +265,13 @@ class GameSession:
                 self.game_session.CLUELESS_MUTEX.release()
 
             self.__add_player()
+            log.debug(f"[game: {self.game_id}]: Player {player_name} added")
             return self.player_data[player_name]
-
-
 
         else:
             # This should never happen, if games being full is properly handled
             # at the server level.
+            log.fatal(f"[game: {self.game_id}]: Game is full!")
             raise Exception(f"Game-{self.game_id}: add_player exception! Game Full")
 
     def __add_player(self):
@@ -264,7 +280,7 @@ class GameSession:
         :return:
         """
         if self.player_count >= ClueLessCommon.MIN_NUMBER_OF_PLAYERS:
-            log.info("Starting timeout timer")
+            log.info(f"[game: {self.game_id}]: Starting timeout timer")
             if self.timer_running:
                 self.timeout_timer_thread.cancel()
                 self.timeout_timer_thread = threading.Timer(
@@ -273,11 +289,54 @@ class GameSession:
                 )
                 self.timeout_timer_thread.start()
             else:
-                log.info("Starting timeout timer for first time")
+                log.info(f"[game: {self.game_id}]: Starting timeout timer for first time")
                 self.timeout_timer_thread.start()
                 self.timer_running = True
                 # self.game_state = Cl
+
+    def get_next_turn(self):
+        """
+        Rotates around by player count in the game to determine the turn.
+
+        :return: the self.player[<playername>] object of player whose turn it is
+        or None if game not ready
+        """
+        state = self.game_state.get_state()
+        log.info(f"[game: {self.game_id}]: get_next_turn. Current state is {state}")
+
+        if state == GameState.GAME_RUNNING:
+            if self.players_turn_name is None or self.current_player_turn == -1:
+                # Assign the first player whose turn it will be
+                log.info(f"[game: {self.game_id}]: players turn is none, setting first players turn")
+                self.players_turn_name = next(iter(self.player_data.items()))[0]
+                self.current_player_turn = 0
+
+            this_players_turn = list(self.player_data.items())[self.current_player_turn]
+            # this_players_turn[1]["my_turn"] = True
+            log.info(f"[game: {self.game_id}]: New Current Players Turn: {this_players_turn}")
+            self.__set_next_players_turn_in_db(this_players_turn[0])
+            self.current_player_turn = (self.current_player_turn + 1) % self.player_count
+            log.info(f"[game: {self.game_id}]: Players Turn set!")
+            return this_players_turn
+
+        log.info(f"[game: {self.game_id}]: Game state is not ready to return a players turn")
+        return None
+
+    # -----------------------------------------------------------------
+    #                       Helper Functions
+    # -----------------------------------------------------------------
+    def __set_next_players_turn_in_db(self, player_name: str):
+        self.game_session.db_controller.update_active_turn(player_name)
+
+    # -----------------------------------------------------------------
+    #                    JSON Message Creators
+    # -----------------------------------------------------------------
+
     def get_game_state_json(self):
+        """
+        Creates a json object representing the game state
+        :return: JSON object representing game state
+        """
         current_turn = None
         # if self.current_player_turn in self.player_data:
         #     current_turn = self.player_data[self.current_player_turn]
@@ -288,7 +347,22 @@ class GameSession:
             'state': self.game_state.get_state(),
             'players': {name: pdata.data for name, pdata in self.player_data.items()},
             'player_count': self.player_count,
-            'turn': "none"
+            'turn': self.get_current_turn(True)
+        }
+
+    def get_current_turn(self, player_only=False):
+        turn = {'name': "None"}
+        if self.players_turn_name:
+            print(f"Player name: {self.players_turn_name[0]}")
+            turn = self.player_data[self.players_turn_name].get_json()
+
+        print(f"Turn Info")
+        if player_only:
+            return turn
+        return {
+            'game_id': self.game_id,
+            'state': self.game_state.get_state(),
+            'turn': turn
         }
 
 

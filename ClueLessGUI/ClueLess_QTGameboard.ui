@@ -1,0 +1,1845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ClueGameBoard</class>
+ <widget class="QDialog" name="ClueGameBoard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1261</width>
+    <height>949</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>900</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1464</width>
+    <height>949</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Verdana</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
+  <property name="acceptDrops">
+   <bool>false</bool>
+  </property>
+  <property name="windowTitle">
+   <string>ClueLess by Team Laeviculus</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(38, 38, 38);</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0" rowspan="3">
+    <widget class="QGroupBox" name="left_side_layout">
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>450</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Verdana</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(198, 198, 198);</string>
+     </property>
+     <property name="title">
+      <string>Messages</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="chat_text_display_box">
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(170, 255, 255);
+color: rgb(0, 0, 0);</string>
+        </property>
+        <property name="text">
+         <string>Greetings !!!....Welcome to ClueLess</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="margin">
+         <number>2</number>
+        </property>
+        <property name="indent">
+         <number>2</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="message_input_text_box">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(255, 255, 127);</string>
+        </property>
+        <property name="inputMethodHints">
+         <set>Qt::ImhNone</set>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="send_message_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Verdana</family>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(203, 203, 203);</string>
+        </property>
+        <property name="text">
+         <string>Send</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="quit_game_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Verdana</family>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(179, 179, 179);</string>
+        </property>
+        <property name="text">
+         <string>Quit Game</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="2" rowspan="3">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QWidget" name="gbNotebook" native="true">
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(216, 216, 216);</string>
+       </property>
+       <widget class="QCheckBox" name="chkMissScarlet">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>30</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Miss Scarlet</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkColMustard">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>60</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Col Mustard</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkMrsWhite">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>90</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Mrs. White</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkMrGreen">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>120</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Mr. Green</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkMrsPeacock">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>150</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Mrs. Peacock</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkProfPlum">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>180</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Prof. Plum</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkRevolver">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>330</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Revolver</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkCandlestick">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>240</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Candlestick</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkLeadPipe">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>300</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Lead Pipe</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkWrench">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>390</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Wrench</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkRope">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>360</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Rope</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkKnife">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>270</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Knife</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkLibrary">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>600</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Library</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkConservatory">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>570</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Conservatory</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkLounge">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>450</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Lounge</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkDiningRoom">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>480</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Dining Room</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkKitchen">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>510</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Kitchen</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkBallroom">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>540</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Ballroom</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkHall">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>660</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Hall</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkStudy">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>630</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Study</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkBilliardRoom">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>690</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Billiard Room</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestStudy">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>630</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestDiningRoom">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>480</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestLibrary">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>600</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestProfPlum">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>180</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestBilliardRoom">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>690</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestRevolver">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>330</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestMissScarlet">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>30</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestKitchen">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>510</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestMrsPeacock">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>150</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestMrGreen">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>120</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestHall">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>660</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestWrench">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>390</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestBallroom">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>540</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestConservatory">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>570</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestMrsWhite">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>90</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestKnife">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>270</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestLounge">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>450</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestRope">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>360</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestCandlestick">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>240</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestColMustard">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>60</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="chkSuggestLeadPipe">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>300</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="make_suggestion_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>70</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(198, 198, 198);</string>
+       </property>
+       <property name="text">
+        <string>Make Suggestion</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="make_accusation_button">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>70</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(198, 198, 198);</string>
+       </property>
+       <property name="text">
+        <string>Make Accusation</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLabel" name="game_status_window">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Verdana</family>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(156, 156, 156);
+border: 1px solid black;</string>
+     </property>
+     <property name="text">
+      <string>Waiting for game...</string>
+     </property>
+     <property name="indent">
+      <number>2</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QWidget" name="card_holder_hlayout" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="card_1">
+        <property name="font">
+         <font>
+          <family>Papyrus</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 170, 127);
+color: rgb(0, 0, 0);
+border: 1px solid brown;</string>
+        </property>
+        <property name="text">
+         <string>Col Mustard</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="card_2">
+        <property name="font">
+         <font>
+          <family>Papyrus</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 170, 127);
+color: rgb(0, 0, 0);
+border: 1px solid brown;</string>
+        </property>
+        <property name="text">
+         <string>Prof Plum</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="card_3">
+        <property name="font">
+         <font>
+          <family>Papyrus</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 170, 127);
+color: rgb(0, 0, 0);
+border: 1px solid brown;</string>
+        </property>
+        <property name="text">
+         <string>Lead Pipe</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="card_4">
+        <property name="font">
+         <font>
+          <family>Papyrus</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 170, 127);
+color: rgb(0, 0, 0);
+border: 1px solid brown;</string>
+        </property>
+        <property name="text">
+         <string>Revolver</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="card_5">
+        <property name="font">
+         <font>
+          <family>Papyrus</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 170, 127);
+color: rgb(0, 0, 0);
+border: 1px solid brown;</string>
+        </property>
+        <property name="text">
+         <string>Library</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="card_6">
+        <property name="font">
+         <font>
+          <family>Papyrus</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 170, 127);
+color: rgb(0, 0, 0);
+border: 1px solid brown;</string>
+        </property>
+        <property name="text">
+         <string>Study</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="gbGameboard">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>700</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777214</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Verdana</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="acceptDrops">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(186, 186, 186);</string>
+     </property>
+     <property name="title">
+      <string>Gameboard</string>
+     </property>
+     <widget class="QLabel" name="suspectMrsPeacock">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>90</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/blue_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="suspectMissScarlet">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>90</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/red_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="suspectProfPlum">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>570</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/purple_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="suspectColMustard">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>570</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/yellow_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="weaponCandleStick">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>610</y>
+        <width>61</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/candlestick_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="weaponKnife">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>610</y>
+        <width>61</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/knife_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="weaponLeadPipe">
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>620</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/lead_pipe_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="weaponRope">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>130</y>
+        <width>41</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/rope_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="weaponRevolver">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>150</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/revolver_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="weaponWrench">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>150</y>
+        <width>61</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/wrench_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="suspectMrGreen">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>450</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/green_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="suspectMrsWhite">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>210</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 0%);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>Assets/orange_game_piece.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>511</width>
+        <height>661</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item row="0" column="2">
+        <widget class="QLabel" name="roomHall">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(85, 255, 255);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Hall</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="hall5_2">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="buddy">
+          <cstring>groupBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLabel" name="hall5_4">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="roomBallroom">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 170, 127);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Ballroom</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="QLabel" name="roomKitchen">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(85, 170, 255);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Kitchen</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="hall1_2">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLabel" name="hall3_4">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>123</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLabel" name="hall2_5">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="hall4_3">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="hall4_1">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLabel" name="roomDiningRoom">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>123</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 127);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Dining Room</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="hall2_1">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="hall2_3">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="roomLounge">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 170, 0);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Lounge</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QLabel" name="hall4_5">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="roomConservatory">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(170, 170, 255);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Conservatory</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="hall1_4">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>122</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="hall3_2">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>123</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(125, 125, 125);</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="roomLibrary">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>123</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(170, 85, 127);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Library</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="roomBilliardRoom">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>123</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(0, 170, 127);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Billiard Room</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <property name="margin">
+          <number>2</number>
+         </property>
+         <property name="indent">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="roomStudy">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Papyrus</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(170, 170, 127);
+border: 1px solid black;
+color: rgb(0, 0, 0);</string>
+         </property>
+         <property name="text">
+          <string>Study</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="indent">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <zorder>hall4_5</zorder>
+     <zorder>hall2_5</zorder>
+     <zorder>hall2_3</zorder>
+     <zorder>hall4_3</zorder>
+     <zorder>hall4_1</zorder>
+     <zorder>hall2_1</zorder>
+     <zorder>hall5_4</zorder>
+     <zorder>hall5_2</zorder>
+     <zorder>hall3_4</zorder>
+     <zorder>hall3_2</zorder>
+     <zorder>hall1_4</zorder>
+     <zorder>hall1_2</zorder>
+     <zorder>roomStudy</zorder>
+     <zorder>roomHall</zorder>
+     <zorder>roomLounge</zorder>
+     <zorder>roomDiningRoom</zorder>
+     <zorder>roomLibrary</zorder>
+     <zorder>roomBilliardRoom</zorder>
+     <zorder>roomKitchen</zorder>
+     <zorder>roomConservatory</zorder>
+     <zorder>roomBallroom</zorder>
+     <zorder>suspectMrsPeacock</zorder>
+     <zorder>suspectMissScarlet</zorder>
+     <zorder>suspectProfPlum</zorder>
+     <zorder>suspectColMustard</zorder>
+     <zorder>weaponCandleStick</zorder>
+     <zorder>weaponKnife</zorder>
+     <zorder>weaponLeadPipe</zorder>
+     <zorder>weaponRope</zorder>
+     <zorder>weaponRevolver</zorder>
+     <zorder>weaponWrench</zorder>
+     <zorder>suspectMrGreen</zorder>
+     <zorder>suspectMrsWhite</zorder>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
