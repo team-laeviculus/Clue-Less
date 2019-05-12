@@ -3,7 +3,8 @@ Use this file to manipulate generated files so we don't overwrite anything
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtNetwork
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QColorDialog
 
 from PyQt5.QtCore import QSize
 from ClueLessGUI.ClueLess_QTGameboard import Ui_ClueGameBoard
@@ -13,6 +14,8 @@ import json
 import traceback
 import time
 import sys
+
+nearby_elements = ["roomStudy", "roomHall"]
 
 class GameWindow(QtGui.QWindow):
     def __init__(self, parent=None):
@@ -69,7 +72,15 @@ class MainWindow(QMainWindow):
         self.clue_login_window.username_input_field.returnPressed.connect(
             self.clue_login_window.create_profile_button.click)
 
+        self.game_board_ui.make_suggestion_button.clicked.connect(lambda: self.make_suggestion_callback(nearby_array=nearby_elements))
 
+    def doSomething(self, event):
+        print("Got a response")
+        x = event.x()
+        y = event.y()
+
+        location = "x: {0},  y: {1}".format(x, y)
+        print(location)
 
     def create_profile_callback(self, reply):
         """
@@ -118,16 +129,30 @@ class MainWindow(QMainWindow):
             print(f"Exception! {e}")
             traceback.print_exc()
 
-
     def quit_callback(self):
         print("Exiting ClueGameBoard prototype")
         # Dialog.close()
 
+    def showText1(self, event):
+        print("Label 1 clicked")
+
     def send_message_callback(self):
         print("send message clicked")
 
-    def make_suggestion_callback(self):
+    def make_suggestion_callback(self, nearby_array):
         print("Make Suggestion Clicked")
+        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in range(self.game_board_ui.gridLayout.count()))
+        for widget in widgets:
+            for i in nearby_array:
+                if widget.objectName() == i:
+                    new_name = widget.objectName()
+                    widget.setObjectName(new_name + "_moving")
+                    widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+"border: 5px solid yellow;\n"
+"color: rgb(0, 0, 0);")
+        self.game_board_ui.roomStudy.mousePressEvent = self.doSomething
+            #QtGui.QGuiApplication.processEvents()
+        #print(self.game_board_ui.roomStudy.objectName())
 
     def make_accusation_callback(self):
         print("Make Accusation Clicked")
