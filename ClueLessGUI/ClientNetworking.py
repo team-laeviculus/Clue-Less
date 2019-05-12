@@ -69,6 +69,7 @@ class ClientNetworking:
         except Exception as e:
             print(f"GET Exception! {e}")
             traceback.print_exc()
+
     def post_json(self, path, data: str, callback):
         req = QtNetwork.QNetworkRequest(QUrl(self.base_url + path))
         req.setHeader(QtNetwork.QNetworkRequest.ContentTypeHeader, "application/json")

@@ -259,8 +259,9 @@ class MainWindow(QMainWindow):
         print(f"New game chat status {msg}")
         self.chat_window.setText(self.chat_window.text() + f"\n[{type}]: {msg}")
 
+
 if __name__ == "__main__":
-    # Main application window context
+
     app = QtWidgets.QApplication(sys.argv)
     main_window = MainWindow(app)
     main_window.show()
