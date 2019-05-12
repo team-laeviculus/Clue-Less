@@ -277,8 +277,61 @@ class MainWindow(QMainWindow):
         # QtGui.QGuiApplication.processEvents()
         # print(self.game_board_ui.roomStudy.objectName())
 
+    def tmp_make_suggestion_callback(self, nearby_array):
+        print("Make Suggestion Clicked")
+        #From Phillip, get player, weapon, room from user
+        game_id = self.networking.game_id
+        address_string = "/games/" + game_id + "/turn"
+        data_dict = {"name": self.profile_name, "move_type": "accusation",
+                     "move_info": {"player": None, "weapon": None, "room": None}}
+        self.networking.post_json(address_string, json.dumps(data_dict),
+                                  self.get_suggestion_callback)
+
+    def get_suggestion_callback(self, reply):
+        """
+        ClientNetworking Callback for making a suggestion
+        :param reply:
+        :return:
+        """
+        print("\nSUGGESTION CALLBACK CALLED")
+        try:
+            data, er = self.networking.reply_to_json(reply)
+            status_window = self.clue_login_window.create_profile_server_status_label
+
+            def error_message(msg: str):
+                status_window.setStyleSheet("QLabel { font: 9pt; color: red }")
+                status_window.setText(msg)
+
+            # Success!!!
+            if er == QtNetwork.QNetworkReply.NoError:
+                print(f"Returned suggestion data")
+                print(f"Data: {data}")
+
+                #if no error, no status msg about returned suggestion?
+                # TODO: what should this actually do?
+                # Call methods here
+
+            elif er == QtNetwork.QNetworkReply.ProtocolInvalidOperationError:
+                if data:
+                    # error_message(f"Error! {data['name']} Already Taken.")
+                    # Would any deliberate error msgs be returned for this?
+                    pass
+                else:
+                    print("Some other error")
+                    traceback.print_exc()
+            elif er == QtNetwork.QNetworkReply.ConnectionRefusedError:
+                error_message(f"{reply.errorString()} - {self.networking.base_url}")
+            else:
+                error_message(f"Unhandled Error: {reply.errorString()}")
+
+        except Exception as e:
+            print(f"Exception! {e}")
+            traceback.print_exc()
+
+
     def make_accusation_callback(self):
         print("Make Accusation Clicked")
+
 
     def login_callback(self):
         print("Login called")
