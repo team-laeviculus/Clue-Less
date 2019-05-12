@@ -133,9 +133,6 @@ class MainWindow(QMainWindow):
         print("Exiting ClueGameBoard prototype")
         # Dialog.close()
 
-    def showText1(self, event):
-        print("Label 1 clicked")
-
     def send_message_callback(self):
         print("send message clicked")
 
