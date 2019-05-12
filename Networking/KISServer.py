@@ -382,7 +382,7 @@ def on_players_request_method():
             resp['game_id'] = game_sess.game_id
             return jsonify(resp), HTTPStatus.OK
 
-        return "Error! Invalid Player Message.", HTTPStatus.BAD_REQUEST
+        return jsonify({"error": "Error! Invalid Player Message."}), HTTPStatus.BAD_REQUEST
 
 
 

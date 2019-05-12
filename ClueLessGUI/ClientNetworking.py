@@ -87,6 +87,7 @@ class ClientNetworking:
         """
         er = reply.error()
         r_data = None
+        print(f"ERROR: {er}")
         if er == QtNetwork.QNetworkReply.NoError:
             try:
                 print(f"Error Code: {er}")
@@ -104,5 +105,4 @@ class ClientNetworking:
                 reply.deleteLater()
         else:
             print("[reply_to_json]: An error occured!")
-            print(f"Error String: {QtNetwork.QNetworkReply.errorString()}")
         return r_data, er

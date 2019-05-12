@@ -85,6 +85,8 @@ class MainWindow(QMainWindow):
         self.game_board_ui.make_suggestion_button.clicked.connect(
             lambda: self.make_suggestion_callback(nearby_array=nearby_elements))
 
+        self.game_board_ui.make_move_button.clicked.connect(self.make_move_callback)
+
     def doSomething(self, event):
         print("Got a response")
         x = event.x()
@@ -128,12 +130,13 @@ class MainWindow(QMainWindow):
                 if data:
                     error_message(f"Error! {data['name']} Already Taken.")
                 else:
-                    print("Some other error")
+                    error_message(f"Error! Name already taken")
                     traceback.print_exc()
             elif er == QtNetwork.QNetworkReply.ConnectionRefusedError:
                 error_message(f"{reply.errorString()} - {self.networking.base_url}")
             else:
-                error_message(f"Unhandled Error: {reply.errorString()}")
+                error_message(f"Unhandled Error:")
+                # error_message(f"Unhandled Error: {reply.errorString()}")
 
         except Exception as e:
             print(f"Exception! {e}")
@@ -205,6 +208,9 @@ class MainWindow(QMainWindow):
 
     def send_message_callback(self):
         print("send message clicked")
+
+    def make_move_callback(self):
+        print("Make move button Clicked")
 
     def make_suggestion_callback(self, nearby_array):
         print("Make Suggestion Clicked")
