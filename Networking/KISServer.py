@@ -58,7 +58,7 @@ class Player:
         self.data = {
             "name": name,
             "token": None,
-            "location": None
+            "location": None,
         }
 
     def get_player(self):
@@ -183,6 +183,7 @@ def get_game_by_id(game_id):
     finally:
         return sess
 
+
 @app.route("/games/create_game/<game_id>/", methods=["POST"])
 def create_game_test(game_id):
     # TODO: Exception handling
@@ -222,6 +223,31 @@ def on_get_game_state(game_id):
     else:
         print(f"Couldnt find anything for game {game_id}")
     return jsonify("NULL")
+
+
+@app.route("/games/<game_id>/<player_name>/cards", methods=["GET"])
+def get_cards_for_player(game_id, player_name):
+    game = get_game_by_id(game_id)
+    print(f"player_name: {player_name}")
+    print(f"registered players: {REGISTERED_PLAYERS}")
+    print(f"Game: {game}")
+    if game and player_name in REGISTERED_PLAYERS:
+        print(f"Game State: {game.get_state()}")
+        if game.get_state() == SERV_DAT.GameState.GAME_RUNNING:
+            return jsonify({
+                'name': player_name,
+                'cards': game.get_player_cards(player_name)
+            }), HTTPStatus.OK
+        else:
+            return jsonify({
+                "error": "game state is set as not running",
+                "state": game.get_state()
+            }), HTTPStatus.BAD_REQUEST
+    return jsonify({
+        "error": f"Game {game_id} does not exist or player {player_name} is not in game",
+        "game_id": f"{game_id}",
+        "name": player_name
+    }), HTTPStatus.BAD_REQUEST
 
 
 @app.route("/games", methods=["GET", "POST", "PUT"])

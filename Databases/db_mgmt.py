@@ -949,7 +949,7 @@ if __name__ == '__main__':
     msg = db.make_accusation(test_game_num, test_player_num, "Miss Scarlet", "Lead Pipe", "Ballroom")
     print(msg)
 
-    print(db.get_player_by_name('Paul'))
+    print(f"get player by name: {db.get_player_by_name('Paul')}")
     print(db.get_player_location('Paul'))
     print(db.get_game_state())
     #

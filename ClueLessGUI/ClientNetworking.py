@@ -14,6 +14,7 @@ class ClientNetworking:
         self.net_manager = QtNetwork.QNetworkAccessManager()
         self.server_status_timer = QTimer()
         self.game_id = 1
+        self.profile_data = None
 
         self.status_callback = None
 
@@ -30,6 +31,10 @@ class ClientNetworking:
     def set_status_callback(self, function):
         self.status_callback = function
 
+    def set_profile_data(self, data):
+        print(f"Profile name updated from {self.profile_data} to {data}")
+        self.profile_data = data
+
     def get_server_status(self):
         print(f"Getting Server Status on: /games/{self.game_id}/game_state")
         try:
@@ -39,15 +44,31 @@ class ClientNetworking:
             print(f"Error: {e}")
             traceback.print_exc()
 
+    def get_my_cards(self, callback):
+        """
+        Gets the cards for this client (using the set profile name).
+        :return: list of card tuples: [(card_id, card_type, card_info)] or None if there was an error
+        """
+        print(f"Getting Cards from the server")
+        try:
+            self.get(f"/games/{self.game_id}/{self.profile_data['name']}/cards", callback)
+        except Exception as e:
+            print(f"get_my_cards exception: {e}")
+            traceback.print_exc()
+
     def get(self, path, callback):
-        print("\n")
+        print(f"\n")
         print("-"*100)
         print(f"GET {path}")
-        req = QtNetwork.QNetworkRequest(QUrl(self.base_url + path))
+        try:
+            req = QtNetwork.QNetworkRequest(QUrl(self.base_url + path))
 
-        reply = self.net_manager.get(req)
-        reply.finished.connect(lambda: callback(reply))
-
+            reply = self.net_manager.get(req)
+            print(f"GET Callback: {callback}")
+            reply.finished.connect(lambda: callback(reply))
+        except Exception as e:
+            print(f"GET Exception! {e}")
+            traceback.print_exc()
     def post_json(self, path, data: str, callback):
         req = QtNetwork.QNetworkRequest(QUrl(self.base_url + path))
         req.setHeader(QtNetwork.QNetworkRequest.ContentTypeHeader, "application/json")
@@ -81,4 +102,7 @@ class ClientNetworking:
             finally:
                 reply.close()
                 reply.deleteLater()
+        else:
+            print("[reply_to_json]: An error occured!")
+            print(f"Error String: {QtNetwork.QNetworkReply.errorString()}")
         return r_data, er

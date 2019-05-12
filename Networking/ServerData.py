@@ -128,7 +128,8 @@ class Player:
         self.data = {
             "name": name,
             "token": None,
-            "location": None
+            "location": None,
+            "cards": None
         }
 
     def get_player(self):
@@ -274,25 +275,13 @@ class GameSession:
             log.fatal(f"[game: {self.game_id}]: Game is full!")
             raise Exception(f"Game-{self.game_id}: add_player exception! Game Full")
 
-    def __add_player(self):
+    def get_player_cards(self, name):
         """
-        Private helper method for adding player and checking if game should start
-        :return:
+        Returns a list of the players cards from the database
+        :param name: players name as a string
+        :return: list of card tuples: [(card_id, card_type, card_info)]
         """
-        if self.player_count >= ClueLessCommon.MIN_NUMBER_OF_PLAYERS:
-            log.info(f"[game: {self.game_id}]: Starting timeout timer")
-            if self.timer_running:
-                self.timeout_timer_thread.cancel()
-                self.timeout_timer_thread = threading.Timer(
-                    ClueLessCommon.TIMEOUT_TIME,
-                    self.start_game
-                )
-                self.timeout_timer_thread.start()
-            else:
-                log.info(f"[game: {self.game_id}]: Starting timeout timer for first time")
-                self.timeout_timer_thread.start()
-                self.timer_running = True
-                # self.game_state = Cl
+        return self.__get_player_cards(name)
 
     def get_next_turn(self):
         """
@@ -325,8 +314,41 @@ class GameSession:
     # -----------------------------------------------------------------
     #                       Helper Functions
     # -----------------------------------------------------------------
+    def __add_player(self):
+        """
+        Private helper method for adding player and checking if game should start
+        :return:
+        """
+        if self.player_count >= ClueLessCommon.MIN_NUMBER_OF_PLAYERS:
+            log.info(f"[game: {self.game_id}]: Starting timeout timer")
+            if self.timer_running:
+                self.timeout_timer_thread.cancel()
+                self.timeout_timer_thread = threading.Timer(
+                    ClueLessCommon.TIMEOUT_TIME,
+                    self.start_game
+                )
+                self.timeout_timer_thread.start()
+            else:
+                log.info(f"[game: {self.game_id}]: Starting timeout timer for first time")
+                self.timeout_timer_thread.start()
+                self.timer_running = True
+                # self.game_state = Cl
+
     def __set_next_players_turn_in_db(self, player_name: str):
         self.game_session.db_controller.update_active_turn(player_name)
+
+    def __get_player_cards(self, player_name):
+        db = self.game_session.db_controller
+        log.info(f"[get_cards] Getting cards for player: {player_name}")
+        row = db.get_player_by_name(player_name)
+        log.info(f"[get_cards] Player id: {row[2]}")
+        cards = db.get_player_cards(self.game_id, int(row[2]))
+        log.info(f"[get_cards] Cards: {cards}")
+        return cards
+
+
+    def get_state(self):
+        return self.game_state.get_state()
 
     # -----------------------------------------------------------------
     #                    JSON Message Creators

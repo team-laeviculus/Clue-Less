@@ -10,6 +10,7 @@ from PyQt5.QtCore import QSize
 from ClueLessGUI.ClueLess_QTGameboard import Ui_ClueGameBoard
 from ClueLessGUI.QTlogin_window import Ui_ClueLoginWindow
 from ClueLessGUI.ClientNetworking import ClientNetworking
+from Networking.ServerData import GameState
 import json
 import traceback
 import time
@@ -65,6 +66,8 @@ class MainWindow(QMainWindow):
         self.dialogs = list()
 
         self.my_profile = None # Contains name, token, location dict
+        self.my_cards = None
+        self.game_data_initialized = False
 
         ######################################
         ########### Button Actions ###########
@@ -116,6 +119,7 @@ class MainWindow(QMainWindow):
                 self.app.processEvents()
                 self.login_form_widget.hide()
                 self.my_profile = data
+                self.networking.set_profile_data(self.my_profile)  # Hopefully this is passed by reference
                 self.__launch_gameboard(data)
 
                 # Populate the chat window with some initial messages
@@ -144,9 +148,39 @@ class MainWindow(QMainWindow):
         print("\n[Status Update]  CALLBACK CALLED")
         status, err = self.networking.reply_to_json(reply)
         print(f"NEW STATUS [{err}]: {status}")
-        if 'turn' in status:
-            if status['turn']['name'] == self.my_profile['name']:
-                self.update_game_status("Its my Turn!!")
+        if status['state'] == GameState.GAME_RUNNING:
+            if not self.game_data_initialized:
+                print("Initializing Game State")
+                self.init_game_data()
+
+            if 'turn' in status:
+                current_players_turn = status['turn']['name']
+                if current_players_turn == self.my_profile['name']:
+                    self.update_game_status("Its my Turn!!")
+                else:
+                    # Waiting for turn
+                    self.update_game_status(f"Waiting for player {current_players_turn} to finish turn")
+
+    def init_game_data(self):
+        # Called only once when the game starts to get needed data from server
+        print("\n")
+        print("-"*40)
+        print("[init_game_data]: Initializing Game Data")
+        if self.game_data_initialized is False:
+            print("[init_game_data]: initializing cards")
+            self.networking.get_my_cards(self.get_cards_callback)
+
+    def get_cards_callback(self, reply):
+        print(f"\nGET CARDS")
+        print("-"*40)
+        cards, er = self.networking.reply_to_json(reply)
+        print(f"CARDS[{er}]: {cards}")
+        # Sets players cards class variable
+        if not "error" in cards:
+            self.my_cards = cards['cards']
+            self.add_message_to_chat_window(f"My Cards: {self.my_cards}")
+            self.game_data_initialized = True
+
 
     def __launch_gameboard(self, data):
         """
