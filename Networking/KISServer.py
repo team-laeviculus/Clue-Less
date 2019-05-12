@@ -212,6 +212,14 @@ def get_current_turn_for_game(game_id):
         "error": f"game id {game_id} does not exist"
     }), HTTPStatus.BAD_REQUEST
 
+@app.route("/games/<game_id>/turn", methods=["POST"])
+def post_player_turn(game_id):
+    game = get_game_by_id(game_id)
+    turn_data = request.get_json()
+    log.debug(f"post_player_turn - game_{game_id}: {turn_data}")
+    current_players_turn = game.get_current_turn(True)
+
+
 
 @app.route("/games/<game_id>/game_state", methods=["GET"])
 def on_get_game_state(game_id):

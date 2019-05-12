@@ -15,6 +15,7 @@ import json
 import traceback
 import time
 import sys
+from collections import OrderedDict
 
 app = None  # Main Qt context
 
@@ -33,6 +34,46 @@ class StatusMessageType:
     Normal = "black"
     Warning = "yellow"
     Error = "red"
+
+class Notebook:
+    # Class for managing checkboxes on notebook stuff
+    def __init__(self, parent_widget):
+        self.notebook_widget = parent_widget
+        self.check_box_widgets = parent_widget.findChildren(QtWidgets.QCheckBox)
+        print(f"Check boxes: {len(self.check_box_widgets)}. half: {len(self.check_box_widgets) / 2}")
+        self.left_checkboxes = self.check_box_widgets[0:21]
+        self.right_checkboxes = self.check_box_widgets[21:]
+        print(f"Sum: {len(self.left_checkboxes) + len(self.right_checkboxes)}")
+
+        print(f"Left checkboxes: {self.left_checkboxes}")
+        print(f"Right Checkboxes: {self.right_checkboxes}")
+        self.check_boxes = OrderedDict()
+        for i in range(len(self.check_box_widgets) // 2):
+            self.check_boxes[self.check_box_widgets[i].text()] = (self.left_checkboxes[i], self.right_checkboxes[i])
+        # for i in self.check_boxes:
+        #     print(f"Checkbox: {i.text()}:  {i.checkState()}")
+
+    def get_checkbox_pair_by_name(self, name):
+        """
+        Get the pair of checkboxes by name
+        :param name: The widget text name
+        :return: (left checkbox, right checkbox)
+        """
+        if name in self.check_boxes:
+            return self.check_boxes[name]
+        print(f"Error: {name} not found in checkboxes")
+        return None
+
+    def get_checkbox_pair_by_index(self, idx):
+        """
+        Gets a checkbox pair by their integer index
+        :param idx: a number, 0-20
+        :return: (left checkbox, right checkbox)
+        """
+        if idx > 0 and idx <= 20:
+            return (self.left_checkboxes[idx], self.right_checkboxes[idx])
+        print(f"Error {idx} is not within the range of checkbox indices (0-20)")
+        return None
 
 
 class MainWindow(QMainWindow):
@@ -64,6 +105,14 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.login_form_widget)
 
         self.dialogs = list()
+        # Notebook checkboxes
+        self.notebook = Notebook(self.game_board_ui.gbNotebook)
+        print(f"TEST Checkboxes: {self.notebook.get_checkbox_pair_by_index(4)}")
+        print(f"Test by name: {self.notebook.get_checkbox_pair_by_name('Rope')}")
+
+        # for i in range(self.notebook.count()):
+        #     print(f"Adding checkbox widget: {self.notebook.item(i)}")
+        #     self.check_boxes.append(self.notebook.item(i))
 
         self.my_profile = None # Contains name, token, location dict
         self.my_cards = None
