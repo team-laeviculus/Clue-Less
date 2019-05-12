@@ -205,12 +205,17 @@ def get_status(game_id):
 
 @app.route("/games/<game_id>/turn", methods=["GET"])
 def get_current_turn_for_game(game_id):
-    game = get_game_by_id(game_id)
-    if game:
-        return jsonify(game.get_current_turn()), HTTPStatus.OK
+    # game = get_game_by_id(game_id)
+    # if game:
+    #     return jsonify(game.get_current_turn()), HTTPStatus.OK
+    # return jsonify({
+    #     "error": f"game id {game_id} does not exist"
+    # }), HTTPStatus.BAD_REQUEST
     return jsonify({
-        "error": f"game id {game_id} does not exist"
-    }), HTTPStatus.BAD_REQUEST
+               "game_id": game_id,
+               "turn_status": "Success",  # "turn_status": Failure on bad move
+               "message": None,
+               "data_server_rcvd": request.get_json()}), HTTPStatus.OK
 
 @app.route("/games/<game_id>/turn", methods=["POST"])
 def post_player_turn(game_id):
