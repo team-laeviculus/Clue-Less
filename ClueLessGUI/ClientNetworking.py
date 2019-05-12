@@ -1,21 +1,10 @@
-# import requests
-# from http import HTTPStatus
-# import threading
-# import
-# """
-# Module for handling client network events for the GUI
-# """
-# class ClientNetworking:
-#     def __init__(self, output_queue):
-# BASE_URL="http://localhost:5000/"
-# def create_profile(name: str):
-#     url = BASE_URL + "games/players"
-#     threading.Thread.run(requests.post, args=()
 from PyQt5 import QtNetwork
 from PyQt5.QtCore import QCoreApplication, QUrl, QTimer
 import sys
 import json
 import traceback
+import time
+
 
 class ClientNetworking:
 
@@ -24,7 +13,9 @@ class ClientNetworking:
         self.base_url = "http://localhost:5000"
         self.net_manager = QtNetwork.QNetworkAccessManager()
         self.server_status_timer = QTimer()
-        self.game_id = 0
+        self.game_id = 1
+
+        self.status_callback = None
 
     def start_server_status_tick(self, tickrate=300):
         """
@@ -34,32 +25,40 @@ class ClientNetworking:
         :return:
         """
         self.server_status_timer.timeout.connect(self.get_server_status)
-        self.server_status_timer.start(1000)
+        self.server_status_timer.start(tickrate)
+
+    def set_status_callback(self, function):
+        self.status_callback = function
 
     def get_server_status(self):
+        print(f"Getting Server Status on: /games/{self.game_id}/game_state")
         try:
             print(f"game_status tick")
-            self.get(f"/games/{self.game_id}/game_state", lambda data: print("Got some data"))
+            self.get(f"/games/{self.game_id}/game_state", self.status_callback)
         except Exception as e:
             print(f"Error: {e}")
             traceback.print_exc()
 
     def get(self, path, callback):
+        print("\n")
+        print("-"*100)
+        print(f"GET {path}")
         req = QtNetwork.QNetworkRequest(QUrl(self.base_url + path))
-        self.net_manager.finished.connect(callback)
-        self.net_manager.get(req)
+
+        reply = self.net_manager.get(req)
+        reply.finished.connect(lambda: callback(reply))
 
     def post_json(self, path, data: str, callback):
         req = QtNetwork.QNetworkRequest(QUrl(self.base_url + path))
         req.setHeader(QtNetwork.QNetworkRequest.ContentTypeHeader, "application/json")
-        self.net_manager.finished.connect(callback)
-        self.net_manager.post(req, data.encode('utf-8'))
+        reply = self.net_manager.post(req, data.encode('utf-8'))
+
+        reply.finished.connect(lambda: callback(reply))
 
     def set_game_id(self, gid: str):
         self.game_id = gid
 
-    @staticmethod
-    def reply_to_json(reply):
+    def reply_to_json(self, reply):
         """
         Converts an QNetworkReply objects data to JSON
         :param reply: QNetworkReply object (passed via connect())
@@ -71,11 +70,15 @@ class ClientNetworking:
             try:
                 print(f"Error Code: {er}")
                 # print(f"Error String: {QtNetwork.QNetworkReply.errorString()}")
-                bytes_string = reply.readAll()
-                print(str(bytes_string, 'utf-8'))
-                r_data = json.loads(str(bytes_string, 'utf-8'))
-                print(f"Data as JSON/dict: {r_data}")
+                if reply.isFinished():
+                    bytes_string = reply.readAll()
+                    print(f"Data: {bytes_string}")
+                    # print(str(bytes_string, 'utf-8'))
+                    r_data = json.loads(str(bytes_string, 'utf-8')) if bytes_string else None
             except Exception as e:
                 print(f"Error: {e}")
                 traceback.print_exc()
+            finally:
+                reply.close()
+                reply.deleteLater()
         return r_data, er

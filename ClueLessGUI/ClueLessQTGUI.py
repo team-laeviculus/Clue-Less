@@ -14,9 +14,11 @@ import json
 import traceback
 import time
 import sys
-app = None # Main Qt context
+
+app = None  # Main Qt context
 
 nearby_elements = ["roomStudy", "roomHall"]
+
 
 class GameWindow(QtGui.QWindow):
     def __init__(self, parent=None):
@@ -61,14 +63,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.login_form_widget)
 
         self.dialogs = list()
-        #
-        # app = QtWidgets.QApplication(sys.argv)
-        # Form = QtWidgets.QWidget()
-        # ui = Ui_ClueLoginWindow()
-        # ui.setupUi(Form)
-        # Form.show()
-        # sys.exit(app.exec_())
 
+        self.my_profile = None # Contains name, token, location dict
 
         ######################################
         ########### Button Actions ###########
@@ -83,7 +79,8 @@ class MainWindow(QMainWindow):
         self.clue_login_window.username_input_field.returnPressed.connect(
             self.clue_login_window.create_profile_button.click)
 
-        self.game_board_ui.make_suggestion_button.clicked.connect(lambda: self.make_suggestion_callback(nearby_array=nearby_elements))
+        self.game_board_ui.make_suggestion_button.clicked.connect(
+            lambda: self.make_suggestion_callback(nearby_array=nearby_elements))
 
     def doSomething(self, event):
         print("Got a response")
@@ -99,38 +96,36 @@ class MainWindow(QMainWindow):
         :param reply:
         :return:
         """
+        print("\nCREATE PROFILE CALLBACK CALLED")
         try:
-            data, er = ClientNetworking.reply_to_json(reply)
+            data, er = self.networking.reply_to_json(reply)
             status_window = self.clue_login_window.create_profile_server_status_label
 
             def error_message(msg: str):
                 status_window.setStyleSheet("QLabel { font: 9pt; color: red }")
                 status_window.setText(msg)
+
             # Success!!!
             if er == QtNetwork.QNetworkReply.NoError:
+                print(f"Data: {data}")
                 print(f"Created profile for {data['name']}")
                 status_window.clear()
                 status_window.setStyleSheet("QLabel { font-weight: bold; color: green }")
                 status_window.setText(f"Profile {data['name']} created! Entering game {data['game_id']} in 1s")
+
                 self.app.processEvents()
-                time.sleep(1)
-
                 self.login_form_widget.hide()
-                self.setCentralWidget(self.game_board_widget)
-                self.game_board_widget.show()
-                self.setWindowTitle(f"ClueLess Prototype - {self.networking.game_id}")
-                self.update_game_status("Waiting for players to join...")
-                self.add_message_to_chat_window(f"Player: {data['name']} joined the game!")
-                # Start repeated requests for game updates
-                self.networking.set_game_id(data['game_id'])
-                self.networking.start_server_status_tick()
-
+                self.my_profile = data
+                self.__launch_gameboard(data)
 
                 # Populate the chat window with some initial messages
 
             elif er == QtNetwork.QNetworkReply.ProtocolInvalidOperationError:
-                error_message(f"Error! {data['name']} Already Taken.")
-
+                if data:
+                    error_message(f"Error! {data['name']} Already Taken.")
+                else:
+                    print("Some other error")
+                    traceback.print_exc()
             elif er == QtNetwork.QNetworkReply.ConnectionRefusedError:
                 error_message(f"{reply.errorString()} - {self.networking.base_url}")
             else:
@@ -139,6 +134,36 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Exception! {e}")
             traceback.print_exc()
+
+    def status_update_callback(self, reply):
+        """
+        This gets the game state from the server
+        :param reply:
+        :return:
+        """
+        print("\n[Status Update]  CALLBACK CALLED")
+        status, err = self.networking.reply_to_json(reply)
+        print(f"NEW STATUS [{err}]: {status}")
+        if 'turn' in status:
+            if status['turn']['name'] == self.my_profile['name']:
+                self.update_game_status("Its my Turn!!")
+
+    def __launch_gameboard(self, data):
+        """
+        After player logs in, launches gamebaord player will be using
+        :return:
+        """
+        self.setCentralWidget(self.game_board_widget)
+        self.game_board_widget.show()
+        self.setWindowTitle(f"ClueLess Prototype - {self.networking.game_id}")
+        self.update_game_status("Waiting for players to join...")
+        self.add_message_to_chat_window(f"Player: {data['name']} joined the game!")
+        # Start repeated requests for game updates
+        print(f"LAUNCHING GAMEBOARD")
+        self.networking.set_game_id(data['game_id'])
+        self.networking.set_status_callback(self.status_update_callback)
+        self.networking.get_server_status()
+        self.networking.start_server_status_tick()
 
     def quit_callback(self):
         print("Exiting ClueGameBoard prototype")
@@ -149,18 +174,19 @@ class MainWindow(QMainWindow):
 
     def make_suggestion_callback(self, nearby_array):
         print("Make Suggestion Clicked")
-        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in range(self.game_board_ui.gridLayout.count()))
+        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
+                   range(self.game_board_ui.gridLayout.count()))
         for widget in widgets:
             for i in nearby_array:
                 if widget.objectName() == i:
                     new_name = widget.objectName()
                     widget.setObjectName(new_name + "_moving")
                     widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border: 5px solid yellow;\n"
-"color: rgb(0, 0, 0);")
+                                         "border: 5px solid yellow;\n"
+                                         "color: rgb(0, 0, 0);")
         self.game_board_ui.roomStudy.mousePressEvent = self.doSomething
-            #QtGui.QGuiApplication.processEvents()
-        #print(self.game_board_ui.roomStudy.objectName())
+        # QtGui.QGuiApplication.processEvents()
+        # print(self.game_board_ui.roomStudy.objectName())
 
     def make_accusation_callback(self):
         print("Make Accusation Clicked")
@@ -180,18 +206,18 @@ class MainWindow(QMainWindow):
         status_label.setStyleSheet("QLabel { color: yellow }")
         status_label.setText("Connecting to server...")
 
-        print(f"Profile name entered: {self.profile_name}")
-        self.networking.post_json("/games/players", json.dumps({"name": self.profile_name}), self.create_profile_callback)
+        print(f"[login screen] Profile name entered: {self.profile_name}")
+        self.networking.post_json("/games/players", json.dumps({"name": self.profile_name}),
+                                  self.create_profile_callback)
 
     def update_game_status(self, msg: str, message_type: StatusMessageType = StatusMessageType.Normal):
         print(f"Game Status updated: {msg}")
+        self.game_status.setStyleSheet("QLabel { color: white }")
         self.game_status.setText(msg)
-        self.game_status.setStyleSheet(f"color: {message_type}")
 
-    def add_message_to_chat_window(self, msg: str, type: str="N"):
+    def add_message_to_chat_window(self, msg: str, type: str = "N"):
         print(f"New game chat status {msg}")
         self.chat_window.setText(self.chat_window.text() + f"\n[{type}]: {msg}")
-
 
 if __name__ == "__main__":
     # Main application window context
