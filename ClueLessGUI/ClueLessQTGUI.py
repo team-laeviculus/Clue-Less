@@ -242,7 +242,7 @@ class MainWindow(QMainWindow):
 
         # Set the widget being displayed to the login form
         # Phillip Made Change
-        self.setCentralWidget(self.game_board_widget)
+        self.setCentralWidget(self.login_form_widget)
 
         self.dialogs = list()
         # Notebook checkboxes
