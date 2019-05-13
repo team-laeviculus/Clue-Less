@@ -108,7 +108,109 @@ class Card:
         self.name = name
         self.type = type
 
+class Room:
 
+    name = None
+    positionXsmall = None
+    positionXlarge = None
+    positionYsmall = None
+    positionYlarge = None
+    styleSheet = None
+
+    def __init__(self, room_name, room_position_x_small, room_position_x_large, room_position_y_small, room_position_y_large, styleSheet):
+        self.name = room_name
+        self.positionXsmall = room_position_x_small
+        self.positionXlarge = room_position_x_large
+        self.positionYsmall = room_position_y_small
+        self.positionYlarge = room_position_y_large
+        self.styleSheet = styleSheet
+
+class Hall:
+
+    name = None
+    positionXsmall = None
+    positionXlarge = None
+    positionYsmall = None
+    positionYlarge = None
+    styleSheet = None
+
+    def __init__(self, hall_name, hall_position_x_small, hall_position_x_large, hall_position_y_small, hall_position_y_large, styleSheet):
+        self.name = hall_name
+        self.positionXsmall = hall_position_x_small
+        self.positionXlarge = hall_position_x_large
+        self.positionYsmall = hall_position_y_small
+        self.positionYlarge = hall_position_y_large
+        self.styleSheet = styleSheet
+
+class Player:
+
+    name = None
+    token = None
+    positionX = None
+    positionY = None
+
+    def __init__(self, player_name, token, player_position_x, player_position_y):
+        self.name = player_name
+        self.token = token
+        self.positionX = player_position_x
+        self.positionY = player_position_y
+
+    def set_player_position(self,player_position_x, player_position_y):
+        self.positionX = player_position_x
+        self.positionY = player_position_y
+
+gameboard_Elements = []
+Hall1_2 = Hall("hall1_2", 170, 280, 20, 120, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall1_2)
+Hall1_4 = Hall("hall1_4", 470, 580, 20, 120, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall1_4)
+Hall2_1 = Hall("hall2_1", 10, 120, 150, 250, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall2_1)
+Hall2_3 = Hall("hall2_3", 320, 430, 150, 250, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall2_3)
+Hall2_5 = Hall("hall2_5", 630, 740, 150, 250, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall2_5)
+Hall3_2 = Hall("hall3_2", 170, 280, 280, 380, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall3_2)
+Hall3_4 = Hall("hall3_4", 470, 580, 280, 380, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall3_4)
+Hall4_1 = Hall("hall4_1", 10, 120, 410, 510, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall4_1)
+Hall4_3 = Hall("hall4_3", 320, 430, 410, 510, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall4_3)
+Hall4_5 = Hall("hall4_5", 630, 740, 410, 510, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall4_5)
+Hall5_2 = Hall("hall5_2", 170, 280, 520, 640, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall5_2)
+Hall5_4 = Hall("hall5_4", 470, 580, 520, 640, "background-color: rgb(125, 125, 125);")
+gameboard_Elements.append(Hall5_4)
+Study = Room("roomStudy", 10, 120, 20, 120,
+             "background-color: rgb(170, 170, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Study)
+roomHall = Room("roomHall", 320, 430, 20, 120,
+                "background-color: rgb(85, 255, 255);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(roomHall)
+Lounge = Room("roomLounge", 630, 740, 20, 120,
+              "background-color: rgb(255, 170, 0);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Lounge)
+Library = Room("roomLibrary", 10, 120, 280, 380,
+               "background-color: rgb(170, 85, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Library)
+Billiard_Room = Room("roomBilliardRoom", 320, 430, 280, 380,
+                     "background-color: rgb(0, 170, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Billiard_Room)
+Dining_Room = Room("roomDiningRoom", 630, 740, 280, 380,
+                   "background-color: rgb(255, 255, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Dining_Room)
+Conservatory = Room("roomConservatory", 10, 120, 520, 640,
+                    "background-color: rgb(170, 170, 255);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Conservatory)
+Ballroom = Room("roomBallroom", 320, 430, 520, 640,
+                "background-color: rgb(255, 170, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Ballroom)
+Kitchen = Room("roomKitchen", 630, 740, 520, 640,
+               "background-color: rgb(125, 125, 125);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+gameboard_Elements.append(Kitchen)
 
 class MainWindow(QMainWindow):
 
@@ -119,6 +221,9 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(QtCore.QSize(900, 450))
         self.setMaximumSize(QtCore.QSize(1464, 949))
         self.networking = ClientNetworking(self)
+
+        #Move Button Add-On
+        self._running = False
 
         self.setWindowTitle("ClueLess Prototype - Please Login")
 
@@ -136,7 +241,8 @@ class MainWindow(QMainWindow):
         self.chat_window = self.game_board_ui.chat_text_display_box
 
         # Set the widget being displayed to the login form
-        self.setCentralWidget(self.login_form_widget)
+        # Phillip Made Change
+        self.setCentralWidget(self.game_board_widget)
 
         self.dialogs = list()
         # Notebook checkboxes
@@ -167,18 +273,28 @@ class MainWindow(QMainWindow):
         self.clue_login_window.username_input_field.returnPressed.connect(
             self.clue_login_window.create_profile_button.click)
 
-        self.game_board_ui.make_suggestion_button.clicked.connect(
-            lambda: self.make_suggestion_callback(nearby_array=nearby_elements))
+        self.game_board_ui.make_move_button.clicked.connect(
+            lambda: self.make_move_callback(nearby_array=nearby_elements))
+        self.game_board_ui.groupBox.mousePressEvent = self.moveToken
 
-        self.game_board_ui.make_move_button.clicked.connect(self.make_move_callback)
 
-    def doSomething(self, event):
+    def moveToken(self, event):
         print("Got a response")
+        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
+                   range(self.game_board_ui.gridLayout.count()))
+
         x = event.x()
         y = event.y()
 
+        for item in gameboard_Elements:
+            if (item.positionXsmall < x < item.positionXlarge) and (item.positionYsmall < y < item.positionYlarge):
+                for widget in widgets:
+                    if (item.name in widget.objectName()) and ("moving" in widget.objectName()):
+                        print("ok")
+                        self.game_board_ui.suspectMrsPeacock.move(x, y)
         location = "x: {0},  y: {1}".format(x, y)
         print(location)
+        self._running = False
 
     def create_profile_callback(self, reply):
         """
@@ -295,8 +411,36 @@ class MainWindow(QMainWindow):
     def send_message_callback(self):
         print("send message clicked")
 
-    def make_move_callback(self):
+    def make_move_callback(self, nearby_array):
         print("Make move button Clicked")
+        self.game_board_ui.make_suggestion_button.setDisabled(True)
+        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
+                   range(self.game_board_ui.gridLayout.count()))
+        for widget in widgets:
+            for i in nearby_array:
+                if widget.objectName() == i:
+                    new_name = widget.objectName()
+                    widget.setObjectName(new_name + "_moving")
+                    widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+                                         "border: 5px solid yellow;\n"
+                                         "color: rgb(0, 0, 0);")
+        self._running = True
+        while self._running:
+            QtGui.QGuiApplication.processEvents()
+            time.sleep(0.05)
+        print("Still got it")
+        widgets_list = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
+                        range(self.game_board_ui.gridLayout.count()))
+        for current in widgets_list:
+            for i in nearby_array:
+                if i in current.objectName():
+                    print(current)
+                    current.setObjectName(i)
+                    for item in gameboard_Elements:
+                        if item.name == current.objectName():
+                            current.setStyleSheet(item.styleSheet)
+
+        self.game_board_ui.make_suggestion_button.setDisabled(False)
 
     def make_suggestion_callback(self, nearby_array):
         print("Make Suggestion Clicked")
