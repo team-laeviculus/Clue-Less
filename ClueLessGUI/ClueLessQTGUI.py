@@ -42,16 +42,41 @@ class Notebook:
         self.check_box_widgets = parent_widget.findChildren(QtWidgets.QCheckBox)
         print(f"Check boxes: {len(self.check_box_widgets)}. half: {len(self.check_box_widgets) / 2}")
         self.left_checkboxes = self.check_box_widgets[0:21]
-        self.right_checkboxes = self.check_box_widgets[21:]
-        print(f"Sum: {len(self.left_checkboxes) + len(self.right_checkboxes)}")
 
-        print(f"Left checkboxes: {self.left_checkboxes}")
-        print(f"Right Checkboxes: {self.right_checkboxes}")
+        self.right_checkboxes = self.check_box_widgets[21:]
+        self.right_checkboxes_tokens = self.right_checkboxes[0:5]
+        self.right_checkboxes_weapons = self.right_checkboxes[5:11]
+        self.right_checkboxes_rooms = self.right_checkboxes[11:]
+
         self.check_boxes = OrderedDict()
+        # Initial setup for all check boxes
         for i in range(len(self.check_box_widgets) // 2):
+            self.left_checkboxes[i].setEnabled(False)
+            # self.left_checkboxes[i].setTriState(False)
+            self.right_checkboxes[i].hide()  # Hides all right checkboxes on
+            # self.right_checkboxes[i].setTriState(False)
             self.check_boxes[self.check_box_widgets[i].text()] = (self.left_checkboxes[i], self.right_checkboxes[i])
-        # for i in self.check_boxes:
-        #     print(f"Checkbox: {i.text()}:  {i.checkState()}")
+
+        wtf = set(self.right_checkboxes_tokens)
+        print(len(wtf))
+        wtf.update(self.right_checkboxes_weapons)
+        print(f"2: {len(wtf)}")
+        wtf.update(self.right_checkboxes_rooms)
+        print(f"3: {len(wtf)}")
+
+    def show_right_checkboxes(self, current_room):
+        for i in self.right_checkboxes_tokens:
+            # i.setCheckState(False)
+            i.show()
+        # for i in self.right_checkboxes_weapons:
+        #     # i.setCheckState(False)
+        #     i.show()
+        # if current_room in self.check_boxes:
+        #     room_box = self.check_boxes[current_room]
+        #     room_box[1].show()
+        #     room_box[1].setCheckState(True)
+
+
 
     def get_checkbox_pair_by_name(self, name):
         """
@@ -74,6 +99,15 @@ class Notebook:
             return (self.left_checkboxes[idx], self.right_checkboxes[idx])
         print(f"Error {idx} is not within the range of checkbox indices (0-20)")
         return None
+
+class Card:
+
+    MIN_WIDTH = 250
+
+    def __init__(self, name, type):
+        self.name = name
+        self.type = type
+
 
 
 class MainWindow(QMainWindow):
@@ -107,6 +141,9 @@ class MainWindow(QMainWindow):
         self.dialogs = list()
         # Notebook checkboxes
         self.notebook = Notebook(self.game_board_ui.gbNotebook)
+
+        # self.notebook.show_right_checkboxes("Hall")
+
         print(f"TEST Checkboxes: {self.notebook.get_checkbox_pair_by_index(4)}")
         print(f"Test by name: {self.notebook.get_checkbox_pair_by_name('Rope')}")
 
@@ -125,7 +162,6 @@ class MainWindow(QMainWindow):
         # self.send_message_button.clicked.connect(self.send_message_callback)
         # self.make_suggestion_button.clicked.connect(self.make_suggestion_callback)
         # self.make_accusation_button.clicked.connect(self.make_accusation_callback)
-
         # Create Profile, also accepts enter button
         self.clue_login_window.create_profile_button.clicked.connect(self.login_button_callback)
         self.clue_login_window.username_input_field.returnPressed.connect(
@@ -220,6 +256,7 @@ class MainWindow(QMainWindow):
         print("[init_game_data]: Initializing Game Data")
         if self.game_data_initialized is False:
             print("[init_game_data]: initializing cards")
+
             self.networking.get_my_cards(self.get_cards_callback)
 
     def get_cards_callback(self, reply):

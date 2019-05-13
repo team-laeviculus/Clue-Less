@@ -3,7 +3,7 @@ import sys
 from multiprocessing import Process
 import copy
 from PyQt5 import QtWidgets
-
+from Networking.KISServer import start_server
 
 def create_gui_window():
     print("Creating windows")
@@ -18,6 +18,7 @@ if __name__ == "__main__":
     processes = []
     NUM_GUIS = 3 # CHANGE THIS FOR MORE OR LESS GUIS
     print("Starting gui")
+    P = Process(target=start_server)
     for i in range(NUM_GUIS):
         print(f"Starting GUI {i}")
         p = Process(target=create_gui_window)

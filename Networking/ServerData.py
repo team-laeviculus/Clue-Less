@@ -129,7 +129,6 @@ class Player:
             "name": name,
             "token": None,
             "location": None,
-            "cards": None
         }
 
     def get_player(self):
