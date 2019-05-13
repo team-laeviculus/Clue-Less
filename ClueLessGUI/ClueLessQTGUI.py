@@ -264,8 +264,7 @@ class MainWindow(QMainWindow):
         self.chat_window = self.game_board_ui.chat_text_display_box
 
         # Set the widget being displayed to the login form
-        # Phillip Made Change
-        self.setCentralWidget(self.game_board_widget)
+        self.setCentralWidget(self.login_form_widget)
 
         self.dialogs = list()
         # Notebook checkboxes
