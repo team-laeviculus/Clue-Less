@@ -882,7 +882,7 @@ background-color: rgb(255, 255, 127);</string>
         </font>
        </property>
        <property name="text">
-        <string>PushButton</string>
+        <string>Move</string>
        </property>
       </widget>
      </item>

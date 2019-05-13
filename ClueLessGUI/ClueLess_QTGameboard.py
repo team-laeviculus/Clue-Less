@@ -742,7 +742,7 @@ class Ui_ClueGameBoard(object):
         self.chkHall.setText(_translate("ClueGameBoard", "Hall"))
         self.chkStudy.setText(_translate("ClueGameBoard", "Study"))
         self.chkBilliardRoom.setText(_translate("ClueGameBoard", "Billiard Room"))
-        self.make_move_button.setText(_translate("ClueGameBoard", "PushButton"))
+        self.make_move_button.setText(_translate("ClueGameBoard", "Move"))
         self.make_suggestion_button.setText(_translate("ClueGameBoard", "Make Suggestion"))
         self.make_accusation_button.setText(_translate("ClueGameBoard", "Make Accusation"))
         self.game_status_window.setText(_translate("ClueGameBoard", "Waiting for game..."))
