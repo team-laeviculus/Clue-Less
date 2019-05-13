@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1261</width>
+    <width>1161</width>
     <height>949</height>
    </rect>
   </property>
@@ -751,12 +751,6 @@ background-color: rgb(255, 255, 127);</string>
      </item>
      <item>
       <widget class="QPushButton" name="make_move_button">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -766,30 +760,12 @@ background-color: rgb(255, 255, 127);</string>
        <property name="palette">
         <palette>
          <active>
-          <colorrole role="WindowText">
-           <brush brushstyle="SolidPattern">
-            <color alpha="255">
-             <red>198</red>
-             <green>198</green>
-             <blue>198</blue>
-            </color>
-           </brush>
-          </colorrole>
           <colorrole role="Button">
            <brush brushstyle="SolidPattern">
             <color alpha="255">
              <red>38</red>
              <green>38</green>
              <blue>38</blue>
-            </color>
-           </brush>
-          </colorrole>
-          <colorrole role="Text">
-           <brush brushstyle="SolidPattern">
-            <color alpha="255">
-             <red>198</red>
-             <green>198</green>
-             <blue>198</blue>
             </color>
            </brush>
           </colorrole>
@@ -822,30 +798,12 @@ background-color: rgb(255, 255, 127);</string>
           </colorrole>
          </active>
          <inactive>
-          <colorrole role="WindowText">
-           <brush brushstyle="SolidPattern">
-            <color alpha="255">
-             <red>198</red>
-             <green>198</green>
-             <blue>198</blue>
-            </color>
-           </brush>
-          </colorrole>
           <colorrole role="Button">
            <brush brushstyle="SolidPattern">
             <color alpha="255">
              <red>38</red>
              <green>38</green>
              <blue>38</blue>
-            </color>
-           </brush>
-          </colorrole>
-          <colorrole role="Text">
-           <brush brushstyle="SolidPattern">
-            <color alpha="255">
-             <red>198</red>
-             <green>198</green>
-             <blue>198</blue>
             </color>
            </brush>
           </colorrole>
@@ -878,30 +836,12 @@ background-color: rgb(255, 255, 127);</string>
           </colorrole>
          </inactive>
          <disabled>
-          <colorrole role="WindowText">
-           <brush brushstyle="SolidPattern">
-            <color alpha="255">
-             <red>120</red>
-             <green>120</green>
-             <blue>120</blue>
-            </color>
-           </brush>
-          </colorrole>
           <colorrole role="Button">
            <brush brushstyle="SolidPattern">
             <color alpha="255">
              <red>38</red>
              <green>38</green>
              <blue>38</blue>
-            </color>
-           </brush>
-          </colorrole>
-          <colorrole role="Text">
-           <brush brushstyle="SolidPattern">
-            <color alpha="255">
-             <red>120</red>
-             <green>120</green>
-             <blue>120</blue>
             </color>
            </brush>
           </colorrole>
@@ -942,7 +882,7 @@ background-color: rgb(255, 255, 127);</string>
         </font>
        </property>
        <property name="text">
-        <string>Move</string>
+        <string>PushButton</string>
        </property>
       </widget>
      </item>
@@ -1169,15 +1109,9 @@ border: 1px solid brown;</string>
    </item>
    <item row="0" column="1">
     <widget class="QGroupBox" name="gbGameboard">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="minimumSize">
       <size>
-       <width>0</width>
+       <width>800</width>
        <height>700</height>
       </size>
      </property>
@@ -1474,7 +1408,7 @@ border: 1px solid brown;</string>
        <rect>
         <x>10</x>
         <y>30</y>
-        <width>511</width>
+        <width>781</width>
         <height>661</height>
        </rect>
       </property>
@@ -1484,28 +1418,7 @@ border: 1px solid brown;</string>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
       <layout class="QGridLayout" name="gridLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <property name="spacing">
-        <number>0</number>
-       </property>
        <item row="0" column="2">
         <widget class="QLabel" name="roomHall">
          <property name="minimumSize">
@@ -1645,7 +1558,7 @@ color: rgb(0, 0, 0);</string>
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>0</height>
+           <height>122</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -1970,7 +1883,7 @@ color: rgb(0, 0, 0);</string>
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>0</height>
+           <height>122</height>
           </size>
          </property>
          <property name="font">
@@ -1991,10 +1904,10 @@ color: rgb(0, 0, 0);</string>
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
          <property name="margin">
-          <number>0</number>
+          <number>2</number>
          </property>
          <property name="indent">
-          <number>0</number>
+          <number>2</number>
          </property>
         </widget>
        </item>
