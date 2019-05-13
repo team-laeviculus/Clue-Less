@@ -237,8 +237,10 @@ class MainWindow(QMainWindow):
         self.game_board_ui = Ui_ClueGameBoard()
         self.game_board_ui.setupUi(self.game_board_widget)
 
+        # Status and message updates
         self.game_status = self.game_board_ui.game_status_window
         self.chat_window = self.game_board_ui.chat_text_display_box
+        self.last_chat_message = None
 
         # Set the widget being displayed to the login form
         # Phillip Made Change
@@ -258,8 +260,9 @@ class MainWindow(QMainWindow):
         #     self.check_boxes.append(self.notebook.item(i))
 
         self.my_profile = None # Contains name, token, location dict
-        self.my_cards = None
-        self.game_data_initialized = False
+        self.my_cards = None  # Contains cards
+        self.game_data_initialized = False  # Boolean for one time initialization calls
+        self.players = OrderedDict()
 
         ######################################
         ########### Button Actions ###########
@@ -323,6 +326,7 @@ class MainWindow(QMainWindow):
                 self.login_form_widget.hide()
                 self.my_profile = data
                 self.networking.set_profile_data(self.my_profile)  # Hopefully this is passed by reference
+
                 self.__launch_gameboard(data)
 
                 # Populate the chat window with some initial messages
@@ -352,6 +356,20 @@ class MainWindow(QMainWindow):
         print("\n[Status Update]  CALLBACK CALLED")
         status, err = self.networking.reply_to_json(reply)
         print(f"NEW STATUS [{err}]: {status}")
+        if status:
+            if status['last_chat_message'] != self.last_chat_message:
+                self.add_message_to_chat_window(f"{status['last_chat_message']}")
+                self.last_chat_message = status['last_chat_message']
+
+            # Terrible way to do this but whatever
+            # new_players = set(status['players'].keys()) - set(self.players.keys())
+            for p, profile in status['players'].items():
+                if not p in self.players:
+                    self.players[p] = status['players'][p]
+                    print(f"Added new player: {status['players'][p]}")
+                    self.add_message_to_chat_window(f"Player {status['players'][p]['name']} Joined the game")
+
+
         if status['state'] == GameState.GAME_RUNNING:
             if not self.game_data_initialized:
                 print("Initializing Game State")
@@ -393,10 +411,10 @@ class MainWindow(QMainWindow):
         :return:
         """
         self.setCentralWidget(self.game_board_widget)
+        self.setWindowTitle(f"ClueLess Prototype - Server #{self.networking.game_id}")
         self.game_board_widget.show()
-        self.setWindowTitle(f"ClueLess Prototype - {self.networking.game_id}")
         self.update_game_status("Waiting for players to join...")
-        self.add_message_to_chat_window(f"Player: {data['name']} joined the game!")
+        # self.add_message_to_chat_window(f"Player: {data['name']} joined the game!")
         # Start repeated requests for game updates
         print(f"LAUNCHING GAMEBOARD")
         self.networking.set_game_id(data['game_id'])

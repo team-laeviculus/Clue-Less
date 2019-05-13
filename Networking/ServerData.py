@@ -174,6 +174,8 @@ class GameSession:
         self.player_data = OrderedDict()  # Holds an ordered list of players
         self.game_board = GameBoard(ClueLessCommon.db_controller)  # DB connection
         self.game_state = GameState()  # Game State Object
+
+        # Last messages updated
         self.last_turn = None
         self.last_chat_message = None
 
@@ -278,7 +280,11 @@ class GameSession:
 
             self.__add_player()
             log.debug(f"[game: {self.game_id}]: Player {player_name} added: {self.player_data[player_name]}")
+
+            # update last_message to notify a player joined
+            # self.last_chat_message = f"{player_name} Joined the Game!"
             return self.player_data[player_name]
+
 
         else:
             # This should never happen, if games being full is properly handled
@@ -317,6 +323,7 @@ class GameSession:
             self.__set_next_players_turn_in_db(this_players_turn[0])
             self.current_player_turn = (self.current_player_turn + 1) % self.player_count
             log.info(f"[game: {self.game_id}]: Players Turn set!")
+
             return this_players_turn
 
         log.info(f"[game: {self.game_id}]: Game state is not ready to return a players turn")
