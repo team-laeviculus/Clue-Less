@@ -577,6 +577,47 @@ class MainWindow(QMainWindow):
         print(f"New game chat status {msg}")
         self.chat_window.setText(self.chat_window.text() + f"\n[{type}]: {msg}")
 
+    def send_suggestion(self, pn, s, w, r):
+        name = pn
+        suspect = s
+        weapon = w
+        room = r
+
+        suggest = json.loads(
+            '{{"pName": "{0}", "suspectSuggest": "{1}", "weaponSuggest": "{2}", "roomSuggest": "{3}"}}'.format(name,
+                                                                                                               suspect,
+                                                                                                               weapon,
+                                                                                                               room))
+        print(json.dumps(suggest, indent=4, sort_keys=True))
+
+    def send_disprove(self, pn, s, w, r):
+        name = pn
+        suspect = s
+        weapon = w
+        room = r
+
+        disprove = json.loads(
+            '{{"pName": "{0}", "suspectDisprove": "{1}", "weaponDisprove": "{2}", "roomDisprove": "{3}"}}'.format(name,
+                                                                                                                  suspect,
+                                                                                                                  weapon,
+                                                                                                                  room))
+
+        print(json.dumps(disprove, indent=4, sort_keys=True))
+
+    def send_accusation(self, pn, s, w, r):
+        name = pn
+        suspect = s
+        weapon = w
+        room = r
+
+        accuse = json.loads(
+            '{{"pName": "{0}", "suspectAccuse": "{1}", "weaponAccuse": "{2}", "roomAccuse": "{3}:"}}'.format(name,
+                                                                                                             suspect,
+                                                                                                             weapon,
+                                                                                                             room))
+
+        print(json.dumps(accuse, indent=4, sort_keys=True))
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
