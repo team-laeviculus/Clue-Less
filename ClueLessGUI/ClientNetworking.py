@@ -4,19 +4,21 @@ import sys
 import json
 import traceback
 import time
+from functools import partial
 
 
 class ClientNetworking:
 
     def __init__(self, Widget):
-        self.widget = Widget
+        self.game_board_widget = Widget
         self.base_url = "http://localhost:5000"
         self.net_manager = QtNetwork.QNetworkAccessManager()
         self.server_status_timer = QTimer()
         self.game_id = 1
         self.profile_data = None
-
         self.status_callback = None
+
+        self.status_box_update_fp = self.game_board_widget.update_game_status
 
     def start_server_status_tick(self, tickrate=300):
         """
@@ -55,6 +57,31 @@ class ClientNetworking:
         except Exception as e:
             print(f"get_my_cards exception: {e}")
             traceback.print_exc()
+
+    def get_connected_rooms(self, current_room):
+        try:
+            self.get(f"/games/{self.game_id}/connected/{current_room}",
+                     self.__get_connected_rooms_callback)
+        except Exception as e:
+            print(f"get_connected_rooms exception: {e}")
+            traceback.print_exc()
+
+    def __get_connected_rooms_callback(self, reply):
+        data, er = self.reply_to_json(reply)
+        if er == QtNetwork.QNetworkReply.NoError:
+            print(f"get_connected_rooms data: {data}")
+            self.game_board_widget.add_message_to_chat_window(f"Connected Rooms: {data}")
+            return data
+        elif er == 400:
+            print(f"get_connected_rooms 400 Response!")
+            if data and 'error' in data:
+                data_holder = data
+                self.status_box_update_fp(f"Error! {data['error']}")
+        else:
+            print(f"get_connected_rooms Unhandled error type: {er}")
+            self.status_box_update_fp(f"Unhandled networking error type: {er}")
+        return None
+
 
     def get(self, path, callback):
         print(f"\n")

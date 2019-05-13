@@ -18,7 +18,8 @@ if __name__ == "__main__":
     processes = []
     NUM_GUIS = 3 # CHANGE THIS FOR MORE OR LESS GUIS
     print("Starting gui")
-    P = Process(target=start_server)
+    server_proc = Process(target=start_server)
+    # server_proc.start()
     for i in range(NUM_GUIS):
         print(f"Starting GUI {i}")
         p = Process(target=create_gui_window)

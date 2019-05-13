@@ -408,8 +408,9 @@ class MainWindow(QMainWindow):
         print("-" * 40)
         print("[init_game_data]: Initializing Game Data")
         if self.game_data_initialized is False:
+            res = self.networking.get_connected_rooms('Lounge')
+            print(f"Testing get room: {res}")
             print("[init_game_data]: initializing cards")
-
             self.networking.get_my_cards(self.get_cards_callback)
 
     def get_cards_callback(self, reply):
