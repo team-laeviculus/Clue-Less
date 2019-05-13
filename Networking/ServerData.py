@@ -82,6 +82,15 @@ class ClueLessCommon:
         "dining room_kitchen",
     }
 
+    STARTING_LOCATIONS = OrderedDict({
+        "hall_lounge": "Miss Scarlet",
+        "conservatory_ballroom": "Mr. Green",
+        "ballroom_kitchen": "Mrs. White",
+        "study_library": "Prof Plum",
+        "lounge_dining room": "Col. Mustard",
+        "library_conservatory": "Mrs. Peacock",
+    })
+
     ROOMS = {
         'Kitchen',
         'Conservatory',
@@ -123,12 +132,12 @@ class Player:
     Common Player Instance Class
     """
 
-    def __init__(self, name):
+    def __init__(self, name, token=None, location=None):
         self.name = name
         self.data = {
             "name": name,
-            "token": None,
-            "location": None,
+            "token": token,
+            "location": location,
         }
 
     def get_player(self):
@@ -165,6 +174,8 @@ class GameSession:
         self.player_data = OrderedDict()  # Holds an ordered list of players
         self.game_board = GameBoard(ClueLessCommon.db_controller)  # DB connection
         self.game_state = GameState()  # Game State Object
+        self.last_turn = None
+        self.last_chat_message = None
 
         # Timeout timer with callback to start game
         self.timer_running = False
@@ -255,7 +266,8 @@ class GameSession:
         # TODO: Figure out how to add players better? Integrate with Game Board
         if self.player_count < ClueLessCommon.MAX_NUMBER_OF_PLAYERS:
             log.debug(f"Adding player {player_name}")
-            self.player_data[player_name] = Player(player_name)
+
+            self.player_data[player_name] = self.__create_player(player_name)
             self.player_count += 1
             self.game_session.CLUELESS_MUTEX.acquire()
             try:
@@ -265,7 +277,7 @@ class GameSession:
                 self.game_session.CLUELESS_MUTEX.release()
 
             self.__add_player()
-            log.debug(f"[game: {self.game_id}]: Player {player_name} added")
+            log.debug(f"[game: {self.game_id}]: Player {player_name} added: {self.player_data[player_name]}")
             return self.player_data[player_name]
 
         else:
@@ -333,6 +345,14 @@ class GameSession:
                 self.timer_running = True
                 # self.game_state = Cl
 
+    def __create_player(self, profile_name):
+        """
+        Creates the initial info for a player such as assigning token and starting location
+        :return: Player object
+        """
+        init_info = list(ClueLessCommon.STARTING_LOCATIONS.items())[self.player_count]
+        log.info(f"create_player: {init_info}")
+        return Player(profile_name, location=init_info[0], token=init_info[1])
     def __set_next_players_turn_in_db(self, player_name: str):
         self.game_session.db_controller.update_active_turn(player_name)
 
@@ -368,7 +388,10 @@ class GameSession:
             'state': self.game_state.get_state(),
             'players': {name: pdata.data for name, pdata in self.player_data.items()},
             'player_count': self.player_count,
-            'turn': self.get_current_turn(True)
+            'turn': self.get_current_turn(True),
+
+            'last_turn': self.last_turn,
+            'last_chat_message': self.last_chat_message
         }
 
     def get_current_turn(self, player_only=False):
