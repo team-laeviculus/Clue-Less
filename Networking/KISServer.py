@@ -265,6 +265,23 @@ def get_cards_for_player(game_id, player_name):
     }), HTTPStatus.BAD_REQUEST
 
 
+@app.route("/games/<game_id>/connected/<current_room>")
+def get_connected_rooms(game_id, current_room):
+    # TODO: Update this for only rooms that can be moved into
+    log.info(f"GET CONNECTED ROOMS[{game_id}: {current_room}")
+    game = get_game_by_id(game_id)
+    if game:
+        connected = game.get_connected_rooms(current_room)
+        if connected:
+            return jsonify({
+                "current_room": current_room,
+                "connected": connected
+            }), HTTPStatus.OK
+    return jsonify({
+        "error": f"No rooms connected to {current_room}"
+    }), HTTPStatus.BAD_REQUEST
+
+
 @app.route("/games", methods=["GET", "POST", "PUT"])
 def get_game_info():
     """
@@ -300,28 +317,6 @@ def get_game_info():
         return jsonify(GameInfo.game)
 
 
-# @app.route("/games/turn", methods=["GET"])
-# def on_get_turn_request_info():
-#     """
-#     Handles GET requests for turn info
-#     :return:
-#     """
-#     # TODO: Update this so we can do 'games/<GAME_ID>/turn' to support multiple games
-#     # TODO: HTTP response codes
-#     #print(f"[GET][Turn]: {request.get_json()}")
-#     if GameState.CURRENT_STATE == GameState.WAITING_FOR_PLAYERS:
-#         print(f"Waiting for players....")
-#         return jsonify({
-#             "turn": {
-#                 "name": "None",
-#                 "status": "Waiting for players"
-#             }
-#         })
-#     elif GameState.CURRENT_STATE == GameState.GAME_RUNNING:
-#         print("Game Running")
-#         if GameInfo.players_turn_name is None:
-#             get_next_turn()
-#         return jsonify({"turn": GameInfo.players_turn_name[1]})
 
 
 @app.route("/games/turn", methods=["POST"])

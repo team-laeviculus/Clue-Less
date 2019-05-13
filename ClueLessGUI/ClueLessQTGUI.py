@@ -31,7 +31,7 @@ name_conversion = {
     "study_library": "hall2_1",
     "hall_billard room": "hall2_3",
     "lounge_dining room": "hall2_5",
-    "library_conservatory":"hall4_1",
+    "library_conservatory": "hall4_1",
     "billard room_ballroom": "hall4_3",
     "dining room_kitchen": "hall4_5",
     "Kitchen": "roomKitchen",
@@ -45,6 +45,7 @@ name_conversion = {
     "Billard Room": "roomBilliardRoom"
 }
 
+
 class GameWindow(QtGui.QWindow):
     def __init__(self, parent=None):
         super(GameWindow, self).__init__(parent)
@@ -57,6 +58,7 @@ class StatusMessageType:
     Normal = "black"
     Warning = "yellow"
     Error = "red"
+
 
 class Notebook:
     # Class for managing checkboxes on notebook stuff
@@ -80,13 +82,6 @@ class Notebook:
             # self.right_checkboxes[i].setTriState(False)
             self.check_boxes[self.check_box_widgets[i].text()] = (self.left_checkboxes[i], self.right_checkboxes[i])
 
-        wtf = set(self.right_checkboxes_tokens)
-        print(len(wtf))
-        wtf.update(self.right_checkboxes_weapons)
-        print(f"2: {len(wtf)}")
-        wtf.update(self.right_checkboxes_rooms)
-        print(f"3: {len(wtf)}")
-
     def show_right_checkboxes(self, current_room):
         for i in self.right_checkboxes_tokens:
             # i.setCheckState(False)
@@ -98,8 +93,6 @@ class Notebook:
         #     room_box = self.check_boxes[current_room]
         #     room_box[1].show()
         #     room_box[1].setCheckState(True)
-
-
 
     def get_checkbox_pair_by_name(self, name):
         """
@@ -123,16 +116,16 @@ class Notebook:
         print(f"Error {idx} is not within the range of checkbox indices (0-20)")
         return None
 
-class Card:
 
+class Card:
     MIN_WIDTH = 250
 
     def __init__(self, name, type):
         self.name = name
         self.type = type
 
-class Room:
 
+class Room:
     name = None
     positionXsmall = None
     positionXlarge = None
@@ -140,7 +133,8 @@ class Room:
     positionYlarge = None
     styleSheet = None
 
-    def __init__(self, room_name, room_position_x_small, room_position_x_large, room_position_y_small, room_position_y_large, styleSheet):
+    def __init__(self, room_name, room_position_x_small, room_position_x_large, room_position_y_small,
+                 room_position_y_large, styleSheet):
         self.name = room_name
         self.positionXsmall = room_position_x_small
         self.positionXlarge = room_position_x_large
@@ -148,8 +142,8 @@ class Room:
         self.positionYlarge = room_position_y_large
         self.styleSheet = styleSheet
 
-class Hall:
 
+class Hall:
     name = None
     positionXsmall = None
     positionXlarge = None
@@ -157,7 +151,8 @@ class Hall:
     positionYlarge = None
     styleSheet = None
 
-    def __init__(self, hall_name, hall_position_x_small, hall_position_x_large, hall_position_y_small, hall_position_y_large, styleSheet):
+    def __init__(self, hall_name, hall_position_x_small, hall_position_x_large, hall_position_y_small,
+                 hall_position_y_large, styleSheet):
         self.name = hall_name
         self.positionXsmall = hall_position_x_small
         self.positionXlarge = hall_position_x_large
@@ -165,8 +160,8 @@ class Hall:
         self.positionYlarge = hall_position_y_large
         self.styleSheet = styleSheet
 
-class Player:
 
+class Player:
     name = None
     token = None
     positionX = None
@@ -178,9 +173,10 @@ class Player:
         self.positionX = player_position_x
         self.positionY = player_position_y
 
-    def set_player_position(self,player_position_x, player_position_y):
+    def set_player_position(self, player_position_x, player_position_y):
         self.positionX = player_position_x
         self.positionY = player_position_y
+
 
 gameboard_Elements = []
 Hall1_2 = Hall("hall1_2", 170, 280, 20, 120, "background-color: rgb(125, 125, 125);")
@@ -211,7 +207,7 @@ Study = Room("roomStudy", 10, 120, 20, 120,
              "background-color: rgb(170, 170, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
 gameboard_Elements.append(Study)
 Hall = Room("roomHall", 320, 430, 20, 120,
-                "background-color: rgb(85, 255, 255);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
+            "background-color: rgb(85, 255, 255);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
 gameboard_Elements.append(Hall)
 Lounge = Room("roomLounge", 630, 740, 20, 120,
               "background-color: rgb(255, 170, 0);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
@@ -235,6 +231,7 @@ Kitchen = Room("roomKitchen", 630, 740, 520, 640,
                "background-color: rgb(125, 125, 125);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
 gameboard_Elements.append(Kitchen)
 
+
 class MainWindow(QMainWindow):
 
     def __init__(self, qtcontext):
@@ -245,7 +242,7 @@ class MainWindow(QMainWindow):
         self.setMaximumSize(QtCore.QSize(1464, 949))
         self.networking = ClientNetworking(self)
 
-        #Move Button Add-On
+        # Move Button Add-On
         self._running = False
 
         self.setWindowTitle("ClueLess Prototype - Please Login")
@@ -281,7 +278,7 @@ class MainWindow(QMainWindow):
         #     print(f"Adding checkbox widget: {self.notebook.item(i)}")
         #     self.check_boxes.append(self.notebook.item(i))
 
-        self.my_profile = None # Contains name, token, location dict
+        self.my_profile = None  # Contains name, token, location dict
         self.my_cards = None  # Contains cards
         self.game_data_initialized = False  # Boolean for one time initialization calls
         self.players = OrderedDict()
@@ -391,7 +388,7 @@ class MainWindow(QMainWindow):
                     print(f"Added new player: {status['players'][p]}")
                     self.add_message_to_chat_window(f"Player {status['players'][p]['name']} Joined the game")
 
-
+        # Main game 'loop' in a sense
         if status['state'] == GameState.GAME_RUNNING:
             if not self.game_data_initialized:
                 print("Initializing Game State")
@@ -408,7 +405,7 @@ class MainWindow(QMainWindow):
     def init_game_data(self):
         # Called only once when the game starts to get needed data from server
         print("\n")
-        print("-"*40)
+        print("-" * 40)
         print("[init_game_data]: Initializing Game Data")
         if self.game_data_initialized is False:
             print("[init_game_data]: initializing cards")
@@ -417,7 +414,7 @@ class MainWindow(QMainWindow):
 
     def get_cards_callback(self, reply):
         print(f"\nGET CARDS")
-        print("-"*40)
+        print("-" * 40)
         cards, er = self.networking.reply_to_json(reply)
         print(f"CARDS[{er}]: {cards}")
         # Sets players cards class variable
@@ -425,7 +422,6 @@ class MainWindow(QMainWindow):
             self.my_cards = cards['cards']
             self.add_message_to_chat_window(f"My Cards: {self.my_cards}")
             self.game_data_initialized = True
-
 
     def __launch_gameboard(self, data):
         """
@@ -500,7 +496,7 @@ class MainWindow(QMainWindow):
 
     def tmp_make_suggestion_callback(self, nearby_array):
         print("Make Suggestion Clicked")
-        #From Phillip, get player, weapon, room from user
+        # From Phillip, get player, weapon, room from user
         game_id = self.networking.game_id
         address_string = "/games/" + game_id + "/turn"
         data_dict = {"name": self.profile_name, "move_type": "accusation",
@@ -528,7 +524,7 @@ class MainWindow(QMainWindow):
                 print(f"Returned suggestion data")
                 print(f"Data: {data}")
 
-                #if no error, no status msg about returned suggestion?
+                # if no error, no status msg about returned suggestion?
                 # TODO: what should this actually do?
                 # Call methods here
 
@@ -549,10 +545,8 @@ class MainWindow(QMainWindow):
             print(f"Exception! {e}")
             traceback.print_exc()
 
-
     def make_accusation_callback(self):
         print("Make Accusation Clicked")
-
 
     def login_callback(self):
         print("Login called")
@@ -584,7 +578,6 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-
     app = QtWidgets.QApplication(sys.argv)
     main_window = MainWindow(app)
     main_window.show()

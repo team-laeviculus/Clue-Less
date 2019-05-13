@@ -103,6 +103,8 @@ class ClueLessCommon:
         'Billard Room',
     }
 
+    ALL_LOCATIONS = ROOMS.union(HALLWAYS)
+
     # Ensures Only a single instance of this class will exist over lifetime of the server
 
     _instance = None
@@ -157,6 +159,12 @@ class Player:
             'data': self.data
         }
 
+class GameTurnTypes:
+    """ Possible GameAction states for player turns"""
+    MOVE = "MOVE"
+    ACCUSE = "ACCUSE"
+    SUGGEST = "SUGGEST"
+    DISPROVE = "DISPROVE"
 
 class GameSession:
 
@@ -256,8 +264,6 @@ class GameSession:
         finally:
             self.game_session.CLUELESS_MUTEX.release()
 
-
-
     def add_player(self, player_name: str):
         """
         Adds a player to game session storage and to DB
@@ -330,6 +336,23 @@ class GameSession:
         return None
 
     # -----------------------------------------------------------------
+    #                    Player Turn Functions
+    # -----------------------------------------------------------------
+    def get_connected_rooms(self, location):
+        if location in ClueLessCommon.ALL_LOCATIONS:
+            return self.game_board.get_connected_rooms(location)
+        log.error(f"Error!! Location {location} is not a known location!")
+        return None
+
+    def make_move(self, move_info):
+        """
+        A player makes a move from one location to another. Other players notified by updating the state
+        :param move_info: Info passed by client on POST request to /games/<game_id>/turn
+        :return: a __create_game_action dict or None if move is not possible
+        """
+        pass
+
+    # -----------------------------------------------------------------
     #                       Helper Functions
     # -----------------------------------------------------------------
     def __add_player(self):
@@ -360,6 +383,22 @@ class GameSession:
         init_info = list(ClueLessCommon.STARTING_LOCATIONS.items())[self.player_count]
         log.info(f"create_player: {init_info}")
         return Player(profile_name, location=init_info[0], token=init_info[1])
+
+    def __create_game_action(self, player_name, turn_type: GameTurnTypes, turn_data, additional_info=None):
+        """
+        Helper for creating movement messages to update in status
+        :param player_name:
+        :param turn_type:
+        :param turn_data:
+        :param additional_info:
+        :return: A dictionary containing turn info
+        """
+        return {
+            "name": player_name,
+            "action": turn_type,
+            "data": turn_data,
+            "info": additional_info
+        }
     def __set_next_players_turn_in_db(self, player_name: str):
         self.game_session.db_controller.update_active_turn(player_name)
 
@@ -396,8 +435,7 @@ class GameSession:
             'players': {name: pdata.data for name, pdata in self.player_data.items()},
             'player_count': self.player_count,
             'turn': self.get_current_turn(True),
-
-            'last_turn': self.last_turn,
+            'last_game_action': self.last_turn,  # This will hold information about game state, disproves, etc
             'last_chat_message': self.last_chat_message
         }
 
