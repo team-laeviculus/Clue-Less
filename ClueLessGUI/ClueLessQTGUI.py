@@ -19,8 +19,31 @@ from collections import OrderedDict
 
 app = None  # Main Qt context
 
-nearby_elements = ["roomStudy", "roomHall"]
+nearby_elements = ["roomLounge", "roomConservatory"]
 
+name_conversion = {
+    "study_hall": "hall1_2",
+    "hall_lounge": "hall1_4",
+    "library_billard room": "hall3_2",
+    "billard room_dinning room": "hall3_4",
+    "conservatory_ballroom": "hall5_2",
+    "ballroom_kitchen": "hall5_4",
+    "study_library": "hall2_1",
+    "hall_billard room": "hall2_3",
+    "lounge_dining room": "hall2_5",
+    "library_conservatory":"hall4_1",
+    "billard room_ballroom": "hall4_3",
+    "dining room_kitchen": "hall4_5",
+    "Kitchen": "roomKitchen",
+    "Conservatory": "roomConservatory",
+    "Dining Room": "roomDiningRoom",
+    "Ballroom": "roomBallroom",
+    "Study": "roomStudy",
+    "Hall": "roomHall",
+    "Lounge": "roomLounge",
+    "Library": "roomLibrary",
+    "Billard Room": "roomBilliardRoom"
+}
 
 class GameWindow(QtGui.QWindow):
     def __init__(self, parent=None):
@@ -187,9 +210,9 @@ gameboard_Elements.append(Hall5_4)
 Study = Room("roomStudy", 10, 120, 20, 120,
              "background-color: rgb(170, 170, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
 gameboard_Elements.append(Study)
-roomHall = Room("roomHall", 320, 430, 20, 120,
+Hall = Room("roomHall", 320, 430, 20, 120,
                 "background-color: rgb(85, 255, 255);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
-gameboard_Elements.append(roomHall)
+gameboard_Elements.append(Hall)
 Lounge = Room("roomLounge", 630, 740, 20, 120,
               "background-color: rgb(255, 170, 0);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
 gameboard_Elements.append(Lounge)
@@ -243,7 +266,6 @@ class MainWindow(QMainWindow):
         self.last_chat_message = None
 
         # Set the widget being displayed to the login form
-        # Phillip Made Change
         self.setCentralWidget(self.login_form_widget)
 
         self.dialogs = list()
@@ -280,7 +302,6 @@ class MainWindow(QMainWindow):
             lambda: self.make_move_callback(nearby_array=nearby_elements))
         self.game_board_ui.groupBox.mousePressEvent = self.moveToken
 
-
     def moveToken(self, event):
         print("Got a response")
         widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
@@ -291,9 +312,10 @@ class MainWindow(QMainWindow):
 
         for item in gameboard_Elements:
             if (item.positionXsmall < x < item.positionXlarge) and (item.positionYsmall < y < item.positionYlarge):
+                print(item.name)
                 for widget in widgets:
                     if (item.name in widget.objectName()) and ("moving" in widget.objectName()):
-                        print("ok")
+                        print(item.name)
                         self.game_board_ui.suspectMrsPeacock.move(x, y)
         location = "x: {0},  y: {1}".format(x, y)
         print(location)
