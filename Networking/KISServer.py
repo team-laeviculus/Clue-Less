@@ -300,28 +300,28 @@ def get_game_info():
         return jsonify(GameInfo.game)
 
 
-@app.route("/games/turn", methods=["GET"])
-def on_get_turn_request_info():
-    """
-    Handles GET requests for turn info
-    :return:
-    """
-    # TODO: Update this so we can do 'games/<GAME_ID>/turn' to support multiple games
-    # TODO: HTTP response codes
-    #print(f"[GET][Turn]: {request.get_json()}")
-    if GameState.CURRENT_STATE == GameState.WAITING_FOR_PLAYERS:
-        print(f"Waiting for players....")
-        return jsonify({
-            "turn": {
-                "name": "None",
-                "status": "Waiting for players"
-            }
-        })
-    elif GameState.CURRENT_STATE == GameState.GAME_RUNNING:
-        print("Game Running")
-        if GameInfo.players_turn_name is None:
-            get_next_turn()
-        return jsonify({"turn": GameInfo.players_turn_name[1]})
+# @app.route("/games/turn", methods=["GET"])
+# def on_get_turn_request_info():
+#     """
+#     Handles GET requests for turn info
+#     :return:
+#     """
+#     # TODO: Update this so we can do 'games/<GAME_ID>/turn' to support multiple games
+#     # TODO: HTTP response codes
+#     #print(f"[GET][Turn]: {request.get_json()}")
+#     if GameState.CURRENT_STATE == GameState.WAITING_FOR_PLAYERS:
+#         print(f"Waiting for players....")
+#         return jsonify({
+#             "turn": {
+#                 "name": "None",
+#                 "status": "Waiting for players"
+#             }
+#         })
+#     elif GameState.CURRENT_STATE == GameState.GAME_RUNNING:
+#         print("Game Running")
+#         if GameInfo.players_turn_name is None:
+#             get_next_turn()
+#         return jsonify({"turn": GameInfo.players_turn_name[1]})
 
 
 @app.route("/games/turn", methods=["POST"])
