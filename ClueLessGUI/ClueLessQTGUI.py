@@ -368,10 +368,6 @@ class MainWindow(QMainWindow):
                     y = random.randint(element.positionYsmall, element.positionYlarge)
                     return x,y
 
-
-
-
-
     def moveToken(self, event):
         print("Got a response")
         widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
@@ -385,8 +381,9 @@ class MainWindow(QMainWindow):
                 print(item.name)
                 for widget in widgets:
                     if (item.name in widget.objectName()) and ("moving" in widget.objectName()):
-                        print(item.name)
-                        self.game_board_ui.suspectMrsPeacock.move(x, y)
+                        for i, children in enumerate(self.game_board_ui.gbGameboard.findChildren(QtWidgets.QLabel)):
+                            if children.objectName() == currentPlayerToken:
+                                children.move(x, y)
         location = "x: {0},  y: {1}".format(x, y)
         print(location)
         self._running = False
