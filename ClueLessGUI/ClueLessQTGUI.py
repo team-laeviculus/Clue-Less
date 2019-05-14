@@ -82,7 +82,7 @@ class Notebook:
             # self.right_checkboxes[i].setTriState(False)
             self.check_boxes[self.check_box_widgets[i].text()] = [self.left_checkboxes[i], self.right_checkboxes[i]]
 
-    def show_right_checkboxes(self, current_room):
+    def show_right_checkboxes(self):
         # uncheck all checkboxes and display if the left checkbox is not checked
         self.chkSuggestMissScarlet.setChecked(False)
         if not self.chkMissScarlet.ischecked():
@@ -370,6 +370,10 @@ gameboard_Elements.append(Kitchen)
 
 
 class MainWindow(QMainWindow):
+
+    suggest_mode = False
+    accuse_mode = False
+    disprove_mode = False
 
     def __init__(self, qtcontext):
         self.app = qtcontext
@@ -791,6 +795,42 @@ class MainWindow(QMainWindow):
                                                                                                              room))
 
         print(json.dumps(accuse, indent=4, sort_keys=True))
+
+    def change_activity_mode(self, smode, amode, dmode):    # added function to change button text with activity modes
+        if smode is True:
+            self.make_suggestion_button.setText('Confirm Suggest')
+        elif dmode is True:
+            self.make_suggestion_button.setText('Confirm Disprove')     # use suggestion button confirm the disproves
+            self.notebook.show_right_checkboxes()
+        else:
+            self.make_suggestion_button.setText('Make Suggestion')
+            self.chkSuggestMissScarlet.hide
+            self.chkSuggestColMustard.hide
+            self.chkSuggestMrsWhite.hide
+            self.chkSuggestMrGreen.hide
+            self.chkSuggestMrsPeacock.hide
+            self.chkSuggestProfPlum.hide
+            self.chkSuggestCandlestick.hide
+            self.chkSuggestKnife.hide
+            self.chkSuggestLeadPipe.hide
+            self.chkSuggestRevolver.hide
+            self.chkSuggestRope.hide
+            self.chkSuggestWrench.hide
+            self.chkSuggestLounge.hide
+            self.chkSuggestDiningRoom.hide
+            self.chkSuggestKitchen.hide
+            self.chkSuggestBallroom.hide
+            self.chkSuggestConservatory.hide
+            self.chkSuggestLibrary.hide
+            self.chkSuggestStudy.hide
+            self.chkSuggestHall.hide
+            self.chkSuggestBilliardRoom.hide
+
+
+        if amode is True:
+            self.make_accusation_button.setText('Confirm Accuse')
+        else:
+            self.make_accusation_button.setText('Make Accusation')
 
 
 if __name__ == "__main__":
