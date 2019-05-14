@@ -69,7 +69,7 @@ class ClueLessCommon:
 
     HALLWAYS = {
         "study_hall",
-        "hall_lounge"
+        "hall_lounge",
         "library_billard room",
         "billard room_dinning room",
         "conservatory_ballroom",
@@ -81,6 +81,22 @@ class ClueLessCommon:
         "billard room_ballroom",
         "dining room_kitchen",
     }
+    HALLWAY_MAPPING = {
+        "study_hall": "hall1_2",
+        "hall_lounge": "hall1_4",
+        "library_billard room": "hall3_2",
+        "billard room_dinning room": "hall3_4",
+        "conservatory_ballroom": "hall5_2",
+        "ballroom_kitchen": "hall5_4",
+        "study_library": "hall2_1",
+        "hall_billard room": "hall2_3",
+        "lounge_dining room": "hall2_5",
+        "library_conservatory": "hall4_1",
+        "billard room_ballroom": "hall4_3",
+        "dining room_kitchen": "hall4_5",
+    }
+
+    HALLWAYS_DB_STYLE = set(HALLWAY_MAPPING.values())
 
     STARTING_LOCATIONS = OrderedDict({
         "hall_lounge": "Miss Scarlet",
@@ -102,8 +118,8 @@ class ClueLessCommon:
         'Library',
         'Billard Room',
     }
-
-    ALL_LOCATIONS = ROOMS.union(HALLWAYS)
+    # This is what not having standard data types looks like...fml
+    ALL_LOCATIONS = ROOMS.union(HALLWAYS).union(HALLWAY_MAPPING.keys())
 
     # Ensures Only a single instance of this class will exist over lifetime of the server
 
@@ -340,6 +356,9 @@ class GameSession:
     # -----------------------------------------------------------------
     def get_connected_rooms(self, location):
         if location in ClueLessCommon.ALL_LOCATIONS:
+            # if location in ClueLessCommon.HALLWAY_MAPPING:
+            #     # Update to DB friendly hallway names
+            #     location = ClueLessCommon.HALLWAY_MAPPING[location]
             return self.game_board.get_connected_rooms(location)
         log.error(f"Error!! Location {location} is not a known location!")
         return None

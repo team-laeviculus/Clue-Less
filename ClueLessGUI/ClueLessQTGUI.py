@@ -58,7 +58,7 @@ class GameWindow(QtGui.QWindow):
 # For updating game status text
 class StatusMessageType:
     Good = "green"
-    Normal = "black"
+    Normal = "white"
     Warning = "yellow"
     Error = "red"
 
@@ -83,12 +83,13 @@ class Notebook:
             # self.left_checkboxes[i].setTriState(False)
             self.right_checkboxes[i].hide()  # Hides all right checkboxes on
             # self.right_checkboxes[i].setTriState(False)
-            self.check_boxes[self.check_box_widgets[i].text()] = (self.left_checkboxes[i], self.right_checkboxes[i])
+            self.check_boxes[self.check_box_widgets[i].text()] = [self.left_checkboxes[i], self.right_checkboxes[i]]
 
     def show_right_checkboxes(self, current_room):
-        for i in self.right_checkboxes_tokens:
-            # i.setCheckState(False)
-            i.show()
+        pass
+        # for i in self.right_checkboxes_tokens:
+        #     i.setCheckState(False)
+        # #     i.show()
         # for i in self.right_checkboxes_weapons:
         #     # i.setCheckState(False)
         #     i.show()
@@ -320,6 +321,8 @@ class MainWindow(QMainWindow):
         self.game_data_initialized = False  # Boolean for one time initialization calls
         self.players = OrderedDict()
 
+        # Move statte stuff
+        # self.mo
         ######################################
         ########### Button Actions ###########
         ######################################
@@ -332,8 +335,7 @@ class MainWindow(QMainWindow):
         self.clue_login_window.username_input_field.returnPressed.connect(
             self.clue_login_window.create_profile_button.click)
 
-        self.game_board_ui.make_move_button.clicked.connect(
-            lambda: self.make_move_callback(nearby_array=nearby_elements))
+        self.game_board_ui.make_move_button.clicked.connect(self.networking.get_connected_rooms)
         self.game_board_ui.groupBox.mousePressEvent = self.moveToken
 
     def updateLocation(self, token, location):
@@ -478,8 +480,8 @@ class MainWindow(QMainWindow):
         print("-" * 40)
         print("[init_game_data]: Initializing Game Data")
         if self.game_data_initialized is False:
-            res = self.networking.get_connected_rooms('Lounge')
-            print(f"Testing get room: {res}")
+            # res = self.networking.get_connected_rooms('Lounge')
+            # print(f"Testing get room: {res}")
             print("[init_game_data]: initializing cards")
             self.networking.get_my_cards(self.get_cards_callback)
 
@@ -493,6 +495,19 @@ class MainWindow(QMainWindow):
             self.my_cards = cards['cards']
             self.add_message_to_chat_window(f"My Cards: {self.my_cards}")
             self.game_data_initialized = True
+
+    def available_moves_network_callback(self, reply):
+        """
+        3 layers of callbacks just for a get....
+        :return: None
+        """
+        print(f"\nGET AVAILABLE MOVES")
+        print("-" * 40)
+        moves_json, er = self.networking.reply_to_json(reply)
+        if not "error" in moves_json:
+            print(f"SERVER RESPONSE FOR MOVES: {moves_json['connected']}")
+            self.make_move_callback(moves_json['connected'])
+
 
     def __launch_gameboard(self, data):
         """
@@ -519,7 +534,7 @@ class MainWindow(QMainWindow):
         print("send message clicked")
 
     def make_move_callback(self, nearby_array):
-        print("Make move button Clicked")
+        print(f"Make move button Clicked: CONNECTED ROOOOOOMS: {nearby_array}")
         self.game_board_ui.make_suggestion_button.setDisabled(True)
         widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
                    range(self.game_board_ui.gridLayout.count()))
@@ -547,7 +562,7 @@ class MainWindow(QMainWindow):
                             current.setStyleSheet(item.styleSheet)
         self.game_board_ui.make_suggestion_button.setDisabled(False)
 
-    def make_suggestion_callback(self, nearby_array):
+    def __make_move_callback(self, nearby_array):
         print("Make Suggestion Clicked")
         widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
                    range(self.game_board_ui.gridLayout.count()))
@@ -636,9 +651,9 @@ class MainWindow(QMainWindow):
         self.networking.post_json("/games/players", json.dumps({"name": self.profile_name}),
                                   self.create_profile_callback)
 
-    def update_game_status(self, msg: str, message_type: StatusMessageType = StatusMessageType.Normal):
+    def update_game_status(self, msg: str, message_type: StatusMessageType=StatusMessageType.Normal):
         print(f"Game Status updated: {msg}")
-        self.game_status.setStyleSheet("QLabel { color: white }")
+        self.game_status.setStyleSheet(f"QLabel {{ color: {message_type}}}")
         self.game_status.setText(msg)
 
     def add_message_to_chat_window(self, msg: str, type: str = "N"):

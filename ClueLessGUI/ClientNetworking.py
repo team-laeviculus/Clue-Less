@@ -58,19 +58,25 @@ class ClientNetworking:
             print(f"get_my_cards exception: {e}")
             traceback.print_exc()
 
-    def get_connected_rooms(self, current_room):
-        try:
-            self.get(f"/games/{self.game_id}/connected/{current_room}",
-                     self.__get_connected_rooms_callback)
-        except Exception as e:
-            print(f"get_connected_rooms exception: {e}")
-            traceback.print_exc()
+    def get_connected_rooms(self):
+        current_room = self.game_board_widget.my_profile['location']
+        if current_room:
+            try:
+                print(f"GETTING CONNECTED ROOMS")
+                self.get(f"/games/{self.game_id}/connected/{current_room}",
+                         self.__get_connected_rooms_callback
+                         )
+            except Exception as e:
+                print(f"get_connected_rooms exception: {e}")
+                traceback.print_exc()
 
     def __get_connected_rooms_callback(self, reply):
         data, er = self.reply_to_json(reply)
         if er == QtNetwork.QNetworkReply.NoError:
             print(f"get_connected_rooms data: {data}")
-            self.game_board_widget.add_message_to_chat_window(f"Connected Rooms: {data}")
+            if 'connected' in data:
+                self.game_board_widget.add_message_to_chat_window(f"Connected Rooms: {data['connected']}")
+                self.game_board_widget.make_move_callback(data['connected'])
             return data
         elif er == 400:
             print(f"get_connected_rooms 400 Response!")
