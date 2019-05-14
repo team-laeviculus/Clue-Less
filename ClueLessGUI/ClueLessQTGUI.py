@@ -86,9 +86,94 @@ class Notebook:
             self.check_boxes[self.check_box_widgets[i].text()] = (self.left_checkboxes[i], self.right_checkboxes[i])
 
     def show_right_checkboxes(self, current_room):
-        for i in self.right_checkboxes_tokens:
-            # i.setCheckState(False)
-            i.show()
+        # uncheck all checkboxes and display if the left checkbox is not checked
+        self.chkSuggestMissScarlet.setChecked(False)
+        if not self.chkMissScarlet.ischecked():
+            self.chkSuggestMissScarlet.show
+
+        self.chkSuggestColMustard.setChecked(False)
+        if not self.chkColMustard.ischecked():
+            self.chkSuggestColMustard.show
+
+        self.chkSuggestMrsWhite.setChecked(False)
+        if not self.chkMrsWhite.ischecked():
+            self.chkSuggestMrsWhite.show
+
+        self.chkSuggestMrGreen.setChecked(False)
+        if not self.chkMrGreen.ischecked():
+            self.chkSuggestMrGreen.show
+
+        self.chkSuggestMrsPeacock.setChecked(False)
+        if not self.chkMrsPeacock.ischecked():
+            self.chkSuggestMrsPeacock.show
+
+        self.chkSuggestProfPlum.setChecked(False)
+        if not self.chkProfPlum.ischecked():
+            self.chkSuggestProfPlum.show
+
+        self.chkSuggestCandlestick.setChecked(False)
+        if not self.chkCandlestick.ischecked():
+            self.chkSuggestCandlestick.show
+
+        self.chkSuggestKnife.setChecked(False)
+        if not self.chkKnife.ischecked():
+            self.chkSuggestKnife.show
+
+        if not self.chkLeadPipe.ischecked():
+            self.chkSuggestLeadPipe.show
+            self.chkSuggestLeadPipe.setChecked(False)
+
+        self.chkSuggestRevolver.setChecked(False)
+        if not self.chkRevolver.ischecked():
+            self.chkSuggestRevolver.show
+
+        self.chkSuggestRope.setChecked(False)
+        if not self.chkRope.ischecked():
+            self.chkSuggestRope.show
+
+        self.chkSuggestWrench.setChecked(False)
+        if not self.chkWrench.ischecked():
+            self.chkSuggestWrench.show
+
+        self.chkSuggestLounge.setChecked(False)
+        if not self.chkLounge.ischecked():
+            self.chkSuggestLounge.show
+
+        self.chkSuggestDiningRoom.setChecked(False)
+        if not self.chkDiningRoom.ischecked():
+            self.chkSuggestDiningRoom.show
+
+        self.chkSuggestKitchen.setChecked(False)
+        if not self.chkKitchen.ischecked():
+            self.chkSuggestKitchen.show
+
+        self.chkSuggestBallroom.setChecked(False)
+        if not self.chkBallroom.ischecked():
+            self.chkSuggestBallroom.show
+
+        self.chkSuggestConservatory.setChecked(False)
+        if not self.chkConservatory.ischecked():
+            self.chkSuggestConservatory.show
+
+        self.chkSuggestLibrary.setChecked(False)
+        if not self.chkLibrary.ischecked():
+            self.chkSuggestLibrary.show
+
+        self.chkSuggestStudy.setChecked(False)
+        if not self.chkStudy.ischecked():
+            self.chkSuggestStudy.show
+
+        self.chkSuggestHall.setChecked(False)
+        if not self.chkHall.ischecked():
+            self.chkSuggestHall.show
+
+        self.chkSuggestBilliardRoom.setChecked(False)
+        if not self.chkBilliardRoom.ischecked():
+            self.chkSuggestBilliardRoom.show
+
+        # for i in self.right_checkboxes_tokens:
+        #     # i.setCheckState(False)
+        #     i.show()
         # for i in self.right_checkboxes_weapons:
         #     # i.setCheckState(False)
         #     i.show()
@@ -96,6 +181,7 @@ class Notebook:
         #     room_box = self.check_boxes[current_room]
         #     room_box[1].show()
         #     room_box[1].setCheckState(True)
+
 
     def get_checkbox_pair_by_name(self, name):
         """
@@ -659,7 +745,7 @@ class MainWindow(QMainWindow):
                                                                                                                suspect,
                                                                                                                weapon,
                                                                                                                room))
-        print(json.dumps(suggest, indent=4, sort_keys=True))
+        # print(json.dumps(suggest, indent=4, sort_keys=True))
 
     def send_disprove(self, pn, s, w, r):
         name = pn
@@ -673,7 +759,7 @@ class MainWindow(QMainWindow):
                                                                                                                   weapon,
                                                                                                                   room))
 
-        print(json.dumps(disprove, indent=4, sort_keys=True))
+        # print(json.dumps(disprove, indent=4, sort_keys=True))
 
     def send_accusation(self, pn, s, w, r):
         name = pn
@@ -687,7 +773,7 @@ class MainWindow(QMainWindow):
                                                                                                              weapon,
                                                                                                              room))
 
-        print(json.dumps(accuse, indent=4, sort_keys=True))
+        # print(json.dumps(accuse, indent=4, sort_keys=True))
 
 
 if __name__ == "__main__":
