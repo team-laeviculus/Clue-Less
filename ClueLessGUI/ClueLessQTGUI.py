@@ -4,7 +4,7 @@ Use this file to manipulate generated files so we don't overwrite anything
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtNetwork
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QColorDialog
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QColorDialog, QPushButton
 
 from PyQt5.QtCore import QSize
 from ClueLessGUI.ClueLess_QTGameboard import Ui_ClueGameBoard
@@ -20,9 +20,6 @@ from collections import OrderedDict
 
 app = None  # Main Qt context
 
-nearby_elements = ["roomLounge", "roomConservatory"]
-currentPlayerToken = "suspectMrsPeacock"
-goToRoom = "roomBilliardRoom"
 
 name_conversion = {
     "study_hall": "hall1_2",
@@ -58,7 +55,7 @@ class GameWindow(QtGui.QWindow):
 # For updating game status text
 class StatusMessageType:
     Good = "green"
-    Normal = "black"
+    Normal = "white"
     Warning = "yellow"
     Error = "red"
 
@@ -83,97 +80,13 @@ class Notebook:
             # self.left_checkboxes[i].setTriState(False)
             self.right_checkboxes[i].hide()  # Hides all right checkboxes on
             # self.right_checkboxes[i].setTriState(False)
-            self.check_boxes[self.check_box_widgets[i].text()] = (self.left_checkboxes[i], self.right_checkboxes[i])
+            self.check_boxes[self.check_box_widgets[i].text()] = [self.left_checkboxes[i], self.right_checkboxes[i]]
 
     def show_right_checkboxes(self, current_room):
-        # uncheck all checkboxes and display if the left checkbox is not checked
-        self.chkSuggestMissScarlet.setChecked(False)
-        if not self.chkMissScarlet.ischecked():
-            self.chkSuggestMissScarlet.show
-
-        self.chkSuggestColMustard.setChecked(False)
-        if not self.chkColMustard.ischecked():
-            self.chkSuggestColMustard.show
-
-        self.chkSuggestMrsWhite.setChecked(False)
-        if not self.chkMrsWhite.ischecked():
-            self.chkSuggestMrsWhite.show
-
-        self.chkSuggestMrGreen.setChecked(False)
-        if not self.chkMrGreen.ischecked():
-            self.chkSuggestMrGreen.show
-
-        self.chkSuggestMrsPeacock.setChecked(False)
-        if not self.chkMrsPeacock.ischecked():
-            self.chkSuggestMrsPeacock.show
-
-        self.chkSuggestProfPlum.setChecked(False)
-        if not self.chkProfPlum.ischecked():
-            self.chkSuggestProfPlum.show
-
-        self.chkSuggestCandlestick.setChecked(False)
-        if not self.chkCandlestick.ischecked():
-            self.chkSuggestCandlestick.show
-
-        self.chkSuggestKnife.setChecked(False)
-        if not self.chkKnife.ischecked():
-            self.chkSuggestKnife.show
-
-        if not self.chkLeadPipe.ischecked():
-            self.chkSuggestLeadPipe.show
-            self.chkSuggestLeadPipe.setChecked(False)
-
-        self.chkSuggestRevolver.setChecked(False)
-        if not self.chkRevolver.ischecked():
-            self.chkSuggestRevolver.show
-
-        self.chkSuggestRope.setChecked(False)
-        if not self.chkRope.ischecked():
-            self.chkSuggestRope.show
-
-        self.chkSuggestWrench.setChecked(False)
-        if not self.chkWrench.ischecked():
-            self.chkSuggestWrench.show
-
-        self.chkSuggestLounge.setChecked(False)
-        if not self.chkLounge.ischecked():
-            self.chkSuggestLounge.show
-
-        self.chkSuggestDiningRoom.setChecked(False)
-        if not self.chkDiningRoom.ischecked():
-            self.chkSuggestDiningRoom.show
-
-        self.chkSuggestKitchen.setChecked(False)
-        if not self.chkKitchen.ischecked():
-            self.chkSuggestKitchen.show
-
-        self.chkSuggestBallroom.setChecked(False)
-        if not self.chkBallroom.ischecked():
-            self.chkSuggestBallroom.show
-
-        self.chkSuggestConservatory.setChecked(False)
-        if not self.chkConservatory.ischecked():
-            self.chkSuggestConservatory.show
-
-        self.chkSuggestLibrary.setChecked(False)
-        if not self.chkLibrary.ischecked():
-            self.chkSuggestLibrary.show
-
-        self.chkSuggestStudy.setChecked(False)
-        if not self.chkStudy.ischecked():
-            self.chkSuggestStudy.show
-
-        self.chkSuggestHall.setChecked(False)
-        if not self.chkHall.ischecked():
-            self.chkSuggestHall.show
-
-        self.chkSuggestBilliardRoom.setChecked(False)
-        if not self.chkBilliardRoom.ischecked():
-            self.chkSuggestBilliardRoom.show
-
+        pass
         # for i in self.right_checkboxes_tokens:
-        #     # i.setCheckState(False)
-        #     i.show()
+        #     i.setCheckState(False)
+        # #     i.show()
         # for i in self.right_checkboxes_weapons:
         #     # i.setCheckState(False)
         #     i.show()
@@ -181,7 +94,6 @@ class Notebook:
         #     room_box = self.check_boxes[current_room]
         #     room_box[1].show()
         #     room_box[1].setCheckState(True)
-
 
     def get_checkbox_pair_by_name(self, name):
         """
@@ -275,18 +187,26 @@ class Token:
         self.location = location
 
 
+TOKENS_MAP = {
+    "suspectProfPlum": "Prof Plum",
+    "suspectMrsPeacock": "Mrs. Peacock",
+    "suspectMrGreen": "Mr. Green",
+    "suspectMrsWhite": "Mrs. White",
+    "suspectColMustard": "Col. Mustard",
+    "suspectMissScarlet": "Miss Scarlet"
+}
 token_Elements = []
-MrsPeacock = Token("suspectMrsPeacock", "hall1_2")
+MrsPeacock = Token("Mrs. Peacock", name_conversion["library_conservatory"])
 token_Elements.append(MrsPeacock)
-MrsScarlet = Token("suspectMissScarlet", "hall1_4")
+MrsScarlet = Token("Miss Scarlet", name_conversion["hall_lounge"])
 token_Elements.append(MrsScarlet)
-ProfPlum = Token("suspectProfPlum", "hall5_2")
+ProfPlum = Token("Prof Plum", name_conversion["study_library"])
 token_Elements.append(ProfPlum)
-ColMustard = Token("suspectColMustard", "hall5_4")
+ColMustard = Token("Col. Mustard", name_conversion["lounge_dining room"])
 token_Elements.append(ColMustard)
-MrGreen = Token("suspectMrGreen", "hall4_1")
+MrGreen = Token("Mr. Green", name_conversion["conservatory_ballroom"])
 token_Elements.append(MrGreen)
-MrsWhite = Token("suspectMrsWhite", "hall2_5")
+MrsWhite = Token("Mrs. White", "ballroom_kitchen")
 token_Elements.append(MrsWhite)
 CandleStick = Token("weaponCandleStick", "roomConservatory")
 token_Elements.append(CandleStick)
@@ -392,6 +312,29 @@ class MainWindow(QMainWindow):
         # Notebook checkboxes
         self.notebook = Notebook(self.game_board_ui.gbNotebook)
 
+
+        get_widget = lambda idx: self.game_board_ui.gridLayout.itemAt(idx).widget()
+        # for i in reversed(range(self.game_board_ui.gridLayout.count())):
+        #     widgetToRemove = self.game_board_ui.gridLayout.itemAt(i).widget()
+        #     widgetToRemove.setParent(None)
+        #     widgetToRemove.deleteLater()
+        # try:
+        #     index = 0
+        #     for row in range(self.game_board_ui.gridLayout.rowCount()):
+        #         for column in range(self.game_board_ui.gridLayout.columnCount()):
+        #             btn = QPushButton(f"test_btn {i}")
+        #             self.game_board_ui.gridLayout.addWidget(btn, row, column)
+        #             index += 1
+        # except IndexError:
+        #     pass
+        self.game_board_room_map = {
+            get_widget(widget).objectName(): get_widget(widget)
+            for widget in range(self.game_board_ui.gridLayout.count())
+        }
+        self.rev_room_map = {value: key for key, value in name_conversion.items()}
+        self.is_make_move = False
+        self.move_locations = list()
+
         # self.notebook.show_right_checkboxes("Hall")
 
         print(f"TEST Checkboxes: {self.notebook.get_checkbox_pair_by_index(4)}")
@@ -403,9 +346,12 @@ class MainWindow(QMainWindow):
 
         self.my_profile = None  # Contains name, token, location dict
         self.my_cards = None  # Contains cards
+
         self.game_data_initialized = False  # Boolean for one time initialization calls
         self.players = OrderedDict()
 
+        # Move statte stuff
+        # self.mo
         ######################################
         ########### Button Actions ###########
         ######################################
@@ -418,8 +364,7 @@ class MainWindow(QMainWindow):
         self.clue_login_window.username_input_field.returnPressed.connect(
             self.clue_login_window.create_profile_button.click)
 
-        self.game_board_ui.make_move_button.clicked.connect(
-            lambda: self.make_move_callback(nearby_array=nearby_elements))
+        self.game_board_ui.make_move_button.clicked.connect(self.networking.get_connected_rooms)
         self.game_board_ui.groupBox.mousePressEvent = self.moveToken
 
     def updateLocation(self, token, location):
@@ -454,25 +399,27 @@ class MainWindow(QMainWindow):
                     y = random.randint(element.positionYsmall, element.positionYlarge)
                     return x,y
 
-
-
-
-
     def moveToken(self, event):
         print("Got a response")
-        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                   range(self.game_board_ui.gridLayout.count()))
 
         x = event.x()
         y = event.y()
-
+        has_moved = False
         for item in gameboard_Elements:
+            if has_moved:
+                break
             if (item.positionXsmall < x < item.positionXlarge) and (item.positionYsmall < y < item.positionYlarge):
                 print(item.name)
-                for widget in widgets:
-                    if (item.name in widget.objectName()) and ("moving" in widget.objectName()):
-                        print(item.name)
-                        self.game_board_ui.suspectMrsPeacock.move(x, y)
+                if (item.name in self.game_board_room_map) \
+                        and ("moving" in self.game_board_room_map[item.name].objectName()):
+                    for i, children in enumerate(self.game_board_ui.gbGameboard.findChildren(QtWidgets.QLabel)):
+                        c = children.objectName()
+                        if c in TOKENS_MAP and TOKENS_MAP[c] == self.my_profile['token']:
+                            children.move(x, y)
+                            has_moved = True
+                            break
+
+        QtGui.QGuiApplication.processEvents()
         location = "x: {0},  y: {1}".format(x, y)
         print(location)
         self._running = False
@@ -567,8 +514,8 @@ class MainWindow(QMainWindow):
         print("-" * 40)
         print("[init_game_data]: Initializing Game Data")
         if self.game_data_initialized is False:
-            res = self.networking.get_connected_rooms('Lounge')
-            print(f"Testing get room: {res}")
+            # res = self.networking.get_connected_rooms('Lounge')
+            # print(f"Testing get room: {res}")
             print("[init_game_data]: initializing cards")
             self.networking.get_my_cards(self.get_cards_callback)
 
@@ -609,48 +556,24 @@ class MainWindow(QMainWindow):
 
     def make_move_callback(self, nearby_array):
         print("Make move button Clicked")
-        self.game_board_ui.make_suggestion_button.setDisabled(True)
-        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                   range(self.game_board_ui.gridLayout.count()))
-        for widget in widgets:
-            for i in nearby_array:
-                if widget.objectName() == i:
-                    new_name = widget.objectName()
-                    widget.setObjectName(new_name + "_moving")
-                    widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-                                         "border: 5px solid yellow;\n"
-                                         "color: rgb(0, 0, 0);")
-        self._running = True
-        while self._running:
-            QtGui.QGuiApplication.processEvents()
-            time.sleep(0.05)
-        print("Still got it")
-        widgets_list = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                        range(self.game_board_ui.gridLayout.count()))
-        for current in widgets_list:
-            for i in nearby_array:
-                if i in current.objectName():
-                    current.setObjectName(i)
-                    for item in gameboard_Elements:
-                        if item.name == current.objectName():
-                            current.setStyleSheet(item.styleSheet)
-        self.game_board_ui.make_suggestion_button.setDisabled(False)
+        self.game_board_ui.make_move_button.setDisabled(True)
 
-    def make_suggestion_callback(self, nearby_array):
-        print("Make Suggestion Clicked")
-        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                   range(self.game_board_ui.gridLayout.count()))
-        for widget in widgets:
-            for i in nearby_array:
-                if widget.objectName() == i:
-                    new_name = widget.objectName()
-                    widget.setObjectName(new_name + "_moving")
-                    widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-                                         "border: 5px solid yellow;\n"
-                                         "color: rgb(0, 0, 0);")
-        self.game_board_ui.roomStudy.mousePressEvent = self.doSomething
-        # QtGui.QGuiApplication.processEvents()
-        # print(self.game_board_ui.roomStudy.objectName())
+        for room in nearby_array:
+            widget = None
+            if room in self.game_board_room_map:
+                widget = self.game_board_room_map[room]
+            elif room in name_conversion:
+                widget = self.game_board_room_map[name_conversion[room]]
+            else:
+                print("ERRRORRR")
+                raise Exception(f"Unknown room name: {room}")
+
+            widget.setObjectName(room + "_moving")
+            widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+                                 "border: 5px solid yellow;\n"
+                                 "color: rgb(0, 0, 0);")
+            QtGui.QGuiApplication.processEvents()
+
 
     def tmp_make_suggestion_callback(self, nearby_array):
         print("Make Suggestion Clicked")
@@ -725,9 +648,9 @@ class MainWindow(QMainWindow):
         self.networking.post_json("/games/players", json.dumps({"name": self.profile_name}),
                                   self.create_profile_callback)
 
-    def update_game_status(self, msg: str, message_type: StatusMessageType = StatusMessageType.Normal):
+    def update_game_status(self, msg: str, message_type: StatusMessageType=StatusMessageType.Normal):
         print(f"Game Status updated: {msg}")
-        self.game_status.setStyleSheet("QLabel { color: white }")
+        self.game_status.setStyleSheet(f"QLabel {{ color: {message_type}}}")
         self.game_status.setText(msg)
 
     def add_message_to_chat_window(self, msg: str, type: str = "N"):
@@ -745,7 +668,7 @@ class MainWindow(QMainWindow):
                                                                                                                suspect,
                                                                                                                weapon,
                                                                                                                room))
-        # print(json.dumps(suggest, indent=4, sort_keys=True))
+        print(json.dumps(suggest, indent=4, sort_keys=True))
 
     def send_disprove(self, pn, s, w, r):
         name = pn
@@ -759,7 +682,7 @@ class MainWindow(QMainWindow):
                                                                                                                   weapon,
                                                                                                                   room))
 
-        # print(json.dumps(disprove, indent=4, sort_keys=True))
+        print(json.dumps(disprove, indent=4, sort_keys=True))
 
     def send_accusation(self, pn, s, w, r):
         name = pn
@@ -773,7 +696,7 @@ class MainWindow(QMainWindow):
                                                                                                              weapon,
                                                                                                              room))
 
-        # print(json.dumps(accuse, indent=4, sort_keys=True))
+        print(json.dumps(accuse, indent=4, sort_keys=True))
 
 
 if __name__ == "__main__":

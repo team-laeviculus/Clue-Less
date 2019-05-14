@@ -136,7 +136,7 @@ class OLDClueLessCommon:
         OLDClueLessCommon.db_controller = GAME_SESSIONS[1].game_board.db_conn
 
     HALLWAYS = ["study_hall",
-                "hall_lounge"
+                "hall_lounge",
                 "library_billard room",
                 "billard room_dinning room",
                 "conservatory_ballroom",
@@ -268,10 +268,16 @@ def get_cards_for_player(game_id, player_name):
 @app.route("/games/<game_id>/connected/<current_room>")
 def get_connected_rooms(game_id, current_room):
     # TODO: Update this for only rooms that can be moved into
-    log.info(f"GET CONNECTED ROOMS[{game_id}: {current_room}")
+    log.info(f"GET CONNECTED ROOMS[{game_id}]: {current_room}")
+    log.info(f"Current rooms: {ClueLessCommon.ALL_LOCATIONS}")
+    log.info(f"is it known {current_room in ClueLessCommon.ALL_LOCATIONS}")
+    log.info(f"is it a ROOM: {current_room in ClueLessCommon.ROOMS}")
+    log.info(f"is it a normal hall: {current_room in ClueLessCommon.HALLWAYS}")
+    log.info(f"is in in db hallways: {current_room in ClueLessCommon.HALLWAYS_DB_STYLE}")
     game = get_game_by_id(game_id)
     if game:
         connected = game.get_connected_rooms(current_room)
+        log.info(f"CONNECTED ROOMS FOUND: {connected}")
         if connected:
             return jsonify({
                 "current_room": current_room,
