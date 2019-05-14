@@ -469,6 +469,9 @@ class MainWindow(QMainWindow):
                 for i, children in enumerate(self.game_board_ui.gbGameboard.findChildren(QtWidgets.QLabel)):
                     if children.objectName() == token:
                         x, y = self.locationCheck(location)
+                        for i in token_Elements:
+                            if i.name == token:
+                                i.location = location
                         children.move(x, y)
 
     def locationCheck(self, location):
@@ -510,13 +513,17 @@ class MainWindow(QMainWindow):
                         c = children.objectName()
                         if c in TOKENS_MAP and TOKENS_MAP[c] == self.my_profile['token']:
                             children.move(x, y)
+                            for i in token_Elements:
+                                if i.name == c:
+                                    i.location = item.name
                             has_moved = True
                             break
-
-        QtGui.QGuiApplication.processEvents()
+        for item in gameboard_Elements:
+            if (item.name in self.game_board_room_map):
+                self.game_board_room_map[item.name].setObjectName(item.name)
+                self.game_board_room_map[item.name].setStyleSheet(item.styleSheet)
         location = "x: {0},  y: {1}".format(x, y)
         print(location)
-        self._running = False
 
     def create_profile_callback(self, reply):
         """
@@ -666,7 +673,7 @@ class MainWindow(QMainWindow):
             widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
                                  "border: 5px solid yellow;\n"
                                  "color: rgb(0, 0, 0);")
-            QtGui.QGuiApplication.processEvents()
+            self.game_board_ui.make_move_button.setDisabled(False)
 
 
     def tmp_make_suggestion_callback(self, nearby_array):
