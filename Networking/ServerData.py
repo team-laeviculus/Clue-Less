@@ -364,7 +364,7 @@ class GameSession:
         return None
 
     def make_move(self, move_info):
-        """
+        """w
         A player makes a move from one location to another. Other players notified by updating the state
         :param move_info: Info passed by client on POST request to /games/<game_id>/turn
         :return: a __create_game_action dict or None if move is not possible

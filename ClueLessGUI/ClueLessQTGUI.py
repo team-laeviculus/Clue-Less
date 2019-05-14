@@ -4,7 +4,7 @@ Use this file to manipulate generated files so we don't overwrite anything
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtNetwork
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QColorDialog
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QColorDialog, QPushButton
 
 from PyQt5.QtCore import QSize
 from ClueLessGUI.ClueLess_QTGameboard import Ui_ClueGameBoard
@@ -20,9 +20,6 @@ from collections import OrderedDict
 
 app = None  # Main Qt context
 
-nearby_elements = ["roomLounge", "roomConservatory"]
-currentPlayerToken = "suspectMrsPeacock"
-goToRoom = "roomBilliardRoom"
 
 name_conversion = {
     "study_hall": "hall1_2",
@@ -190,18 +187,26 @@ class Token:
         self.location = location
 
 
+TOKENS_MAP = {
+    "suspectProfPlum": "Prof Plum",
+    "suspectMrsPeacock": "Mrs. Peacock",
+    "suspectMrGreen": "Mr. Green",
+    "suspectMrsWhite": "Mrs. White",
+    "suspectColMustard": "Col. Mustard",
+    "suspectMissScarlet": "Miss Scarlet"
+}
 token_Elements = []
-MrsPeacock = Token("suspectMrsPeacock", "hall1_2")
+MrsPeacock = Token("Mrs. Peacock", name_conversion["library_conservatory"])
 token_Elements.append(MrsPeacock)
-MrsScarlet = Token("suspectMissScarlet", "hall1_4")
+MrsScarlet = Token("Miss Scarlet", name_conversion["hall_lounge"])
 token_Elements.append(MrsScarlet)
-ProfPlum = Token("suspectProfPlum", "hall5_2")
+ProfPlum = Token("Prof Plum", name_conversion["study_library"])
 token_Elements.append(ProfPlum)
-ColMustard = Token("suspectColMustard", "hall5_4")
+ColMustard = Token("Col. Mustard", name_conversion["lounge_dining room"])
 token_Elements.append(ColMustard)
-MrGreen = Token("suspectMrGreen", "hall4_1")
+MrGreen = Token("Mr. Green", name_conversion["conservatory_ballroom"])
 token_Elements.append(MrGreen)
-MrsWhite = Token("suspectMrsWhite", "hall2_5")
+MrsWhite = Token("Mrs. White", "ballroom_kitchen")
 token_Elements.append(MrsWhite)
 CandleStick = Token("weaponCandleStick", "roomConservatory")
 token_Elements.append(CandleStick)
@@ -307,6 +312,29 @@ class MainWindow(QMainWindow):
         # Notebook checkboxes
         self.notebook = Notebook(self.game_board_ui.gbNotebook)
 
+
+        get_widget = lambda idx: self.game_board_ui.gridLayout.itemAt(idx).widget()
+        # for i in reversed(range(self.game_board_ui.gridLayout.count())):
+        #     widgetToRemove = self.game_board_ui.gridLayout.itemAt(i).widget()
+        #     widgetToRemove.setParent(None)
+        #     widgetToRemove.deleteLater()
+        # try:
+        #     index = 0
+        #     for row in range(self.game_board_ui.gridLayout.rowCount()):
+        #         for column in range(self.game_board_ui.gridLayout.columnCount()):
+        #             btn = QPushButton(f"test_btn {i}")
+        #             self.game_board_ui.gridLayout.addWidget(btn, row, column)
+        #             index += 1
+        # except IndexError:
+        #     pass
+        self.game_board_room_map = {
+            get_widget(widget).objectName(): get_widget(widget)
+            for widget in range(self.game_board_ui.gridLayout.count())
+        }
+        self.rev_room_map = {value: key for key, value in name_conversion.items()}
+        self.is_make_move = False
+        self.move_locations = list()
+
         # self.notebook.show_right_checkboxes("Hall")
 
         print(f"TEST Checkboxes: {self.notebook.get_checkbox_pair_by_index(4)}")
@@ -318,6 +346,7 @@ class MainWindow(QMainWindow):
 
         self.my_profile = None  # Contains name, token, location dict
         self.my_cards = None  # Contains cards
+
         self.game_data_initialized = False  # Boolean for one time initialization calls
         self.players = OrderedDict()
 
@@ -372,20 +401,25 @@ class MainWindow(QMainWindow):
 
     def moveToken(self, event):
         print("Got a response")
-        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                   range(self.game_board_ui.gridLayout.count()))
 
         x = event.x()
         y = event.y()
-
+        has_moved = False
         for item in gameboard_Elements:
+            if has_moved:
+                break
             if (item.positionXsmall < x < item.positionXlarge) and (item.positionYsmall < y < item.positionYlarge):
                 print(item.name)
-                for widget in widgets:
-                    if (item.name in widget.objectName()) and ("moving" in widget.objectName()):
-                        for i, children in enumerate(self.game_board_ui.gbGameboard.findChildren(QtWidgets.QLabel)):
-                            if children.objectName() == currentPlayerToken:
-                                children.move(x, y)
+                if (item.name in self.game_board_room_map) \
+                        and ("moving" in self.game_board_room_map[item.name].objectName()):
+                    for i, children in enumerate(self.game_board_ui.gbGameboard.findChildren(QtWidgets.QLabel)):
+                        c = children.objectName()
+                        if c in TOKENS_MAP and TOKENS_MAP[c] == self.my_profile['token']:
+                            children.move(x, y)
+                            has_moved = True
+                            break
+
+        QtGui.QGuiApplication.processEvents()
         location = "x: {0},  y: {1}".format(x, y)
         print(location)
         self._running = False
@@ -496,19 +530,6 @@ class MainWindow(QMainWindow):
             self.add_message_to_chat_window(f"My Cards: {self.my_cards}")
             self.game_data_initialized = True
 
-    def available_moves_network_callback(self, reply):
-        """
-        3 layers of callbacks just for a get....
-        :return: None
-        """
-        print(f"\nGET AVAILABLE MOVES")
-        print("-" * 40)
-        moves_json, er = self.networking.reply_to_json(reply)
-        if not "error" in moves_json:
-            print(f"SERVER RESPONSE FOR MOVES: {moves_json['connected']}")
-            self.make_move_callback(moves_json['connected'])
-
-
     def __launch_gameboard(self, data):
         """
         After player logs in, launches gamebaord player will be using
@@ -534,49 +555,25 @@ class MainWindow(QMainWindow):
         print("send message clicked")
 
     def make_move_callback(self, nearby_array):
-        print(f"Make move button Clicked: CONNECTED ROOOOOOMS: {nearby_array}")
-        self.game_board_ui.make_suggestion_button.setDisabled(True)
-        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                   range(self.game_board_ui.gridLayout.count()))
-        for widget in widgets:
-            for i in nearby_array:
-                if widget.objectName() == i:
-                    new_name = widget.objectName()
-                    widget.setObjectName(new_name + "_moving")
-                    widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-                                         "border: 5px solid yellow;\n"
-                                         "color: rgb(0, 0, 0);")
-        self._running = True
-        while self._running:
-            QtGui.QGuiApplication.processEvents()
-            time.sleep(0.05)
-        print("Still got it")
-        widgets_list = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                        range(self.game_board_ui.gridLayout.count()))
-        for current in widgets_list:
-            for i in nearby_array:
-                if i in current.objectName():
-                    current.setObjectName(i)
-                    for item in gameboard_Elements:
-                        if item.name == current.objectName():
-                            current.setStyleSheet(item.styleSheet)
-        self.game_board_ui.make_suggestion_button.setDisabled(False)
+        print("Make move button Clicked")
+        self.game_board_ui.make_move_button.setDisabled(True)
 
-    def __make_move_callback(self, nearby_array):
-        print("Make Suggestion Clicked")
-        widgets = (self.game_board_ui.gridLayout.itemAt(i).widget() for i in
-                   range(self.game_board_ui.gridLayout.count()))
-        for widget in widgets:
-            for i in nearby_array:
-                if widget.objectName() == i:
-                    new_name = widget.objectName()
-                    widget.setObjectName(new_name + "_moving")
-                    widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-                                         "border: 5px solid yellow;\n"
-                                         "color: rgb(0, 0, 0);")
-        self.game_board_ui.roomStudy.mousePressEvent = self.doSomething
-        # QtGui.QGuiApplication.processEvents()
-        # print(self.game_board_ui.roomStudy.objectName())
+        for room in nearby_array:
+            widget = None
+            if room in self.game_board_room_map:
+                widget = self.game_board_room_map[room]
+            elif room in name_conversion:
+                widget = self.game_board_room_map[name_conversion[room]]
+            else:
+                print("ERRRORRR")
+                raise Exception(f"Unknown room name: {room}")
+
+            widget.setObjectName(room + "_moving")
+            widget.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+                                 "border: 5px solid yellow;\n"
+                                 "color: rgb(0, 0, 0);")
+            QtGui.QGuiApplication.processEvents()
+
 
     def tmp_make_suggestion_callback(self, nearby_array):
         print("Make Suggestion Clicked")
