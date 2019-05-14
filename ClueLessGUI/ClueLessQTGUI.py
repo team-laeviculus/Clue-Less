@@ -15,11 +15,14 @@ import json
 import traceback
 import time
 import sys
+import random
 from collections import OrderedDict
 
 app = None  # Main Qt context
 
 nearby_elements = ["roomLounge", "roomConservatory"]
+currentPlayerToken = "suspectMrsPeacock"
+goToRoom = "roomBilliardRoom"
 
 name_conversion = {
     "study_hall": "hall1_2",
@@ -177,6 +180,40 @@ class Player:
         self.positionX = player_position_x
         self.positionY = player_position_y
 
+class Token:
+    name = None
+    location = None
+
+    def __init__(self, token_name, location):
+        self.name = token_name
+        self.location = location
+
+
+token_Elements = []
+MrsPeacock = Token("suspectMrsPeacock", "hall1_2")
+token_Elements.append(MrsPeacock)
+MrsScarlet = Token("suspectMissScarlet", "hall1_4")
+token_Elements.append(MrsScarlet)
+ProfPlum = Token("suspectProfPlum", "hall5_2")
+token_Elements.append(ProfPlum)
+ColMustard = Token("suspectColMustard", "hall5_4")
+token_Elements.append(ColMustard)
+MrGreen = Token("suspectMrGreen", "hall4_1")
+token_Elements.append(MrGreen)
+MrsWhite = Token("suspectMrsWhite", "hall2_5")
+token_Elements.append(MrsWhite)
+CandleStick = Token("weaponCandleStick", "roomConservatory")
+token_Elements.append(CandleStick)
+Knife = Token("weaponKnife", "roomBallroom")
+token_Elements.append(Knife)
+Rope = Token("weaponRope", "roomLounge")
+token_Elements.append(Rope)
+Revolver = Token("weaponRevolver", "roomHall")
+token_Elements.append(Revolver)
+Wrench = Token("weaponWrench", "roomStudy")
+token_Elements.append(Wrench)
+LeadPipe = Token("weaponLeadPipe", "roomKitchen")
+token_Elements.append(LeadPipe)
 
 gameboard_Elements = []
 Hall1_2 = Hall("hall1_2", 170, 280, 20, 120, "background-color: rgb(125, 125, 125);")
@@ -206,9 +243,9 @@ gameboard_Elements.append(Hall5_4)
 Study = Room("roomStudy", 10, 120, 20, 120,
              "background-color: rgb(170, 170, 127);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
 gameboard_Elements.append(Study)
-Hall = Room("roomHall", 320, 430, 20, 120,
+roomHall = Room("roomHall", 320, 430, 20, 120,
             "background-color: rgb(85, 255, 255);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
-gameboard_Elements.append(Hall)
+gameboard_Elements.append(roomHall)
 Lounge = Room("roomLounge", 630, 740, 20, 120,
               "background-color: rgb(255, 170, 0);\nborder: 1px solid black;\ncolor: rgb(0, 0, 0);")
 gameboard_Elements.append(Lounge)
@@ -298,6 +335,42 @@ class MainWindow(QMainWindow):
         self.game_board_ui.make_move_button.clicked.connect(
             lambda: self.make_move_callback(nearby_array=nearby_elements))
         self.game_board_ui.groupBox.mousePressEvent = self.moveToken
+
+    def updateLocation(self, token, location):
+        for item in gameboard_Elements:
+            print(item.name)
+            if item.name == location:
+                print(item.name)
+                for i, children in enumerate(self.game_board_ui.gbGameboard.findChildren(QtWidgets.QLabel)):
+                    if children.objectName() == token:
+                        x, y = self.locationCheck(location)
+                        children.move(x, y)
+
+    def locationCheck(self, location):
+        count = 0
+        for item in token_Elements:
+            print(item.name)
+            if item.location == location:
+                count += 1
+        print(count)
+        for element in gameboard_Elements:
+            if element.name == location:
+                if count == 0:
+                    return element.positionXlarge, element.positionYsmall
+                elif count == 1:
+                    return element.positionXlarge, element.positionYlarge
+                elif count == 2:
+                    return element.positionXsmall, element.positionYlarge
+                elif count == 3:
+                    return element.positionXsmall, element.positionYsmall
+                else:
+                    x = random.randint(element.positionXsmall, element.positionXlarge)
+                    y = random.randint(element.positionYsmall, element.positionYlarge)
+                    return x,y
+
+
+
+
 
     def moveToken(self, event):
         print("Got a response")
@@ -471,12 +544,10 @@ class MainWindow(QMainWindow):
         for current in widgets_list:
             for i in nearby_array:
                 if i in current.objectName():
-                    print(current)
                     current.setObjectName(i)
                     for item in gameboard_Elements:
                         if item.name == current.objectName():
                             current.setStyleSheet(item.styleSheet)
-
         self.game_board_ui.make_suggestion_button.setDisabled(False)
 
     def make_suggestion_callback(self, nearby_array):
