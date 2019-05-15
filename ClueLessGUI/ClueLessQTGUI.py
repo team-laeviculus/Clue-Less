@@ -103,89 +103,89 @@ class Notebook:
 
     def show_right_checkboxes(self):
         # uncheck all checkboxes and display if the left checkbox is not checked
-        self.chkSuggestMissScarlet.setChecked(False)
-        if not self.chkMissScarlet.ischecked():
-            self.chkSuggestMissScarlet.show
+        self.right_checkboxes.chkSuggestMissScarlet.setChecked(False)
+        if not self.right_checkboxes.chkMissScarlet.ischecked():
+            self.right_checkboxes.chkSuggestMissScarlet.show
 
-        self.chkSuggestColMustard.setChecked(False)
-        if not self.chkColMustard.ischecked():
-            self.chkSuggestColMustard.show
+        self.right_checkboxes.chkSuggestColMustard.setChecked(False)
+        if not self.right_checkboxes.right_checkboxeschkColMustard.ischecked():
+            self.right_checkboxes.chkSuggestColMustard.show
 
-        self.chkSuggestMrsWhite.setChecked(False)
-        if not self.chkMrsWhite.ischecked():
-            self.chkSuggestMrsWhite.show
+        self.right_checkboxes.chkSuggestMrsWhite.setChecked(False)
+        if not self.right_checkboxes.chkMrsWhite.ischecked():
+            self.right_checkboxes.chkSuggestMrsWhite.show
 
-        self.chkSuggestMrGreen.setChecked(False)
-        if not self.chkMrGreen.ischecked():
-            self.chkSuggestMrGreen.show
+        self.right_checkboxes.chkSuggestMrGreen.setChecked(False)
+        if not self.right_checkboxes.chkMrGreen.ischecked():
+            self.right_checkboxes.chkSuggestMrGreen.show
 
-        self.chkSuggestMrsPeacock.setChecked(False)
-        if not self.chkMrsPeacock.ischecked():
-            self.chkSuggestMrsPeacock.show
+        self.right_checkboxes.chkSuggestMrsPeacock.setChecked(False)
+        if not self.right_checkboxes.chkMrsPeacock.ischecked():
+            self.right_checkboxes.chkSuggestMrsPeacock.show
 
-        self.chkSuggestProfPlum.setChecked(False)
-        if not self.chkProfPlum.ischecked():
-            self.chkSuggestProfPlum.show
+        self.right_checkboxes.chkSuggestProfPlum.setChecked(False)
+        if not self.right_checkboxes.chkProfPlum.ischecked():
+            self.right_checkboxes.chkSuggestProfPlum.show
 
-        self.chkSuggestCandlestick.setChecked(False)
-        if not self.chkCandlestick.ischecked():
-            self.chkSuggestCandlestick.show
+        self.right_checkboxes.chkSuggestCandlestick.setChecked(False)
+        if not self.right_checkboxes.chkCandlestick.ischecked():
+            self.right_checkboxes.chkSuggestCandlestick.show
 
-        self.chkSuggestKnife.setChecked(False)
-        if not self.chkKnife.ischecked():
-            self.chkSuggestKnife.show
+        self.right_checkboxes.chkSuggestKnife.setChecked(False)
+        if not self.right_checkboxes.chkKnife.ischecked():
+            self.right_checkboxes.chkSuggestKnife.show
 
-        if not self.chkLeadPipe.ischecked():
-            self.chkSuggestLeadPipe.show
-            self.chkSuggestLeadPipe.setChecked(False)
+        if not self.right_checkboxes.chkLeadPipe.ischecked():
+            self.right_checkboxes.chkSuggestLeadPipe.show
+            self.right_checkboxes.chkSuggestLeadPipe.setChecked(False)
 
-        self.chkSuggestRevolver.setChecked(False)
-        if not self.chkRevolver.ischecked():
-            self.chkSuggestRevolver.show
+        self.right_checkboxes.chkSuggestRevolver.setChecked(False)
+        if not self.right_checkboxes.chkRevolver.ischecked():
+            self.right_checkboxes.chkSuggestRevolver.show
 
-        self.chkSuggestRope.setChecked(False)
-        if not self.chkRope.ischecked():
+        self.right_checkboxes.chkSuggestRope.setChecked(False)
+        if not self.right_checkboxes.chkRope.ischecked():
             self.chkSuggestRope.show
 
-        self.chkSuggestWrench.setChecked(False)
-        if not self.chkWrench.ischecked():
-            self.chkSuggestWrench.show
+        self.right_checkboxes.chkSuggestWrench.setChecked(False)
+        if not self.right_checkboxes.chkWrench.ischecked():
+            self.right_checkboxes.chkSuggestWrench.show
 
-        self.chkSuggestLounge.setChecked(False)
-        if not self.chkLounge.ischecked():
-            self.chkSuggestLounge.show
+        self.right_checkboxes.chkSuggestLounge.setChecked(False)
+        if not self.right_checkboxes.chkLounge.ischecked():
+            self.right_checkboxes.chkSuggestLounge.show
 
-        self.chkSuggestDiningRoom.setChecked(False)
-        if not self.chkDiningRoom.ischecked():
-            self.chkSuggestDiningRoom.show
+        self.right_checkboxes.chkSuggestDiningRoom.setChecked(False)
+        if not self.right_checkboxes.chkDiningRoom.ischecked():
+            self.right_checkboxes.chkSuggestDiningRoom.show
 
-        self.chkSuggestKitchen.setChecked(False)
-        if not self.chkKitchen.ischecked():
-            self.chkSuggestKitchen.show
+        self.right_checkboxes.chkSuggestKitchen.setChecked(False)
+        if not self.right_checkboxes.chkKitchen.ischecked():
+            self.right_checkboxes.chkSuggestKitchen.show
 
-        self.chkSuggestBallroom.setChecked(False)
-        if not self.chkBallroom.ischecked():
-            self.chkSuggestBallroom.show
+        self.right_checkboxes.chkSuggestBallroom.setChecked(False)
+        if not self.right_checkboxes.chkBallroom.ischecked():
+            self.right_checkboxes.chkSuggestBallroom.show
 
-        self.chkSuggestConservatory.setChecked(False)
-        if not self.chkConservatory.ischecked():
-            self.chkSuggestConservatory.show
+        self.right_checkboxes.chkSuggestConservatory.setChecked(False)
+        if not self.right_checkboxes.chkConservatory.ischecked():
+            self.right_checkboxes.chkSuggestConservatory.show
 
-        self.chkSuggestLibrary.setChecked(False)
-        if not self.chkLibrary.ischecked():
-            self.chkSuggestLibrary.show
+        self.right_checkboxes.chkSuggestLibrary.setChecked(False)
+        if not self.right_checkboxes.chkLibrary.ischecked():
+            self.right_checkboxes.chkSuggestLibrary.show
 
-        self.chkSuggestStudy.setChecked(False)
-        if not self.chkStudy.ischecked():
-            self.chkSuggestStudy.show
+        self.right_checkboxes.chkSuggestStudy.setChecked(False)
+        if not self.right_checkboxes.chkStudy.ischecked():
+            self.right_checkboxes.chkSuggestStudy.show
 
-        self.chkSuggestHall.setChecked(False)
-        if not self.chkHall.ischecked():
-            self.chkSuggestHall.show
+        self.right_checkboxes.chkSuggestHall.setChecked(False)
+        if not self.right_checkboxes.chkHall.ischecked():
+            self.right_checkboxes.chkSuggestHall.show
 
-        self.chkSuggestBilliardRoom.setChecked(False)
-        if not self.chkBilliardRoom.ischecked():
-            self.chkSuggestBilliardRoom.show
+        self.right_checkboxes.chkSuggestBilliardRoom.setChecked(False)
+        if not self.right_checkboxes.chkBilliardRoom.ischecked():
+            self.right_checkboxes.chkSuggestBilliardRoom.show
 
         # for i in self.right_checkboxes_tokens:
         #     # i.setCheckState(False)
