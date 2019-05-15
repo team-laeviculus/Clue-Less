@@ -16,6 +16,7 @@ import traceback
 import time
 import sys
 import random
+from functools import partial
 from collections import OrderedDict
 
 app = None  # Main Qt context
@@ -73,14 +74,32 @@ class Notebook:
         self.right_checkboxes_weapons = self.right_checkboxes[5:11]
         self.right_checkboxes_rooms = self.right_checkboxes[11:]
 
+        # Get checkboxes so we know what was clicked
+        self.check_boxes_callback = OrderedDict()
+        for checkbox in self.right_checkboxes:
+            print(f"Checkbox: {checkbox.objectName()}")
+            self.check_boxes_callback[checkbox.objectName()] = checkbox
+            checkbox.stateChanged.connect(
+                partial(self.right_checkbox_clicked,
+                        checkbox.objectName())
+            )
         self.check_boxes = OrderedDict()
         # Initial setup for all check boxes
         for i in range(len(self.check_box_widgets) // 2):
             self.left_checkboxes[i].setEnabled(False)
             # self.left_checkboxes[i].setTriState(False)
-            self.right_checkboxes[i].hide()  # Hides all right checkboxes on
+            # self.right_checkboxes[i].hide()  # Hides all right checkboxes on
             # self.right_checkboxes[i].setTriState(False)
             self.check_boxes[self.check_box_widgets[i].text()] = [self.left_checkboxes[i], self.right_checkboxes[i]]
+
+    def right_checkbox_clicked(self, checkbox_clicked):
+        """
+        Looks up and does something with a check box if its clicked
+        :param checkbox_clicked: checkbox Object name
+        :return:
+        """
+        chck_box = self.check_boxes_callback[checkbox_clicked]
+        print(f"You clicked {chck_box.objectName()}")
 
     def show_right_checkboxes(self):
         # uncheck all checkboxes and display if the left checkbox is not checked
@@ -300,7 +319,7 @@ ColMustard = Token("Col. Mustard", name_conversion["lounge_dining room"])
 token_Elements.append(ColMustard)
 MrGreen = Token("Mr. Green", name_conversion["conservatory_ballroom"])
 token_Elements.append(MrGreen)
-MrsWhite = Token("Mrs. White", "ballroom_kitchen")
+MrsWhite = Token("Mrs. White", name_conversion["ballroom_kitchen"])
 token_Elements.append(MrsWhite)
 CandleStick = Token("weaponCandleStick", "roomConservatory")
 token_Elements.append(CandleStick)
