@@ -73,6 +73,8 @@ class Notebook:
         self.right_checkboxes_tokens = self.right_checkboxes[0:5]
         self.right_checkboxes_weapons = self.right_checkboxes[5:11]
         self.right_checkboxes_rooms = self.right_checkboxes[11:]
+        self.clicked_list = []
+        self.is_ready = False
 
         # Get checkboxes so we know what was clicked
         self.check_boxes_callback = OrderedDict()
@@ -99,7 +101,11 @@ class Notebook:
         :return:
         """
         chck_box = self.check_boxes_callback[checkbox_clicked]
-        print(f"You clicked {chck_box.objectName()}")
+        name = chck_box.objectName()
+        print(f"You clicked {name}")
+        self.clicked_list.append(chck_box.objectName())
+        if len(self.clicked_list) > 2:
+            self.is_ready = True
 
     def show_right_checkboxes(self):
         # uncheck all checkboxes and display if the left checkbox is not checked
@@ -405,7 +411,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, qtcontext):
         self.app = qtcontext
-
+        self.second_click = False
         QMainWindow.__init__(self)
         self.setMinimumSize(QtCore.QSize(900, 450))
         self.setMaximumSize(QtCore.QSize(1464, 949))
@@ -709,11 +715,28 @@ class MainWindow(QMainWindow):
 
     def make_suggestion_callback(self):
         self.add_message_to_chat_window("Make Suggestion Clicked")
+
+        if not self.second_click:
+            self.second_click = True
+            # make checkboxes visible
+            return
+
+        room = self.my_profile['location']
+
+        player = None
+        weapon = None
+        for name in self.notebook.clicked_list:
+            if name in TOKENS_MAP:
+                name = TOKENS_MAP[name]
+                player = name
+            if name in WEAPONS_MAP:
+                name = WEAPONS_MAP[name]
+                weapon = name
         # From Phillip, get player, weapon, room from user
         game_id = self.networking.game_id
         address_string = "/games/" + str(game_id) + "/turn"
         data_dict = {"name": self.profile_name, "move_type": "accusation",
-                     "move_info": {"player": None, "weapon": None, "room": None}}
+                     "move_info": {"player": player, "weapon": weapon, "room": room}}
         self.networking.post_json(address_string, json.dumps(data_dict),
                                   self.get_suggestion_callback)
 
