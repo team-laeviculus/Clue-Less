@@ -334,6 +334,15 @@ token_Elements.append(Wrench)
 LeadPipe = Token("weaponLeadPipe", "roomKitchen")
 token_Elements.append(LeadPipe)
 
+WEAPONS_MAP = {
+    "weaponCandleStick": "Candlestick",
+    "weaponKnife": "Knife",
+    "weaponRope": "Rope",
+    "weaponRevolver": "Revolver",
+    "weaponWrench": "Wrench",
+    "weaponLeadPipe": "Lead Pipe"
+}
+
 gameboard_Elements = []
 Hall1_2 = Hall("hall1_2", 170, 280, 20, 120, "background-color: rgb(125, 125, 125);")
 gameboard_Elements.append(Hall1_2)
@@ -474,7 +483,7 @@ class MainWindow(QMainWindow):
         ######################################
         # self.quit_game_button.clicked.connect(self.quit_callback)
         # self.send_message_button.clicked.connect(self.send_message_callback)
-        # self.make_suggestion_button.clicked.connect(self.make_suggestion_callback)
+        self.game_board_ui.make_suggestion_button.clicked.connect(self.make_suggestion_callback)
         # self.make_accusation_button.clicked.connect(self.make_accusation_callback)
         # Create Profile, also accepts enter button
         self.clue_login_window.create_profile_button.clicked.connect(self.login_button_callback)
@@ -656,7 +665,7 @@ class MainWindow(QMainWindow):
 
     def __launch_gameboard(self, data):
         """
-        After player logs in, launches gamebaord player will be using
+        After player logs in, launches gameboard player will be using
         :return:
         """
         self.setCentralWidget(self.game_board_widget)
@@ -698,12 +707,11 @@ class MainWindow(QMainWindow):
                                  "color: rgb(0, 0, 0);")
             self.game_board_ui.make_move_button.setDisabled(False)
 
-
-    def tmp_make_suggestion_callback(self, nearby_array):
-        print("Make Suggestion Clicked")
+    def make_suggestion_callback(self):
+        self.add_message_to_chat_window("Make Suggestion Clicked")
         # From Phillip, get player, weapon, room from user
         game_id = self.networking.game_id
-        address_string = "/games/" + game_id + "/turn"
+        address_string = "/games/" + str(game_id) + "/turn"
         data_dict = {"name": self.profile_name, "move_type": "accusation",
                      "move_info": {"player": None, "weapon": None, "room": None}}
         self.networking.post_json(address_string, json.dumps(data_dict),
@@ -715,9 +723,11 @@ class MainWindow(QMainWindow):
         :param reply:
         :return:
         """
+
         print("\nSUGGESTION CALLBACK CALLED")
         try:
             data, er = self.networking.reply_to_json(reply)
+            self.add_message_to_chat_window(data)
             status_window = self.clue_login_window.create_profile_server_status_label
 
             def error_message(msg: str):
